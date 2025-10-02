@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { scrapeAsset, OptimizerConfig } from '@repo/optimizer';
 
 export const runtime = 'nodejs';
 
@@ -30,6 +29,9 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Dynamically import the optimizer to avoid bundling issues
+    const { scrapeAsset, OptimizerConfig } = await import('@repo/optimizer');
 
     // Create config with debug option
     const config = new OptimizerConfig({ debug });
