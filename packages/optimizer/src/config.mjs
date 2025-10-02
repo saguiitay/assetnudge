@@ -244,6 +244,27 @@ export class Config {
   getSubCategory(fullCategory) {
     return fullCategory.split('/')[1];
   }
+
+  /**
+   * Convert config back to command line args format
+   */
+  toArgs() {
+    const args = [];
+    
+    if (this.debug) {
+      args.push('--debug', 'true');
+    }
+    
+    if (this.apiKey) {
+      args.push('--apiKey', this.apiKey);
+    }
+    
+    if (this.ai.defaultModel !== AI_CONFIG.defaultModel) {
+      args.push('--model', this.ai.defaultModel);
+    }
+    
+    return args;
+  }
 }
 
 export default Config;
