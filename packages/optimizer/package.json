@@ -3,15 +3,20 @@
   "version": "2.0.0",
   "description": "AI-powered optimization tool for Unity Asset Store listings",
   "type": "module",
-  "main": "index.mjs",
-  "module": "index.mjs",
+  "main": "main.mjs",
+  "module": "src/optimizer.mjs",
   "exports": {
     ".": {
-      "import": "./index.mjs",
-      "require": "./index.cjs"
+      "import": "./main.mjs",
+      "default": "./main.mjs"
     },
-    "./cli": {
-      "import": "./main.mjs"
+    "./optimizer": {
+      "import": "./src/optimizer.mjs",
+      "default": "./src/optimizer.mjs"
+    },
+    "./src/*": {
+      "import": "./src/*.mjs",
+      "default": "./src/*.mjs"
     }
   },
   "scripts": {
@@ -33,7 +38,8 @@
     "unity3d",
     "gamedev",
     "scraping",
-    "analysis"
+    "analysis",
+    "monorepo-ready"
   ],
   "author": "Unity Asset Optimizer Team",
   "license": "MIT",
@@ -50,13 +56,10 @@
     "unity-optimizer": "./main.mjs"
   },
   "files": [
-    "index.mjs",
-    "index.cjs",
     "main.mjs",
     "src/",
     "utils.mjs",
-    "puppeteer-scraper.mjs",
-    "README.md",
-    "examples/"
+    "data/",
+    "README.md"
   ]
 }

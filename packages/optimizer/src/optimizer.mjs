@@ -17,7 +17,7 @@ import AISuggestionEngine from './ai-suggestions.mjs';
 import HeuristicSuggestions from './heuristic-suggestions.mjs';
 
 // External dependencies
-import { scrapeAssetWithPuppeteer } from '../puppeteer-scraper.mjs';
+import { scrapeAssetWithPuppeteer } from './puppeteer-scraper.mjs';
 
 /**
  * Main optimizer class that orchestrates all functionality
