@@ -1,5 +1,5 @@
 {
-  "name": "with-tailwind",
+  "name": "asset-nudge",
   "private": true,
   "scripts": {
     "build": "turbo run build",
