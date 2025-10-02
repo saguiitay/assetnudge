@@ -1,0 +1,28 @@
+[
+  {
+    "id": "192384",
+    "title": "Simple Memory Game Template",
+    "short_description": "Simple Memory Game Template is a very simple and clean game template.",
+    "long_description": "Simple Memory Game Template is a very simple and clean game template that allows you to create memory games. The template includes a single scene with a main menu, a difficulty level selection panel, and the main game panels. The game can be easily customized for different graphics. Features: Full C# code. Perfect for creating games for children. Easily customizable to support different graphics. Provides easy linking to other games. Integrates with Google Mobile Ads. Works on all platforms, PC, Mac, iOS, Android, etc.",
+    "tags": ["Memory game", "2D", "Template", "Complete Project"],
+    "category": "Templates",
+    "price": 4.99,
+    "images_count": 5,
+    "videos_count": 0,
+    "rating": 4.2,
+    "reviews_count": 1032
+  },
+  {
+    "id": "140796", 
+    "title": "Dice Roller Pro - Advanced Dice System for Unity Games",
+    "short_description": "Professional dice rolling system with physics simulation and customizable graphics.",
+    "long_description": "Dice Roller Pro is the ultimate dice rolling solution for Unity developers. Create realistic dice physics with customizable materials, sounds, and visual effects. Perfect for board games, RPGs, and casino-style applications. Features include: Advanced physics simulation, Multiple dice types (D4, D6, D8, D10, D12, D20), Customizable materials and textures, Sound effects and particle systems, Easy integration with existing projects, Complete documentation and examples, Mobile-optimized performance, Cross-platform compatibility. This asset provides everything you need to implement professional-quality dice mechanics in your Unity projects.",
+    "tags": ["Dice", "Physics", "Board Game", "RPG", "Casino", "Simulation"],
+    "category": "Templates",
+    "price": 12.99,
+    "images_count": 8,
+    "videos_count": 2,
+    "rating": 4.7,
+    "reviews_count": 156
+  }
+]

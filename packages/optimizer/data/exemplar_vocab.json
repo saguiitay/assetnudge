@@ -1,0 +1,3796 @@
+{
+  "3d": {
+    "title_words": [
+      {
+        "word": "city",
+        "frequency": 3,
+        "score": 3
+      },
+      {
+        "word": "polygon",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "low",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "poly",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "art",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "synty",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "kit",
+        "frequency": 2,
+        "score": 2
+      }
+    ],
+    "title_bigrams": [
+      {
+        "word": "low poly",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "poly art",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "art synty",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "bed game",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "game ready",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "ready model",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "polygon apocalypse",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "apocalypse low",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "next gen",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "gen planets",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "stylized forest",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "forest asset",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "asset kit",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "soldier animations",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "city builder",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "builder urban",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "greeble city",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "city kit",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "polygon kids",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "kids low",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "realistic car",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "free fps",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "fps weapon",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "weapon akm",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "magical knight",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "knight animset",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "colonial city",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "city littlepack",
+        "frequency": 1,
+        "score": 1
+      }
+    ],
+    "description_words": [
+      {
+        "word": "props",
+        "frequency": 15,
+        "score": 15
+      },
+      {
+        "word": "pack",
+        "frequency": 14,
+        "score": 14
+      },
+      {
+        "word": "male",
+        "frequency": 14,
+        "score": 14
+      },
+      {
+        "word": "included",
+        "frequency": 13,
+        "score": 13
+      },
+      {
+        "word": "female",
+        "frequency": 13,
+        "score": 13
+      },
+      {
+        "word": "city",
+        "frequency": 13,
+        "score": 13
+      },
+      {
+        "word": "assets",
+        "frequency": 12,
+        "score": 12
+      },
+      {
+        "word": "textures",
+        "frequency": 11,
+        "score": 11
+      },
+      {
+        "word": "all",
+        "frequency": 11,
+        "score": 11
+      },
+      {
+        "word": "materials",
+        "frequency": 11,
+        "score": 11
+      },
+      {
+        "word": "asset",
+        "frequency": 10,
+        "score": 10
+      },
+      {
+        "word": "modular",
+        "frequency": 10,
+        "score": 10
+      },
+      {
+        "word": "scene",
+        "frequency": 9,
+        "score": 9
+      },
+      {
+        "word": "model",
+        "frequency": 8,
+        "score": 8
+      },
+      {
+        "word": "game",
+        "frequency": 8,
+        "score": 8
+      },
+      {
+        "word": "shader",
+        "frequency": 8,
+        "score": 8
+      },
+      {
+        "word": "ready",
+        "frequency": 8,
+        "score": 8
+      },
+      {
+        "word": "high",
+        "frequency": 7,
+        "score": 7
+      },
+      {
+        "word": "detailed",
+        "frequency": 7,
+        "score": 7
+      },
+      {
+        "word": "demo",
+        "frequency": 7,
+        "score": 7
+      },
+      {
+        "word": "car",
+        "frequency": 7,
+        "score": 7
+      },
+      {
+        "word": "crawling",
+        "frequency": 7,
+        "score": 7
+      },
+      {
+        "word": "colonial",
+        "frequency": 7,
+        "score": 7
+      },
+      {
+        "word": "1024",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "quality",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "other",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "includes",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "need",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "vehicle",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "different",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "animation",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "motion",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "com",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "interior",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "greeble",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "tris",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "pbr",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "unity",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "metallic",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "jump",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "create",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "buildings",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "attachments",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "hdrp",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "full",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "technical",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "using",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "idle",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "root",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "from",
+        "frequency": 5,
+        "score": 5
+      }
+    ],
+    "common_tags": [
+      {
+        "word": "ottoman",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "low poly",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "trees",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "grenade",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "city game prop",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "kitbash",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "children",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "vr",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "unity asset",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "wemakethegame",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "cemetry",
+        "frequency": 1,
+        "score": 1
+      }
+    ],
+    "tag_cooccurrence": [],
+    "sample_size": 12,
+    "images_count": {
+      "mean": 8.166666666666666,
+      "median": 8,
+      "std": 2.7638539919628333,
+      "min": 4,
+      "max": 14
+    },
+    "videos_count": {
+      "mean": 0,
+      "median": 0,
+      "std": 0,
+      "min": 0,
+      "max": 0
+    },
+    "title_length": {
+      "mean": 23.916666666666668,
+      "median": 21.5,
+      "std": 8.635762206596988,
+      "min": 16,
+      "max": 45
+    },
+    "word_count_long": {
+      "mean": 289,
+      "median": 199,
+      "std": 150,
+      "min": 60,
+      "max": 770
+    },
+    "tag_count": {
+      "mean": 0.9166666666666666,
+      "median": 1,
+      "std": 0.2763853991962833
+    },
+    "bullet_count": {
+      "mean": 3,
+      "median": 0,
+      "std": 6.298147875897061
+    },
+    "price": {
+      "mean": 79.10111111111112,
+      "median": 29.95,
+      "std": 104.25088909233922,
+      "min": 6,
+      "max": 349.99,
+      "q1": 20,
+      "q3": 69.99
+    },
+    "quality_score": {
+      "mean": 220.50179437100596,
+      "std": 50.174960839880775,
+      "median": 203.92727221585608,
+      "min": 176.9614751719642,
+      "max": 344.11415938395237
+    },
+    "extracted_from": "exemplars",
+    "extraction_date": "2025-09-29T20:24:02.599Z",
+    "top_exemplar_score": 344.11415938395237,
+    "has_video_percentage": 0,
+    "common_structures": {
+      "hasFeaturesList": 2,
+      "hasRequirements": 0,
+      "hasExamples": 7,
+      "hasLinks": 8,
+      "hasCTA": 9
+    }
+  },
+  "Audio": {
+    "title_words": [
+      {
+        "word": "pack",
+        "frequency": 7,
+        "score": 7
+      },
+      {
+        "word": "astrokid",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "mini",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "rpg",
+        "frequency": 3,
+        "score": 3
+      },
+      {
+        "word": "soundtrack",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "horror",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "adventure",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "music",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "ambience",
+        "frequency": 2,
+        "score": 2
+      }
+    ],
+    "title_bigrams": [
+      {
+        "word": "astrokid mini",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "mini pack",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "nature sound",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "free cyberpunk",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "cyberpunk sci",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "sci soundtrack",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "industrial horror",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "horror bundle",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "tactical rpg",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "rpg audio",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "audio pack",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "detective adventure",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "adventure urban",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "urban rpg",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "rpg music",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "music pack",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "field recording",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "recording flux",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "rpg adventure",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "adventure soundtrack",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "soundtrack collection",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "pack epic",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "epic combat",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "combat music",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "pack ethereal",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "ethereal drum",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "drum bass",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "bass canopy",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "pack fantasy",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "fantasy textures",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "textures ambience",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "pack horror",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "horror ambience",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "ambience stingers",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "pack jungle",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "jungle ruins",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "ruins hardcore",
+        "frequency": 1,
+        "score": 1
+      }
+    ],
+    "description_words": [
+      {
+        "word": "loop",
+        "frequency": 21,
+        "score": 21
+      },
+      {
+        "word": "mins",
+        "frequency": 15,
+        "score": 15
+      },
+      {
+        "word": "battle",
+        "frequency": 13,
+        "score": 13
+      },
+      {
+        "word": "perfect",
+        "frequency": 12,
+        "score": 12
+      },
+      {
+        "word": "full",
+        "frequency": 12,
+        "score": 12
+      },
+      {
+        "word": "perc",
+        "frequency": 11,
+        "score": 11
+      },
+      {
+        "word": "amp",
+        "frequency": 11,
+        "score": 11
+      },
+      {
+        "word": "music",
+        "frequency": 10,
+        "score": 10
+      },
+      {
+        "word": "pack",
+        "frequency": 10,
+        "score": 10
+      },
+      {
+        "word": "games",
+        "frequency": 10,
+        "score": 10
+      },
+      {
+        "word": "track",
+        "frequency": 10,
+        "score": 10
+      },
+      {
+        "word": "nbsp",
+        "frequency": 10,
+        "score": 10
+      },
+      {
+        "word": "mel",
+        "frequency": 9,
+        "score": 9
+      },
+      {
+        "word": "sound",
+        "frequency": 8,
+        "score": 8
+      },
+      {
+        "word": "package",
+        "frequency": 7,
+        "score": 7
+      },
+      {
+        "word": "high",
+        "frequency": 7,
+        "score": 7
+      },
+      {
+        "word": "horror",
+        "frequency": 7,
+        "score": 7
+      },
+      {
+        "word": "sounds",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "action",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "projects",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "atmospheric",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "boss",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "designed",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "rpg",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "while",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "intro",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "cinematic",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "all",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "soundtrack",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "moments",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "drama",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "astrokid",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "mini",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "looping",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "jungle",
+        "frequency": 4,
+        "score": 4
+      },
+      {
+        "word": "quality",
+        "frequency": 4,
+        "score": 4
+      },
+      {
+        "word": "immersive",
+        "frequency": 4,
+        "score": 4
+      },
+      {
+        "word": "includes",
+        "frequency": 4,
+        "score": 4
+      },
+      {
+        "word": "experience",
+        "frequency": 4,
+        "score": 4
+      },
+      {
+        "word": "collection",
+        "frequency": 4,
+        "score": 4
+      },
+      {
+        "word": "industrial",
+        "frequency": 4,
+        "score": 4
+      },
+      {
+        "word": "ambient",
+        "frequency": 4,
+        "score": 4
+      },
+      {
+        "word": "like",
+        "frequency": 4,
+        "score": 4
+      },
+      {
+        "word": "battles",
+        "frequency": 4,
+        "score": 4
+      },
+      {
+        "word": "epic",
+        "frequency": 4,
+        "score": 4
+      },
+      {
+        "word": "orchestral",
+        "frequency": 4,
+        "score": 4
+      },
+      {
+        "word": "songs",
+        "frequency": 4,
+        "score": 4
+      },
+      {
+        "word": "fanfares",
+        "frequency": 4,
+        "score": 4
+      },
+      {
+        "word": "delivers",
+        "frequency": 4,
+        "score": 4
+      },
+      {
+        "word": "adventure",
+        "frequency": 4,
+        "score": 4
+      }
+    ],
+    "common_tags": [
+      {
+        "word": "nature sound",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "horror ambience",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "rpg games",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "persona",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "lake",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "music",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "fantasy soundtrack",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "ethereal",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "cavern reverb",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "scary soundscape",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "hardcore music",
+        "frequency": 1,
+        "score": 1
+      }
+    ],
+    "tag_cooccurrence": [],
+    "sample_size": 12,
+    "images_count": {
+      "mean": 1.8333333333333333,
+      "median": 1,
+      "std": 1.4624940645653537,
+      "min": 1,
+      "max": 5
+    },
+    "videos_count": {
+      "mean": 0,
+      "median": 0,
+      "std": 0,
+      "min": 0,
+      "max": 0
+    },
+    "title_length": {
+      "mean": 35.333333333333336,
+      "median": 37.5,
+      "std": 10.094002619817813,
+      "min": 15,
+      "max": 48
+    },
+    "word_count_long": {
+      "mean": 168,
+      "median": 136,
+      "std": 76,
+      "min": 61,
+      "max": 411
+    },
+    "tag_count": {
+      "mean": 0.9166666666666666,
+      "median": 1,
+      "std": 0.27638539919628324
+    },
+    "bullet_count": {
+      "mean": 4.833333333333333,
+      "median": 0,
+      "std": 9.711104754638143
+    },
+    "price": {
+      "mean": 23.496250000000003,
+      "median": 25,
+      "std": 13.065748100950822,
+      "min": 4.99,
+      "max": 49.99,
+      "q1": 15,
+      "q3": 29.99
+    },
+    "quality_score": {
+      "mean": 99.59669892083934,
+      "std": 36.77695531450295,
+      "median": 83.03972077083992,
+      "min": 82,
+      "max": 210.25911849519815
+    },
+    "extracted_from": "exemplars",
+    "extraction_date": "2025-09-29T20:24:02.606Z",
+    "top_exemplar_score": 210.25911849519815,
+    "has_video_percentage": 0,
+    "common_structures": {
+      "hasFeaturesList": 1,
+      "hasRequirements": 0,
+      "hasExamples": 1,
+      "hasLinks": 3,
+      "hasCTA": 4
+    }
+  },
+  "2d": {
+    "title_words": [
+      {
+        "word": "icons",
+        "frequency": 3,
+        "score": 3
+      },
+      {
+        "word": "fantasy",
+        "frequency": 3,
+        "score": 3
+      },
+      {
+        "word": "gui",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "collection",
+        "frequency": 2,
+        "score": 2
+      }
+    ],
+    "title_bigrams": [
+      {
+        "word": "flat icons",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "icons free",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "medieval kingdom",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "demo funky",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "funky cartoon",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "cartoon gui",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "gui animation",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "animation bundle",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "heavy weapons",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "weapons icons",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "icons extended",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "extended mechs",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "mechs spaceships",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "spaceships vehicles",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "gui fantasy",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "fantasy casual",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "casual psd",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "2352 crystals",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "crystals colours",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "colours transparent",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "transparent background",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "easy chara",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "chara school",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "school character",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "character collection",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "fantasy backgrounds",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "backgrounds collection",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "collection 330",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "330 high",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "high resolution",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "resolution images",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "seamless grass",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "grass pattern",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "pattern textures",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "rpg moba",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "moba fantasy",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "fantasy icons",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "icons pack",
+        "frequency": 1,
+        "score": 1
+      }
+    ],
+    "description_words": [
+      {
+        "word": "pack",
+        "frequency": 29,
+        "score": 29
+      },
+      {
+        "word": "icons",
+        "frequency": 25,
+        "score": 25
+      },
+      {
+        "word": "size",
+        "frequency": 18,
+        "score": 18
+      },
+      {
+        "word": "png",
+        "frequency": 16,
+        "score": 16
+      },
+      {
+        "word": "pixel",
+        "frequency": 16,
+        "score": 16
+      },
+      {
+        "word": "backgrounds",
+        "frequency": 16,
+        "score": 16
+      },
+      {
+        "word": "animation",
+        "frequency": 15,
+        "score": 15
+      },
+      {
+        "word": "fantasy",
+        "frequency": 15,
+        "score": 15
+      },
+      {
+        "word": "games",
+        "frequency": 12,
+        "score": 12
+      },
+      {
+        "word": "demo",
+        "frequency": 12,
+        "score": 12
+      },
+      {
+        "word": "use",
+        "frequency": 12,
+        "score": 12
+      },
+      {
+        "word": "elements",
+        "frequency": 10,
+        "score": 10
+      },
+      {
+        "word": "character",
+        "frequency": 10,
+        "score": 10
+      },
+      {
+        "word": "gui",
+        "frequency": 10,
+        "score": 10
+      },
+      {
+        "word": "unity",
+        "frequency": 9,
+        "score": 9
+      },
+      {
+        "word": "includes",
+        "frequency": 8,
+        "score": 8
+      },
+      {
+        "word": "our",
+        "frequency": 8,
+        "score": 8
+      },
+      {
+        "word": "characters",
+        "frequency": 8,
+        "score": 8
+      },
+      {
+        "word": "other",
+        "frequency": 8,
+        "score": 8
+      },
+      {
+        "word": "ready",
+        "frequency": 8,
+        "score": 8
+      },
+      {
+        "word": "assets",
+        "frequency": 7,
+        "score": 7
+      },
+      {
+        "word": "all",
+        "frequency": 7,
+        "score": 7
+      },
+      {
+        "word": "included",
+        "frequency": 7,
+        "score": 7
+      },
+      {
+        "word": "prefabs",
+        "frequency": 7,
+        "score": 7
+      },
+      {
+        "word": "scene",
+        "frequency": 7,
+        "score": 7
+      },
+      {
+        "word": "set",
+        "frequency": 7,
+        "score": 7
+      },
+      {
+        "word": "each",
+        "frequency": 7,
+        "score": 7
+      },
+      {
+        "word": "perfect",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "asset",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "available",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "style",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "total",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "background",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "quality",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "contains",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "fully",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "format",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "sprite",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "projects",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "mobile",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "any",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "full",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "support",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "map",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "game",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "unique",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "textures",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "etc",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "animated",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "buttons",
+        "frequency": 5,
+        "score": 5
+      }
+    ],
+    "common_tags": [
+      {
+        "word": "vector",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "king",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "2d ui",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "heavy weapons",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "8-bit",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "fantasy ui",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "fantasy crystals",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "color ui",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "school",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "cityscape",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "urp",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "magic",
+        "frequency": 1,
+        "score": 1
+      }
+    ],
+    "tag_cooccurrence": [],
+    "sample_size": 12,
+    "images_count": {
+      "mean": 9.166666666666666,
+      "median": 7,
+      "std": 5.273097339852125,
+      "min": 1,
+      "max": 22
+    },
+    "videos_count": {
+      "mean": 0,
+      "median": 0,
+      "std": 0,
+      "min": 0,
+      "max": 0
+    },
+    "title_length": {
+      "mean": 34.583333333333336,
+      "median": 30.5,
+      "std": 17.495038979347513,
+      "min": 10,
+      "max": 65
+    },
+    "word_count_long": {
+      "mean": 247,
+      "median": 230,
+      "std": 124,
+      "min": 57,
+      "max": 518
+    },
+    "tag_count": {
+      "mean": 1,
+      "median": 1,
+      "std": 0
+    },
+    "bullet_count": {
+      "mean": 9.166666666666666,
+      "median": 5,
+      "std": 10.286182749472983
+    },
+    "price": {
+      "mean": 31.047777777777778,
+      "median": 24.99,
+      "std": 25.607182489718163,
+      "min": 9.5,
+      "max": 99.99,
+      "q1": 15.99,
+      "q3": 29.99
+    },
+    "quality_score": {
+      "mean": 129.57063491547362,
+      "std": 44.530350295928564,
+      "median": 102.8283137373023,
+      "min": 98.49964003216866,
+      "max": 231.8645119029475
+    },
+    "extracted_from": "exemplars",
+    "extraction_date": "2025-09-29T20:24:02.612Z",
+    "top_exemplar_score": 231.8645119029475,
+    "has_video_percentage": 0,
+    "common_structures": {
+      "hasFeaturesList": 3,
+      "hasRequirements": 0,
+      "hasExamples": 4,
+      "hasLinks": 8,
+      "hasCTA": 9
+    }
+  },
+  "Tools": {
+    "title_words": [
+      {
+        "word": "lighting",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "biomes",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "presets",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "microverse",
+        "frequency": 2,
+        "score": 2
+      }
+    ],
+    "title_bigrams": [
+      {
+        "word": "biomes presets",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "presets microverse",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "character selection",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "selection menu",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "deepvoice pro",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "pro text",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "text voice",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "hdrp lighting",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "lighting box",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "box nextgen",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "nextgen lighting",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "lighting solution",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "microverse quadart",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "microverse polyart",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "polyart studio",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "bulletpro projectile",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "projectile workspace",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "atavism premises",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "modern procedural",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "procedural kit",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "native screen",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "screen recorder",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "recorder android",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "android ios",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "dlss upscaling",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "upscaling unity",
+        "frequency": 1,
+        "score": 1
+      }
+    ],
+    "description_words": [
+      {
+        "word": "unity",
+        "frequency": 20,
+        "score": 20
+      },
+      {
+        "word": "all",
+        "frequency": 13,
+        "score": 13
+      },
+      {
+        "word": "coroutines",
+        "frequency": 13,
+        "score": 13
+      },
+      {
+        "word": "not",
+        "frequency": 11,
+        "score": 11
+      },
+      {
+        "word": "game",
+        "frequency": 11,
+        "score": 11
+      },
+      {
+        "word": "easy",
+        "frequency": 10,
+        "score": 10
+      },
+      {
+        "word": "support",
+        "frequency": 9,
+        "score": 9
+      },
+      {
+        "word": "character",
+        "frequency": 8,
+        "score": 8
+      },
+      {
+        "word": "one",
+        "frequency": 8,
+        "score": 8
+      },
+      {
+        "word": "dlss",
+        "frequency": 8,
+        "score": 8
+      },
+      {
+        "word": "from",
+        "frequency": 7,
+        "score": 7
+      },
+      {
+        "word": "using",
+        "frequency": 7,
+        "score": 7
+      },
+      {
+        "word": "code",
+        "frequency": 7,
+        "score": 7
+      },
+      {
+        "word": "want",
+        "frequency": 7,
+        "score": 7
+      },
+      {
+        "word": "upscaling",
+        "frequency": 7,
+        "score": 7
+      },
+      {
+        "word": "solution",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "features",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "deepvoice",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "time",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "use",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "works",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "asset",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "documentation",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "coroutine",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "full",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "project",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "android",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "characters",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "most",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "000",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "just",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "voice",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "supported",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "compatibility",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "assets",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "while",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "even",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "gpu",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "custom",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "only",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "different",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "players",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "amp",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "video",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "get",
+        "frequency": 4,
+        "score": 4
+      },
+      {
+        "word": "click",
+        "frequency": 4,
+        "score": 4
+      },
+      {
+        "word": "about",
+        "frequency": 4,
+        "score": 4
+      },
+      {
+        "word": "audio",
+        "frequency": 4,
+        "score": 4
+      },
+      {
+        "word": "text",
+        "frequency": 4,
+        "score": 4
+      },
+      {
+        "word": "play",
+        "frequency": 4,
+        "score": 4
+      }
+    ],
+    "common_tags": [
+      {
+        "word": "pack",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "pro",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "xiaomi",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "artificial intelligence",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "amplify",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "coroutines",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "projectile",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "game tool",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "procedural",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "unity record and save video",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "urp",
+        "frequency": 1,
+        "score": 1
+      }
+    ],
+    "tag_cooccurrence": [],
+    "sample_size": 12,
+    "images_count": {
+      "mean": 7.416666666666667,
+      "median": 9.5,
+      "std": 4.290655220618667,
+      "min": 0,
+      "max": 12
+    },
+    "videos_count": {
+      "mean": 0,
+      "median": 0,
+      "std": 0,
+      "min": 0,
+      "max": 0
+    },
+    "title_length": {
+      "mean": 30.25,
+      "median": 28.5,
+      "std": 12.702525995512335,
+      "min": 9,
+      "max": 50
+    },
+    "word_count_long": {
+      "mean": 475,
+      "median": 266,
+      "std": 471,
+      "min": 24,
+      "max": 1976
+    },
+    "tag_count": {
+      "mean": 1,
+      "median": 1,
+      "std": 0
+    },
+    "bullet_count": {
+      "mean": 3.5833333333333335,
+      "median": 0,
+      "std": 7.017339635186226
+    },
+    "price": {
+      "mean": 107.48800000000001,
+      "median": 35.445,
+      "std": 143.4230834837963,
+      "min": 15,
+      "max": 499,
+      "q1": 29.99,
+      "q3": 180
+    },
+    "quality_score": {
+      "mean": 302.3086509517471,
+      "std": 48.55884286191246,
+      "median": 286.75798981621017,
+      "min": 253.26947024370165,
+      "max": 433.8282513579303
+    },
+    "extracted_from": "exemplars",
+    "extraction_date": "2025-09-29T20:24:02.623Z",
+    "top_exemplar_score": 433.8282513579303,
+    "has_video_percentage": 0,
+    "common_structures": {
+      "hasFeaturesList": 2,
+      "hasRequirements": 0,
+      "hasExamples": 7,
+      "hasLinks": 7,
+      "hasCTA": 9
+    }
+  },
+  "Vfx": {
+    "title_words": [
+      {
+        "word": "pack",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "shader",
+        "frequency": 3,
+        "score": 3
+      },
+      {
+        "word": "lut",
+        "frequency": 2,
+        "score": 2
+      }
+    ],
+    "title_bigrams": [
+      {
+        "word": "lut pack",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "shader pack",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "gest lut",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "amplify shader",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "snapshot shaders",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "shaders urp",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "pack beautify",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "hologram vfx",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "simple firework",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "billboard shader",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "pack animated",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "animated effects",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "master magicfx",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "advanced fog",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "sci pack",
+        "frequency": 1,
+        "score": 1
+      }
+    ],
+    "description_words": [
+      {
+        "word": "shader",
+        "frequency": 16,
+        "score": 16
+      },
+      {
+        "word": "effects",
+        "frequency": 16,
+        "score": 16
+      },
+      {
+        "word": "unity",
+        "frequency": 15,
+        "score": 15
+      },
+      {
+        "word": "shaders",
+        "frequency": 15,
+        "score": 15
+      },
+      {
+        "word": "fog",
+        "frequency": 13,
+        "score": 13
+      },
+      {
+        "word": "color",
+        "frequency": 12,
+        "score": 12
+      },
+      {
+        "word": "based",
+        "frequency": 12,
+        "score": 12
+      },
+      {
+        "word": "pack",
+        "frequency": 11,
+        "score": 11
+      },
+      {
+        "word": "use",
+        "frequency": 11,
+        "score": 11
+      },
+      {
+        "word": "urp",
+        "frequency": 10,
+        "score": 10
+      },
+      {
+        "word": "hdrp",
+        "frequency": 9,
+        "score": 9
+      },
+      {
+        "word": "screen",
+        "frequency": 9,
+        "score": 9
+      },
+      {
+        "word": "editor",
+        "frequency": 8,
+        "score": 8
+      },
+      {
+        "word": "game",
+        "frequency": 8,
+        "score": 8
+      },
+      {
+        "word": "visual",
+        "frequency": 8,
+        "score": 8
+      },
+      {
+        "word": "lut",
+        "frequency": 7,
+        "score": 7
+      },
+      {
+        "word": "render",
+        "frequency": 7,
+        "score": 7
+      },
+      {
+        "word": "amplify",
+        "frequency": 7,
+        "score": 7
+      },
+      {
+        "word": "built",
+        "frequency": 7,
+        "score": 7
+      },
+      {
+        "word": "included",
+        "frequency": 7,
+        "score": 7
+      },
+      {
+        "word": "just",
+        "frequency": 7,
+        "score": 7
+      },
+      {
+        "word": "textures",
+        "frequency": 7,
+        "score": 7
+      },
+      {
+        "word": "depth",
+        "frequency": 7,
+        "score": 7
+      },
+      {
+        "word": "easy",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "transparent",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "pipeline",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "new",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "only",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "support",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "package",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "make",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "add",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "any",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "all",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "asset",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "tints",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "complex",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "firework",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "particle",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "animated",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "amp",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "raised",
+        "frequency": 4,
+        "score": 4
+      },
+      {
+        "word": "minimum",
+        "frequency": 4,
+        "score": 4
+      },
+      {
+        "word": "sample",
+        "frequency": 4,
+        "score": 4
+      },
+      {
+        "word": "over",
+        "frequency": 4,
+        "score": 4
+      },
+      {
+        "word": "fully",
+        "frequency": 4,
+        "score": 4
+      },
+      {
+        "word": "from",
+        "frequency": 4,
+        "score": 4
+      },
+      {
+        "word": "not",
+        "frequency": 4,
+        "score": 4
+      },
+      {
+        "word": "our",
+        "frequency": 4,
+        "score": 4
+      },
+      {
+        "word": "there",
+        "frequency": 4,
+        "score": 4
+      }
+    ],
+    "common_tags": [
+      {
+        "word": "material",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "caustics",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "image effect",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "futuristic",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "firework",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "billboard material",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "effects",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "magic",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "urp",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "aoe",
+        "frequency": 1,
+        "score": 1
+      }
+    ],
+    "tag_cooccurrence": [],
+    "sample_size": 12,
+    "images_count": {
+      "mean": 7.333333333333333,
+      "median": 7.5,
+      "std": 4.6963342678684565,
+      "min": 1,
+      "max": 15
+    },
+    "videos_count": {
+      "mean": 0,
+      "median": 0,
+      "std": 0,
+      "min": 0,
+      "max": 0
+    },
+    "title_length": {
+      "mean": 17.583333333333332,
+      "median": 15.5,
+      "std": 7.899982419108426,
+      "min": 8,
+      "max": 39
+    },
+    "word_count_long": {
+      "mean": 225,
+      "median": 140,
+      "std": 155,
+      "min": 45,
+      "max": 690
+    },
+    "tag_count": {
+      "mean": 0.8333333333333334,
+      "median": 1,
+      "std": 0.3726779962499649
+    },
+    "bullet_count": {
+      "mean": 6.416666666666667,
+      "median": 2.5,
+      "std": 9.1874763794103
+    },
+    "price": {
+      "mean": 20.994000000000003,
+      "median": 18,
+      "std": 9.725431815605926,
+      "min": 4.99,
+      "max": 39.99,
+      "q1": 15,
+      "q3": 29.99
+    },
+    "quality_score": {
+      "mean": 157.14819677503428,
+      "std": 59.36401037160741,
+      "median": 135.59766188821436,
+      "min": 104.86748117280378,
+      "max": 284.66105727906563
+    },
+    "extracted_from": "exemplars",
+    "extraction_date": "2025-09-29T20:24:02.628Z",
+    "top_exemplar_score": 284.66105727906563,
+    "has_video_percentage": 0,
+    "common_structures": {
+      "hasFeaturesList": 3,
+      "hasRequirements": 1,
+      "hasExamples": 6,
+      "hasLinks": 5,
+      "hasCTA": 6
+    }
+  },
+  "Templates": {
+    "title_words": [
+      {
+        "word": "game",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "template",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "puzzle",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "pro",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "highway",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "complete",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "kit",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "placement",
+        "frequency": 2,
+        "score": 2
+      }
+    ],
+    "title_bigrams": [
+      {
+        "word": "game template",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "links challenging",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "challenging puzzle",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "puzzle game",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "inventory pro",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "pro add",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "add fps",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "fps engine",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "highway surfer",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "surfer complete",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "complete mobile",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "mobile game",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "vertical thrill",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "thrill complete",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "complete game",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "game project",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "match kit",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "kit toy",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "toy blast",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "blast game",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "ball destination",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "traffic guys",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "guys game",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "nonogram japan",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "japan crosswords",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "crosswords picross",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "picross puzzle",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "puzzle template",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "double kit",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "kit two",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "two hypercasual",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "hypercasual templates",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "templates tower",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "tower defence",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "defence highway",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "highway racer",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "all one",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "one pro",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "pro drag",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "drag drop",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "drop grid",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "grid snap",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "snap placement",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "placement physics",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "physics placement",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "placement systems",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "virtual pet",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "pet game",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "horror mechanism",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "mechanism pack",
+        "frequency": 1,
+        "score": 1
+      }
+    ],
+    "description_words": [
+      {
+        "word": "game",
+        "frequency": 32,
+        "score": 32
+      },
+      {
+        "word": "games",
+        "frequency": 16,
+        "score": 16
+      },
+      {
+        "word": "system",
+        "frequency": 15,
+        "score": 15
+      },
+      {
+        "word": "easy",
+        "frequency": 12,
+        "score": 12
+      },
+      {
+        "word": "mobile",
+        "frequency": 11,
+        "score": 11
+      },
+      {
+        "word": "all",
+        "frequency": 10,
+        "score": 10
+      },
+      {
+        "word": "puzzle",
+        "frequency": 9,
+        "score": 9
+      },
+      {
+        "word": "level",
+        "frequency": 9,
+        "score": 9
+      },
+      {
+        "word": "code",
+        "frequency": 9,
+        "score": 9
+      },
+      {
+        "word": "pet",
+        "frequency": 9,
+        "score": 9
+      },
+      {
+        "word": "features",
+        "frequency": 8,
+        "score": 8
+      },
+      {
+        "word": "screen",
+        "frequency": 8,
+        "score": 8
+      },
+      {
+        "word": "animations",
+        "frequency": 8,
+        "score": 8
+      },
+      {
+        "word": "documentation",
+        "frequency": 8,
+        "score": 8
+      },
+      {
+        "word": "shops",
+        "frequency": 8,
+        "score": 8
+      },
+      {
+        "word": "shop",
+        "frequency": 8,
+        "score": 8
+      },
+      {
+        "word": "levels",
+        "frequency": 7,
+        "score": 7
+      },
+      {
+        "word": "support",
+        "frequency": 7,
+        "score": 7
+      },
+      {
+        "word": "based",
+        "frequency": 7,
+        "score": 7
+      },
+      {
+        "word": "gameplay",
+        "frequency": 7,
+        "score": 7
+      },
+      {
+        "word": "demo",
+        "frequency": 7,
+        "score": 7
+      },
+      {
+        "word": "different",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "sounds",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "unity",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "use",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "add",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "one",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "functionality",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "customizable",
+        "frequency": 6,
+        "score": 6
+      },
+      {
+        "word": "unique",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "player",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "puzzles",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "complete",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "pro",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "settings",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "package",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "using",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "built",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "clean",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "any",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "included",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "simple",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "new",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "includes",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "psd",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "traffic",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "easily",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "designed",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "modular",
+        "frequency": 5,
+        "score": 5
+      },
+      {
+        "word": "100",
+        "frequency": 4,
+        "score": 4
+      }
+    ],
+    "common_tags": [
+      {
+        "word": "complete",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "2d",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "template inventory",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "mobile game",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "match-2",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "game ready",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "logic game",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "highway",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "rotation system",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "pokemon",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "flashlight",
+        "frequency": 1,
+        "score": 1
+      }
+    ],
+    "tag_cooccurrence": [],
+    "sample_size": 12,
+    "images_count": {
+      "mean": 8.916666666666666,
+      "median": 8.5,
+      "std": 3.277660073216189,
+      "min": 4,
+      "max": 16
+    },
+    "videos_count": {
+      "mean": 0,
+      "median": 0,
+      "std": 0,
+      "min": 0,
+      "max": 0
+    },
+    "title_length": {
+      "mean": 40.583333333333336,
+      "median": 39,
+      "std": 17.571085781918985,
+      "min": 16,
+      "max": 76
+    },
+    "word_count_long": {
+      "mean": 232,
+      "median": 243,
+      "std": 110,
+      "min": 11,
+      "max": 527
+    },
+    "tag_count": {
+      "mean": 1,
+      "median": 1,
+      "std": 0
+    },
+    "bullet_count": {
+      "mean": 6.083333333333333,
+      "median": 0,
+      "std": 9.358225734020786
+    },
+    "price": {
+      "mean": 37.72,
+      "median": 29.99,
+      "std": 36.95884517086048,
+      "min": 7,
+      "max": 149.99,
+      "q1": 19.98,
+      "q3": 29.99
+    },
+    "quality_score": {
+      "mean": 154.29676923673455,
+      "std": 104.94128922497094,
+      "median": 106.16362656578269,
+      "min": 94.8283137373023,
+      "max": 433.81251509105107
+    },
+    "extracted_from": "exemplars",
+    "extraction_date": "2025-09-29T20:24:02.634Z",
+    "top_exemplar_score": 433.81251509105107,
+    "has_video_percentage": 0,
+    "common_structures": {
+      "hasFeaturesList": 3,
+      "hasRequirements": 1,
+      "hasExamples": 7,
+      "hasLinks": 7,
+      "hasCTA": 10
+    }
+  },
+  "Add Ons": {
+    "title_words": [
+      {
+        "word": "advanced",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "spawn",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "system",
+        "frequency": 1,
+        "score": 1
+      }
+    ],
+    "title_bigrams": [
+      {
+        "word": "advanced spawn",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "spawn system",
+        "frequency": 1,
+        "score": 1
+      }
+    ],
+    "description_words": [
+      {
+        "word": "spawn",
+        "frequency": 10,
+        "score": 10
+      },
+      {
+        "word": "system",
+        "frequency": 9,
+        "score": 9
+      },
+      {
+        "word": "advanced",
+        "frequency": 7,
+        "score": 7
+      },
+      {
+        "word": "unity",
+        "frequency": 4,
+        "score": 4
+      },
+      {
+        "word": "when",
+        "frequency": 4,
+        "score": 4
+      },
+      {
+        "word": "culling",
+        "frequency": 4,
+        "score": 4
+      },
+      {
+        "word": "spawning",
+        "frequency": 3,
+        "score": 3
+      },
+      {
+        "word": "from",
+        "frequency": 3,
+        "score": 3
+      },
+      {
+        "word": "also",
+        "frequency": 3,
+        "score": 3
+      },
+      {
+        "word": "gameobjects",
+        "frequency": 3,
+        "score": 3
+      },
+      {
+        "word": "important",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "after",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "fsm",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "horse",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "animset",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "pro",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "animal",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "controller",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "according",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "biome",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "objects",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "wave",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "pooling",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "cpu",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "create",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "destroy",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "occlusion",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "which",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "cameras",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "perform",
+        "frequency": 2,
+        "score": 2
+      },
+      {
+        "word": "ready",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "requirements",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "000",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "higher",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "lts",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "version",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "only",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "licensing",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "terms",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "purchasing",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "asset",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "cost",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "account",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "included",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "assets",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "runtime",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "procedural",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "spawner",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "capable",
+        "frequency": 1,
+        "score": 1
+      },
+      {
+        "word": "entities",
+        "frequency": 1,
+        "score": 1
+      }
+    ],
+    "common_tags": [
+      {
+        "word": "character",
+        "frequency": 1,
+        "score": 1
+      }
+    ],
+    "tag_cooccurrence": [],
+    "sample_size": 1,
+    "images_count": {
+      "mean": 8,
+      "median": 8,
+      "std": 0,
+      "min": 8,
+      "max": 8
+    },
+    "videos_count": {
+      "mean": 0,
+      "median": 0,
+      "std": 0,
+      "min": 0,
+      "max": 0
+    },
+    "title_length": {
+      "mean": 24,
+      "median": 24,
+      "std": 0,
+      "min": 24,
+      "max": 24
+    },
+    "word_count_long": {
+      "mean": 792,
+      "median": 792,
+      "std": 0,
+      "min": 792,
+      "max": 792
+    },
+    "tag_count": {
+      "mean": 1,
+      "median": 1,
+      "std": 0
+    },
+    "bullet_count": {
+      "mean": 34,
+      "median": 34,
+      "std": 0
+    },
+    "price": {
+      "mean": 75,
+      "median": 75,
+      "std": 0,
+      "min": 75,
+      "max": 75,
+      "q1": 75,
+      "q3": 75
+    },
+    "quality_score": {
+      "mean": 185.156937687482,
+      "std": 0,
+      "median": 185.156937687482,
+      "min": 185.156937687482,
+      "max": 185.156937687482
+    },
+    "extracted_from": "exemplars",
+    "extraction_date": "2025-09-29T20:24:02.636Z",
+    "top_exemplar_score": 185.156937687482,
+    "has_video_percentage": 0,
+    "common_structures": {
+      "hasFeaturesList": 0,
+      "hasRequirements": 1,
+      "hasExamples": 0,
+      "hasLinks": 1,
+      "hasCTA": 1
+    }
+  }
+}

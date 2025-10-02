@@ -1,0 +1,62 @@
+{
+  "name": "@repo/optimizer",
+  "version": "2.0.0",
+  "description": "AI-powered optimization tool for Unity Asset Store listings",
+  "type": "module",
+  "main": "index.mjs",
+  "module": "index.mjs",
+  "exports": {
+    ".": {
+      "import": "./index.mjs",
+      "require": "./index.cjs"
+    },
+    "./cli": {
+      "import": "./main.mjs"
+    }
+  },
+  "scripts": {
+    "start": "node main.mjs",
+    "help": "node main.mjs help",
+    "test": "node --experimental-test-runner test/*.test.mjs",
+    "scrape": "node main.mjs scrape",
+    "grade": "node main.mjs grade",
+    "optimize": "node main.mjs optimize",
+    "build-vocab": "node main.mjs build-vocab",
+    "status": "node main.mjs status"
+  },
+  "keywords": [
+    "unity",
+    "asset-store",
+    "optimization",
+    "ai",
+    "seo",
+    "unity3d",
+    "gamedev",
+    "scraping",
+    "analysis"
+  ],
+  "author": "Unity Asset Optimizer Team",
+  "license": "MIT",
+  "dependencies": {
+    "openai": "^4.0.0",
+    "crawlee": "^3.0.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "bin": {
+    "unity-optimizer": "./main.mjs"
+  },
+  "files": [
+    "index.mjs",
+    "index.cjs",
+    "main.mjs",
+    "src/",
+    "utils.mjs",
+    "puppeteer-scraper.mjs",
+    "README.md",
+    "examples/"
+  ]
+}

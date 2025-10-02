@@ -1,0 +1,1240 @@
+{
+  "Templates": {
+    "top_unigrams": [
+      {
+        "t": "and",
+        "c": 7
+      },
+      {
+        "t": "dice",
+        "c": 7
+      },
+      {
+        "t": "for",
+        "c": 6
+      },
+      {
+        "t": "game",
+        "c": 5
+      },
+      {
+        "t": "games",
+        "c": 5
+      },
+      {
+        "t": "template",
+        "c": 4
+      },
+      {
+        "t": "a",
+        "c": 4
+      },
+      {
+        "t": "to",
+        "c": 4
+      },
+      {
+        "t": "the",
+        "c": 4
+      },
+      {
+        "t": "with",
+        "c": 4
+      },
+      {
+        "t": "simple",
+        "c": 3
+      },
+      {
+        "t": "memory",
+        "c": 3
+      },
+      {
+        "t": "customizable",
+        "c": 3
+      },
+      {
+        "t": "unity",
+        "c": 3
+      },
+      {
+        "t": "is",
+        "c": 2
+      },
+      {
+        "t": "you",
+        "c": 2
+      },
+      {
+        "t": "create",
+        "c": 2
+      },
+      {
+        "t": "main",
+        "c": 2
+      },
+      {
+        "t": "easily",
+        "c": 2
+      },
+      {
+        "t": "different",
+        "c": 2
+      },
+      {
+        "t": "graphics",
+        "c": 2
+      },
+      {
+        "t": "features",
+        "c": 2
+      },
+      {
+        "t": "perfect",
+        "c": 2
+      },
+      {
+        "t": "provides",
+        "c": 2
+      },
+      {
+        "t": "easy",
+        "c": 2
+      },
+      {
+        "t": "mobile",
+        "c": 2
+      },
+      {
+        "t": "roller",
+        "c": 2
+      },
+      {
+        "t": "pro",
+        "c": 2
+      },
+      {
+        "t": "advanced",
+        "c": 2
+      },
+      {
+        "t": "physics",
+        "c": 2
+      },
+      {
+        "t": "materials",
+        "c": 2
+      },
+      {
+        "t": "effects",
+        "c": 2
+      },
+      {
+        "t": "projects",
+        "c": 2
+      },
+      {
+        "t": "very",
+        "c": 1
+      },
+      {
+        "t": "clean",
+        "c": 1
+      },
+      {
+        "t": "that",
+        "c": 1
+      },
+      {
+        "t": "allows",
+        "c": 1
+      },
+      {
+        "t": "includes",
+        "c": 1
+      },
+      {
+        "t": "single",
+        "c": 1
+      },
+      {
+        "t": "scene",
+        "c": 1
+      },
+      {
+        "t": "menu",
+        "c": 1
+      },
+      {
+        "t": "difficulty",
+        "c": 1
+      },
+      {
+        "t": "level",
+        "c": 1
+      },
+      {
+        "t": "selection",
+        "c": 1
+      },
+      {
+        "t": "panel",
+        "c": 1
+      },
+      {
+        "t": "panels",
+        "c": 1
+      },
+      {
+        "t": "can",
+        "c": 1
+      },
+      {
+        "t": "be",
+        "c": 1
+      },
+      {
+        "t": "customized",
+        "c": 1
+      },
+      {
+        "t": "full",
+        "c": 1
+      },
+      {
+        "t": "c",
+        "c": 1
+      },
+      {
+        "t": "code",
+        "c": 1
+      },
+      {
+        "t": "creating",
+        "c": 1
+      },
+      {
+        "t": "children",
+        "c": 1
+      },
+      {
+        "t": "support",
+        "c": 1
+      },
+      {
+        "t": "linking",
+        "c": 1
+      },
+      {
+        "t": "other",
+        "c": 1
+      },
+      {
+        "t": "integrates",
+        "c": 1
+      },
+      {
+        "t": "google",
+        "c": 1
+      },
+      {
+        "t": "ads",
+        "c": 1
+      },
+      {
+        "t": "works",
+        "c": 1
+      },
+      {
+        "t": "on",
+        "c": 1
+      },
+      {
+        "t": "all",
+        "c": 1
+      },
+      {
+        "t": "platforms",
+        "c": 1
+      },
+      {
+        "t": "pc",
+        "c": 1
+      },
+      {
+        "t": "mac",
+        "c": 1
+      },
+      {
+        "t": "ios",
+        "c": 1
+      },
+      {
+        "t": "android",
+        "c": 1
+      },
+      {
+        "t": "etc",
+        "c": 1
+      },
+      {
+        "t": "system",
+        "c": 1
+      },
+      {
+        "t": "ultimate",
+        "c": 1
+      },
+      {
+        "t": "rolling",
+        "c": 1
+      },
+      {
+        "t": "solution",
+        "c": 1
+      },
+      {
+        "t": "developers",
+        "c": 1
+      },
+      {
+        "t": "realistic",
+        "c": 1
+      },
+      {
+        "t": "sounds",
+        "c": 1
+      },
+      {
+        "t": "visual",
+        "c": 1
+      },
+      {
+        "t": "board",
+        "c": 1
+      },
+      {
+        "t": "rpgs",
+        "c": 1
+      },
+      {
+        "t": "casino",
+        "c": 1
+      },
+      {
+        "t": "style",
+        "c": 1
+      },
+      {
+        "t": "applications",
+        "c": 1
+      },
+      {
+        "t": "include",
+        "c": 1
+      },
+      {
+        "t": "simulation",
+        "c": 1
+      },
+      {
+        "t": "multiple",
+        "c": 1
+      },
+      {
+        "t": "types",
+        "c": 1
+      },
+      {
+        "t": "d4",
+        "c": 1
+      },
+      {
+        "t": "d6",
+        "c": 1
+      },
+      {
+        "t": "d8",
+        "c": 1
+      },
+      {
+        "t": "d10",
+        "c": 1
+      },
+      {
+        "t": "d12",
+        "c": 1
+      },
+      {
+        "t": "d20",
+        "c": 1
+      },
+      {
+        "t": "textures",
+        "c": 1
+      },
+      {
+        "t": "sound",
+        "c": 1
+      },
+      {
+        "t": "particle",
+        "c": 1
+      },
+      {
+        "t": "systems",
+        "c": 1
+      },
+      {
+        "t": "integration",
+        "c": 1
+      },
+      {
+        "t": "existing",
+        "c": 1
+      },
+      {
+        "t": "complete",
+        "c": 1
+      },
+      {
+        "t": "documentation",
+        "c": 1
+      },
+      {
+        "t": "examples",
+        "c": 1
+      },
+      {
+        "t": "optimized",
+        "c": 1
+      },
+      {
+        "t": "performance",
+        "c": 1
+      },
+      {
+        "t": "cross",
+        "c": 1
+      },
+      {
+        "t": "platform",
+        "c": 1
+      },
+      {
+        "t": "compatibility",
+        "c": 1
+      },
+      {
+        "t": "this",
+        "c": 1
+      },
+      {
+        "t": "asset",
+        "c": 1
+      },
+      {
+        "t": "everything",
+        "c": 1
+      },
+      {
+        "t": "need",
+        "c": 1
+      },
+      {
+        "t": "implement",
+        "c": 1
+      },
+      {
+        "t": "professional",
+        "c": 1
+      },
+      {
+        "t": "quality",
+        "c": 1
+      },
+      {
+        "t": "mechanics",
+        "c": 1
+      },
+      {
+        "t": "in",
+        "c": 1
+      },
+      {
+        "t": "your",
+        "c": 1
+      }
+    ],
+    "top_bigrams": [
+      {
+        "t": "game template",
+        "c": 3
+      },
+      {
+        "t": "simple memory",
+        "c": 2
+      },
+      {
+        "t": "memory game",
+        "c": 2
+      },
+      {
+        "t": "different graphics",
+        "c": 2
+      },
+      {
+        "t": "perfect for",
+        "c": 2
+      },
+      {
+        "t": "dice roller",
+        "c": 2
+      },
+      {
+        "t": "roller pro",
+        "c": 2
+      },
+      {
+        "t": "for unity",
+        "c": 2
+      },
+      {
+        "t": "customizable materials",
+        "c": 2
+      },
+      {
+        "t": "template simple",
+        "c": 1
+      },
+      {
+        "t": "template is",
+        "c": 1
+      },
+      {
+        "t": "is a",
+        "c": 1
+      },
+      {
+        "t": "a very",
+        "c": 1
+      },
+      {
+        "t": "very simple",
+        "c": 1
+      },
+      {
+        "t": "simple and",
+        "c": 1
+      },
+      {
+        "t": "and clean",
+        "c": 1
+      },
+      {
+        "t": "clean game",
+        "c": 1
+      },
+      {
+        "t": "template that",
+        "c": 1
+      },
+      {
+        "t": "that allows",
+        "c": 1
+      },
+      {
+        "t": "allows you",
+        "c": 1
+      },
+      {
+        "t": "you to",
+        "c": 1
+      },
+      {
+        "t": "to create",
+        "c": 1
+      },
+      {
+        "t": "create memory",
+        "c": 1
+      },
+      {
+        "t": "memory games",
+        "c": 1
+      },
+      {
+        "t": "games the",
+        "c": 1
+      },
+      {
+        "t": "the template",
+        "c": 1
+      },
+      {
+        "t": "template includes",
+        "c": 1
+      },
+      {
+        "t": "includes a",
+        "c": 1
+      },
+      {
+        "t": "a single",
+        "c": 1
+      },
+      {
+        "t": "single scene",
+        "c": 1
+      },
+      {
+        "t": "scene with",
+        "c": 1
+      },
+      {
+        "t": "with a",
+        "c": 1
+      },
+      {
+        "t": "a main",
+        "c": 1
+      },
+      {
+        "t": "main menu",
+        "c": 1
+      },
+      {
+        "t": "menu a",
+        "c": 1
+      },
+      {
+        "t": "a difficulty",
+        "c": 1
+      },
+      {
+        "t": "difficulty level",
+        "c": 1
+      },
+      {
+        "t": "level selection",
+        "c": 1
+      },
+      {
+        "t": "selection panel",
+        "c": 1
+      },
+      {
+        "t": "panel and",
+        "c": 1
+      },
+      {
+        "t": "and the",
+        "c": 1
+      },
+      {
+        "t": "the main",
+        "c": 1
+      },
+      {
+        "t": "main game",
+        "c": 1
+      },
+      {
+        "t": "game panels",
+        "c": 1
+      },
+      {
+        "t": "panels the",
+        "c": 1
+      },
+      {
+        "t": "the game",
+        "c": 1
+      },
+      {
+        "t": "game can",
+        "c": 1
+      },
+      {
+        "t": "can be",
+        "c": 1
+      },
+      {
+        "t": "be easily",
+        "c": 1
+      },
+      {
+        "t": "easily customized",
+        "c": 1
+      },
+      {
+        "t": "customized for",
+        "c": 1
+      },
+      {
+        "t": "for different",
+        "c": 1
+      },
+      {
+        "t": "graphics features",
+        "c": 1
+      },
+      {
+        "t": "features full",
+        "c": 1
+      },
+      {
+        "t": "full c",
+        "c": 1
+      },
+      {
+        "t": "c code",
+        "c": 1
+      },
+      {
+        "t": "code perfect",
+        "c": 1
+      },
+      {
+        "t": "for creating",
+        "c": 1
+      },
+      {
+        "t": "creating games",
+        "c": 1
+      },
+      {
+        "t": "games for",
+        "c": 1
+      },
+      {
+        "t": "for children",
+        "c": 1
+      },
+      {
+        "t": "children easily",
+        "c": 1
+      },
+      {
+        "t": "easily customizable",
+        "c": 1
+      },
+      {
+        "t": "customizable to",
+        "c": 1
+      },
+      {
+        "t": "to support",
+        "c": 1
+      },
+      {
+        "t": "support different",
+        "c": 1
+      },
+      {
+        "t": "graphics provides",
+        "c": 1
+      },
+      {
+        "t": "provides easy",
+        "c": 1
+      },
+      {
+        "t": "easy linking",
+        "c": 1
+      },
+      {
+        "t": "linking to",
+        "c": 1
+      },
+      {
+        "t": "to other",
+        "c": 1
+      },
+      {
+        "t": "other games",
+        "c": 1
+      },
+      {
+        "t": "games integrates",
+        "c": 1
+      },
+      {
+        "t": "integrates with",
+        "c": 1
+      },
+      {
+        "t": "with google",
+        "c": 1
+      },
+      {
+        "t": "google mobile",
+        "c": 1
+      },
+      {
+        "t": "mobile ads",
+        "c": 1
+      },
+      {
+        "t": "ads works",
+        "c": 1
+      },
+      {
+        "t": "works on",
+        "c": 1
+      },
+      {
+        "t": "on all",
+        "c": 1
+      },
+      {
+        "t": "all platforms",
+        "c": 1
+      },
+      {
+        "t": "platforms pc",
+        "c": 1
+      },
+      {
+        "t": "pc mac",
+        "c": 1
+      },
+      {
+        "t": "mac ios",
+        "c": 1
+      },
+      {
+        "t": "ios android",
+        "c": 1
+      },
+      {
+        "t": "android etc",
+        "c": 1
+      },
+      {
+        "t": "pro advanced",
+        "c": 1
+      },
+      {
+        "t": "advanced dice",
+        "c": 1
+      },
+      {
+        "t": "dice system",
+        "c": 1
+      },
+      {
+        "t": "system for",
+        "c": 1
+      },
+      {
+        "t": "unity games",
+        "c": 1
+      },
+      {
+        "t": "games dice",
+        "c": 1
+      },
+      {
+        "t": "pro is",
+        "c": 1
+      },
+      {
+        "t": "is the",
+        "c": 1
+      },
+      {
+        "t": "the ultimate",
+        "c": 1
+      },
+      {
+        "t": "ultimate dice",
+        "c": 1
+      },
+      {
+        "t": "dice rolling",
+        "c": 1
+      },
+      {
+        "t": "rolling solution",
+        "c": 1
+      },
+      {
+        "t": "solution for",
+        "c": 1
+      },
+      {
+        "t": "unity developers",
+        "c": 1
+      },
+      {
+        "t": "developers create",
+        "c": 1
+      },
+      {
+        "t": "create realistic",
+        "c": 1
+      },
+      {
+        "t": "realistic dice",
+        "c": 1
+      },
+      {
+        "t": "dice physics",
+        "c": 1
+      },
+      {
+        "t": "physics with",
+        "c": 1
+      },
+      {
+        "t": "with customizable",
+        "c": 1
+      },
+      {
+        "t": "materials sounds",
+        "c": 1
+      },
+      {
+        "t": "sounds and",
+        "c": 1
+      },
+      {
+        "t": "and visual",
+        "c": 1
+      },
+      {
+        "t": "visual effects",
+        "c": 1
+      },
+      {
+        "t": "effects perfect",
+        "c": 1
+      },
+      {
+        "t": "for board",
+        "c": 1
+      },
+      {
+        "t": "board games",
+        "c": 1
+      },
+      {
+        "t": "games rpgs",
+        "c": 1
+      },
+      {
+        "t": "rpgs and",
+        "c": 1
+      },
+      {
+        "t": "and casino",
+        "c": 1
+      },
+      {
+        "t": "casino style",
+        "c": 1
+      },
+      {
+        "t": "style applications",
+        "c": 1
+      },
+      {
+        "t": "applications features",
+        "c": 1
+      },
+      {
+        "t": "features include",
+        "c": 1
+      },
+      {
+        "t": "include advanced",
+        "c": 1
+      },
+      {
+        "t": "advanced physics",
+        "c": 1
+      },
+      {
+        "t": "physics simulation",
+        "c": 1
+      },
+      {
+        "t": "simulation multiple",
+        "c": 1
+      },
+      {
+        "t": "multiple dice",
+        "c": 1
+      },
+      {
+        "t": "dice types",
+        "c": 1
+      },
+      {
+        "t": "types d4",
+        "c": 1
+      },
+      {
+        "t": "d4 d6",
+        "c": 1
+      },
+      {
+        "t": "d6 d8",
+        "c": 1
+      },
+      {
+        "t": "d8 d10",
+        "c": 1
+      },
+      {
+        "t": "d10 d12",
+        "c": 1
+      },
+      {
+        "t": "d12 d20",
+        "c": 1
+      },
+      {
+        "t": "d20 customizable",
+        "c": 1
+      },
+      {
+        "t": "materials and",
+        "c": 1
+      },
+      {
+        "t": "and textures",
+        "c": 1
+      },
+      {
+        "t": "textures sound",
+        "c": 1
+      },
+      {
+        "t": "sound effects",
+        "c": 1
+      },
+      {
+        "t": "effects and",
+        "c": 1
+      },
+      {
+        "t": "and particle",
+        "c": 1
+      },
+      {
+        "t": "particle systems",
+        "c": 1
+      },
+      {
+        "t": "systems easy",
+        "c": 1
+      },
+      {
+        "t": "easy integration",
+        "c": 1
+      },
+      {
+        "t": "integration with",
+        "c": 1
+      },
+      {
+        "t": "with existing",
+        "c": 1
+      },
+      {
+        "t": "existing projects",
+        "c": 1
+      },
+      {
+        "t": "projects complete",
+        "c": 1
+      },
+      {
+        "t": "complete documentation",
+        "c": 1
+      },
+      {
+        "t": "documentation and",
+        "c": 1
+      },
+      {
+        "t": "and examples",
+        "c": 1
+      },
+      {
+        "t": "examples mobile",
+        "c": 1
+      },
+      {
+        "t": "mobile optimized",
+        "c": 1
+      },
+      {
+        "t": "optimized performance",
+        "c": 1
+      },
+      {
+        "t": "performance cross",
+        "c": 1
+      },
+      {
+        "t": "cross platform",
+        "c": 1
+      },
+      {
+        "t": "platform compatibility",
+        "c": 1
+      },
+      {
+        "t": "compatibility this",
+        "c": 1
+      },
+      {
+        "t": "this asset",
+        "c": 1
+      },
+      {
+        "t": "asset provides",
+        "c": 1
+      },
+      {
+        "t": "provides everything",
+        "c": 1
+      },
+      {
+        "t": "everything you",
+        "c": 1
+      },
+      {
+        "t": "you need",
+        "c": 1
+      },
+      {
+        "t": "need to",
+        "c": 1
+      },
+      {
+        "t": "to implement",
+        "c": 1
+      },
+      {
+        "t": "implement professional",
+        "c": 1
+      },
+      {
+        "t": "professional quality",
+        "c": 1
+      },
+      {
+        "t": "quality dice",
+        "c": 1
+      },
+      {
+        "t": "dice mechanics",
+        "c": 1
+      },
+      {
+        "t": "mechanics in",
+        "c": 1
+      },
+      {
+        "t": "in your",
+        "c": 1
+      },
+      {
+        "t": "your unity",
+        "c": 1
+      },
+      {
+        "t": "unity projects",
+        "c": 1
+      }
+    ],
+    "top_tags": [
+      {
+        "t": "memory game",
+        "c": 1
+      },
+      {
+        "t": "2d",
+        "c": 1
+      },
+      {
+        "t": "template",
+        "c": 1
+      },
+      {
+        "t": "complete project",
+        "c": 1
+      },
+      {
+        "t": "dice",
+        "c": 1
+      },
+      {
+        "t": "physics",
+        "c": 1
+      },
+      {
+        "t": "board game",
+        "c": 1
+      },
+      {
+        "t": "rpg",
+        "c": 1
+      },
+      {
+        "t": "casino",
+        "c": 1
+      },
+      {
+        "t": "simulation",
+        "c": 1
+      }
+    ],
+    "med_images": 6.5,
+    "med_videos": 1,
+    "med_price": 8.99,
+    "med_rating": 4.45,
+    "med_reviews": 594,
+    "price_mean": 8.99,
+    "price_std": 4,
+    "title_length": {
+      "median": 40.5,
+      "mean": 40.5,
+      "std": 13.5
+    },
+    "short_desc_length": {
+      "median": 76,
+      "mean": 76,
+      "std": 7
+    },
+    "long_desc_length": {
+      "median": 584,
+      "mean": 584,
+      "std": 60
+    },
+    "tag_count": {
+      "median": 5,
+      "mean": 5,
+      "std": 1
+    },
+    "word_count_short": {
+      "median": 11,
+      "mean": 11,
+      "std": 1
+    },
+    "word_count_long": {
+      "median": 83,
+      "mean": 83,
+      "std": 1
+    },
+    "bullet_count": {
+      "median": 0,
+      "mean": 0
+    },
+    "sample_size": 2
+  }
+}

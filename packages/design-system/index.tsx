@@ -2,6 +2,8 @@ import type { ThemeProviderProps } from 'next-themes';
 import { Toaster } from './components/ui/sonner';
 import { TooltipProvider } from './components/ui/tooltip';
 import { ThemeProvider } from './providers/theme';
+import { AuthProvider } from '@repo/auth/provider';
+
 
 type DesignSystemProviderProperties = ThemeProviderProps & {
   privacyUrl?: string;
@@ -17,7 +19,9 @@ export const DesignSystemProvider = ({
   ...properties
 }: DesignSystemProviderProperties) => (
   <ThemeProvider {...properties}>
-    <TooltipProvider>{children}</TooltipProvider>
-    <Toaster />
+    <AuthProvider privacyUrl={privacyUrl} termsUrl={termsUrl} helpUrl={helpUrl}>
+      <TooltipProvider>{children}</TooltipProvider>
+      <Toaster />
+    </AuthProvider>
   </ThemeProvider>
 );
