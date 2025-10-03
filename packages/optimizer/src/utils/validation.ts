@@ -5,6 +5,7 @@
 
 import { Logger } from './logger';
 import { OFFICIAL_CATEGORIES } from '../config';
+import fs from 'fs';
 
 const logger = new Logger('validator');
 
@@ -308,7 +309,6 @@ export class FileValidator {
     }
 
     try {
-      const fs = await import('fs');
       await fs.promises.access(filePath, fs.constants.R_OK);
       return true;
     } catch (error) {
@@ -323,7 +323,6 @@ export class FileValidator {
     await this.validateFile(filePath);
     
     try {
-      const fs = await import('fs');
       const content = await fs.promises.readFile(filePath, 'utf8');
       return JSON.parse(content);
     } catch (error) {

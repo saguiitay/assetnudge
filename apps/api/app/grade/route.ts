@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { gradeAsset } from '@repo/optimizer';
+import path from 'path';
 
 export const runtime = 'nodejs';
 
@@ -43,10 +45,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Dynamically import the optimizer to avoid bundling issues
-    const { gradeAsset } = await import('@repo/optimizer');
-    const path = await import('path');
-    
     // Use exemplar vocabulary file
     const vocabPath = path.resolve(process.cwd(), '../../packages/optimizer/data/exemplar_vocab.json');
 

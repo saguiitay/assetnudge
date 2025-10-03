@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { optimizeAsset } from '@repo/optimizer';
 
 export const runtime = 'nodejs';
 
@@ -42,9 +43,6 @@ export async function POST(request: NextRequest) {
         { status: 400, headers: corsHeaders }
       );
     }
-
-    // Dynamically import the optimizer to avoid bundling issues
-    const { optimizeAsset } = await import('@repo/optimizer');
 
     if (debug) {
       console.log('Optimizing asset with options:', JSON.stringify(options, null, 2));

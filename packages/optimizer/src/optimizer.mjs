@@ -20,6 +20,11 @@ import HeuristicSuggestions from './heuristic-suggestions.mjs';
 import { scrapeAssetWithHTML } from './scrappers/html-scraper.mjs';
 import { scrapeAssetWithGraphQL } from './scrappers/graphql-scraper.mjs';
 
+// Exemplar and pattern modules
+import { identifyExemplars, saveExemplars, getExemplarStats } from './exemplars.mjs';
+import { extractCategoryPatterns } from './pattern-extraction.mjs';
+import { generateCategoryPlaybook, generateExemplarRecommendations } from './exemplar-coaching.mjs';
+
 /**
  * Main optimizer class that orchestrates all functionality
  */
@@ -107,10 +112,6 @@ export class UnityAssetOptimizer {
         topPercent: finalTopPercent 
       });
       
-      // Import exemplar modules
-      const { identifyExemplars, saveExemplars, getExemplarStats } = await import('./exemplars.mjs');
-      const { extractCategoryPatterns } = await import('./pattern-extraction.mjs');
-      
       // Validate input file
       const corpus = await FileValidator.validateJSONFile(corpusPath);
       
@@ -192,9 +193,6 @@ export class UnityAssetOptimizer {
   async generatePlaybooks(exemplarsPath, outputPath) {
     return this.logger.time('generatePlaybooks', async () => {
       this.logger.info('Generating category playbooks', { exemplarsPath, outputPath });
-      
-      // Import playbook generator
-      const { generateCategoryPlaybook } = await import('./exemplar-coaching.mjs');
       
       // Load exemplars data
       const exemplarsData = await FileValidator.validateJSONFile(exemplarsPath);
@@ -421,7 +419,6 @@ export class UnityAssetOptimizer {
       
       if (exemplarsPath) {
         // Use exemplar-based coaching (recommended approach)
-        const { generateExemplarRecommendations } = await import('./exemplar-coaching.mjs');
         const exemplarsData = await FileValidator.validateJSONFile(exemplarsPath);
         
         exemplarRecommendations = generateExemplarRecommendations(asset, exemplarsData, 5);

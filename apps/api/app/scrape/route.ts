@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { scrapeAsset, scrapeAssetWithHTMLAPI, scrapeAssetWithGraphQLAPI } from '@repo/optimizer';
 
 export const runtime = 'nodejs';
 
@@ -60,9 +61,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Dynamically import the optimizer to avoid bundling issues
-    const { scrapeAsset, scrapeAssetWithHTMLAPI, scrapeAssetWithPuppeteerAPI, scrapeAssetWithGraphQLAPI } = await import('@repo/optimizer');
-
     // Choose scraping method
     let result;
     
@@ -76,9 +74,6 @@ export async function POST(request: NextRequest) {
         break;
       case 'html':
         result = await scrapeAssetWithHTMLAPI(url);
-        break;
-      case 'puppeteer':
-        result = await scrapeAssetWithPuppeteerAPI(url);
         break;
       case 'fallback':
       default:

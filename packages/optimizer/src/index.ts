@@ -7,7 +7,7 @@ import UnityAssetOptimizer from './optimizer.mjs';
 import Config from './config';
 import { scrapeAssetWithHTML } from './scrappers/html-scraper.mjs';
 import { scrapeAssetWithGraphQL } from './scrappers/graphql-scraper.mjs';
-import { Asset as ValidatorAsset, Vocabulary as ValidatorVocabulary } from './utils/validation';
+import { Asset as ValidatorAsset, Vocabulary as ValidatorVocabulary, FileValidator } from './utils/validation';
 import { GradeResult, Vocabulary as TypesVocabulary } from './types';
 
 /**
@@ -110,7 +110,6 @@ export async function gradeAsset(assetData: ValidatorAsset, vocabPath: string | 
   // Load vocabulary if provided
   let vocabulary: TypesVocabulary = {};
   if (vocabPath) {
-    const { FileValidator } = await import('./utils/validation');
     vocabulary = await FileValidator.validateJSONFile(vocabPath);
   }
   

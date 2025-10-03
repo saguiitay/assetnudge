@@ -5,15 +5,181 @@
 
 import { tokenize, median, meanStd } from './utils/utils';
 import { Logger } from './utils/logger';
-import { AssetValidator } from './utils/validation';
+import { AssetValidator, Asset } from './utils/validation';
+import { GraderConfig, CategoryVocabulary, Vocabulary, ThresholdConfig } from './types';
 
 const logger = new Logger('vocab');
+
+/**
+ * Category data structure for building vocabulary
+ */
+interface CategoryData {
+  uni: string[];
+  bi: string[];
+  tags: string[];
+  prices: number[];
+  images: number[];
+  videos: number[];
+  ratings: number[];
+  reviews: number[];
+  title_lengths: number[];
+  short_desc_lengths: number[];
+  long_desc_lengths: number[];
+  tag_counts: number[];
+  word_counts_short: number[];
+  word_counts_long: number[];
+  bullet_counts: number[];
+}
+
+/**
+ * Frequency map item
+ */
+interface FrequencyItem {
+  t: string;
+  c: number;
+}
+
+/**
+ * Statistics object for content metrics
+ */
+interface StatisticsObject {
+  median: number | null;
+  mean: number | null;
+  std: number | null;
+  min?: number | null;
+  max?: number | null;
+  q1?: number | null;
+  q3?: number | null;
+}
+
+/**
+ * Exemplar vocabulary term
+ */
+interface ExemplarVocabTerm {
+  word: string;
+  frequency: number;
+  score: number;
+}
+
+/**
+ * Exemplar patterns structure from extracted data
+ */
+interface ExemplarPatterns {
+  vocabulary: {
+    titleWords: Array<{ item: string; frequency: number }>;
+    titleBigrams: Array<{ item: string; frequency: number }>;
+    descriptionWords: Array<{ item: string; frequency: number }>;
+  };
+  tags: {
+    commonTags: Array<{ item: string; frequency: number }>;
+    tagCooccurrence: Array<{ item: string; frequency: number }>;
+    averageTagCount: number;
+  };
+  media: {
+    images: {
+      avg: number;
+      median: number;
+      min: number;
+      max: number;
+    };
+    videos: {
+      avg: number;
+      median: number;
+      min: number;
+      max: number;
+    };
+    hasVideo: number;
+  };
+  structure: {
+    titleLength: {
+      avg: number;
+      median: number;
+      min: number;
+      max: number;
+    };
+    longDescriptionLength: {
+      avg: number;
+      median: number;
+      min: number;
+      max: number;
+    };
+    bulletPoints: {
+      avg: number;
+      median: number;
+    };
+    commonStructures: string[];
+  };
+  price: {
+    avg?: number;
+    median?: number;
+    min?: number;
+    max?: number;
+    iqr: {
+      q1: number;
+      q3: number;
+    };
+  };
+  metadata: {
+    averageQualityScore: number;
+    topExemplarScore: number;
+    extractedAt: string;
+  };
+}
+
+/**
+ * Exemplar data structure
+ */
+interface ExemplarsData {
+  exemplars: {
+    [category: string]: Array<{
+      title?: string;
+      long_description?: string;
+      short_description?: string;
+      tags?: string[];
+      images_count?: number;
+      videos_count?: number;
+      price?: number;
+      qualityScore: number;
+    }>;
+  };
+  patterns: {
+    [category: string]: ExemplarPatterns;
+  };
+  metadata: {
+    stats: {
+      totalExemplars: number;
+    };
+  };
+}
+
+/**
+ * Extended category vocabulary with additional exemplar-specific fields
+ */
+interface ExtendedCategoryVocabulary extends CategoryVocabulary {
+  title_words?: ExemplarVocabTerm[];
+  title_bigrams?: ExemplarVocabTerm[];
+  description_words?: ExemplarVocabTerm[];
+  common_tags?: ExemplarVocabTerm[];
+  tag_cooccurrence?: ExemplarVocabTerm[];
+  images_count?: StatisticsObject;
+  videos_count?: StatisticsObject;
+  price?: StatisticsObject;
+  quality_score?: StatisticsObject;
+  extracted_from?: string;
+  extraction_date?: string;
+  top_exemplar_score?: number;
+  has_video_percentage?: number;
+  common_structures?: string[];
+}
 
 /**
  * Vocabulary and statistics builder
  */
 export class VocabularyBuilder {
-  constructor(config) {
+  private config: GraderConfig;
+  private logger: Logger;
+
+  constructor(config: GraderConfig) {
     this.config = config;
     this.logger = logger.child('builder');
   }
@@ -23,10 +189,10 @@ export class VocabularyBuilder {
    * This creates category-specific dictionaries of common words, bigrams, and tags
    * along with median values for pricing, images, videos, ratings, and reviews
    * 
-   * @param {Array} corpus - Array of asset objects from scraped Unity Asset Store data
-   * @returns {Object} Category-based vocabulary and comprehensive statistics
+   * @param corpus - Array of asset objects from scraped Unity Asset Store data
+   * @returns Category-based vocabulary and comprehensive statistics
    */
-  async buildVocabAndMedians(corpus) {
+  async buildVocabAndMedians(corpus: Asset[]): Promise<Vocabulary> {
     return this.logger.time('buildVocabAndMedians', async () => {
       // Validate input corpus
       const validCount = AssetValidator.validateCorpus(corpus);
@@ -37,7 +203,7 @@ export class VocabularyBuilder {
       });
 
       // Group assets by category to build category-specific vocabularies
-      const perCat = {};
+      const perCat: Record<string, CategoryData> = {};
       let processedCount = 0;
 
       for (const asset of corpus) {
@@ -63,7 +229,7 @@ export class VocabularyBuilder {
         } catch (error) {
           this.logger.debug('Skipping invalid asset', { 
             title: asset.title,
-            error: error.message 
+            error: (error as Error).message 
           });
           continue;
         }
@@ -75,7 +241,7 @@ export class VocabularyBuilder {
       });
 
       // Process each category to extract top terms and calculate medians
-      const result = {};
+      const result: Vocabulary = {};
       for (const [cat, data] of Object.entries(perCat)) {
         result[cat] = await this.processCategoryData(cat, data);
       }
@@ -92,7 +258,7 @@ export class VocabularyBuilder {
   /**
    * Initialize empty category data structure
    */
-  initializeCategoryData() {
+  private initializeCategoryData(): CategoryData {
     return {
       uni: [], bi: [], tags: [], 
       prices: [], images: [], videos: [], ratings: [], reviews: [],
@@ -104,10 +270,10 @@ export class VocabularyBuilder {
   /**
    * Process a single asset for category statistics
    */
-  processAssetForCategory(asset, categoryData) {
+  private processAssetForCategory(asset: Asset, categoryData: CategoryData): void {
     // Extract and tokenize text content (title + description)
-    const longDesc = asset.long_description || asset.description || '';
-    const shortDesc = asset.short_description || '';
+    const longDesc = (asset as any).long_description || (asset as any).description || '';
+    const shortDesc = (asset as any).short_description || '';
     const assetDesc = longDesc || shortDesc;
     
     const ignoreStopWords = this.config.textProcessing?.ignoreStopWords ?? true;
@@ -116,16 +282,16 @@ export class VocabularyBuilder {
     categoryData.bi.push(...tokens.bi);
     
     // Collect tags and numerical stats for this category
-    if (Array.isArray(asset.tags)) {
-      categoryData.tags.push(...asset.tags.map(x => String(x).toLowerCase()));
+    if (Array.isArray((asset as any).tags)) {
+      categoryData.tags.push(...(asset as any).tags.map((x: any) => String(x).toLowerCase()));
     }
     
     // Numerical statistics
-    this.addIfValid(categoryData.prices, asset.price);
-    this.addIfValid(categoryData.images, asset.images_count);
-    this.addIfValid(categoryData.videos, asset.videos_count);
-    this.addIfValid(categoryData.ratings, asset.rating);
-    this.addIfValid(categoryData.reviews, asset.reviews_count);
+    this.addIfValid(categoryData.prices, (asset as any).price);
+    this.addIfValid(categoryData.images, (asset as any).images_count);
+    this.addIfValid(categoryData.videos, (asset as any).videos_count);
+    this.addIfValid(categoryData.ratings, (asset as any).rating);
+    this.addIfValid(categoryData.reviews, (asset as any).reviews_count);
     
     // Content metadata statistics
     if (asset.title) {
@@ -135,28 +301,28 @@ export class VocabularyBuilder {
       categoryData.short_desc_lengths.push(shortDesc.length);
       const cleanShort = shortDesc.replace(/<[^>]*>/g, ' ');
       categoryData.word_counts_short.push(
-        cleanShort.split(/\s+/).filter(w => w.length > 0).length
+        cleanShort.split(/\s+/).filter((w: string) => w.length > 0).length
       );
     }
     if (longDesc) {
       categoryData.long_desc_lengths.push(longDesc.length);
       const cleanLong = longDesc.replace(/<[^>]*>/g, ' ');
       categoryData.word_counts_long.push(
-        cleanLong.split(/\s+/).filter(w => w.length > 0).length
+        cleanLong.split(/\s+/).filter((w: string) => w.length > 0).length
       );
       // Count bullet points in long description
       const bullets = (longDesc.match(/\n[-•*]/g) || []).length;
       categoryData.bullet_counts.push(bullets);
     }
-    if (Array.isArray(asset.tags)) {
-      categoryData.tag_counts.push(asset.tags.length);
+    if (Array.isArray((asset as any).tags)) {
+      categoryData.tag_counts.push((asset as any).tags.length);
     }
   }
 
   /**
    * Helper to add valid numeric values to arrays
    */
-  addIfValid(array, value) {
+  private addIfValid(array: number[], value: any): void {
     if (typeof value === 'number' && !isNaN(value) && value >= 0) {
       array.push(value);
     }
@@ -165,7 +331,7 @@ export class VocabularyBuilder {
   /**
    * Process category data to extract vocabulary and statistics
    */
-  async processCategoryData(category, data) {
+  private async processCategoryData(category: string, data: CategoryData): Promise<CategoryVocabulary> {
     this.logger.debug(`Processing category: ${category}`, {
       unigrams: data.uni.length,
       bigrams: data.bi.length,
@@ -174,8 +340,8 @@ export class VocabularyBuilder {
     });
 
     // Helper function to count word frequencies
-    const freqMap = (arr) => {
-      const map = new Map();
+    const freqMap = (arr: string[]): Map<string, number> => {
+      const map = new Map<string, number>();
       for (const item of arr) {
         map.set(item, (map.get(item) || 0) + 1);
       }
@@ -209,7 +375,7 @@ export class VocabularyBuilder {
     const wordCountLongStats = meanStd(data.word_counts_long);
     const bulletStats = meanStd(data.bullet_counts);
 
-    const result = {
+    const result: CategoryVocabulary = {
       // Core vocabulary
       top_unigrams: uniFreq,
       top_bigrams: biFreq,
@@ -219,8 +385,6 @@ export class VocabularyBuilder {
       med_images: median(data.images),
       med_videos: median(data.videos),
       med_price: median(data.prices),
-      med_rating: median(data.ratings),
-      med_reviews: median(data.reviews),
       
       // Price statistics for outlier detection
       price_mean: priceStats.mean,
@@ -280,7 +444,7 @@ export class VocabularyBuilder {
   /**
    * Get vocabulary for a specific category with fallback
    */
-  static getVocabularyForCategory(vocab, category) {
+  static getVocabularyForCategory(vocab: Vocabulary | null | undefined, category?: string): CategoryVocabulary {
     if (!vocab || typeof vocab !== 'object') {
       return this.getDefaultVocabulary();
     }
@@ -294,7 +458,10 @@ export class VocabularyBuilder {
     
     // Fallback to first available category
     if (vocabKeys.length > 0) {
-      return vocab[vocabKeys[0]];
+      const firstKey = vocabKeys[0];
+      if (firstKey && vocab[firstKey]) {
+        return vocab[firstKey];
+      }
     }
     
     // Ultimate fallback
@@ -304,7 +471,7 @@ export class VocabularyBuilder {
   /**
    * Get default vocabulary when none is available
    */
-  static getDefaultVocabulary() {
+  static getDefaultVocabulary(): CategoryVocabulary {
     return {
       top_unigrams: [],
       top_bigrams: [],
@@ -329,17 +496,17 @@ export class VocabularyBuilder {
    * Build exemplar-based vocabulary from high-quality assets only
    * This creates more focused, quality-driven vocabularies
    * 
-   * @param {Object} exemplarsData - Exemplars data with patterns
-   * @returns {Object} Exemplar-based vocabulary and statistics
+   * @param exemplarsData - Exemplars data with patterns
+   * @returns Exemplar-based vocabulary and statistics
    */
-  async buildExemplarVocabulary(exemplarsData) {
+  async buildExemplarVocabulary(exemplarsData: ExemplarsData): Promise<Record<string, ExtendedCategoryVocabulary>> {
     return this.logger.time('buildExemplarVocabulary', async () => {
       this.logger.info('Building exemplar-based vocabulary', { 
         categories: Object.keys(exemplarsData.exemplars).length,
         totalExemplars: exemplarsData.metadata.stats.totalExemplars
       });
 
-      const vocabByCategory = {};
+      const vocabByCategory: Record<string, ExtendedCategoryVocabulary> = {};
       
       for (const [category, exemplars] of Object.entries(exemplarsData.exemplars)) {
         if (exemplars.length === 0) continue;
@@ -385,9 +552,7 @@ export class VocabularyBuilder {
           title_length: {
             mean: patterns.structure.titleLength.avg,
             median: patterns.structure.titleLength.median,
-            std: this.calculateStd(exemplars.map(e => (e.title || '').length)),
-            min: patterns.structure.titleLength.min,
-            max: patterns.structure.titleLength.max
+            std: this.calculateStd(exemplars.map(e => (e.title || '').length))
           },
           
           // Word count compatibility (map description_length to word_count_long)
@@ -397,9 +562,7 @@ export class VocabularyBuilder {
             std: Math.round(this.calculateStd(exemplars.map(e => {
               const desc = (e.long_description || e.short_description || '').replace(/<[^>]*>/g, '');
               return desc.split(/\s+/).length;
-            }))),
-            min: Math.round(patterns.structure.longDescriptionLength.min / 5),
-            max: Math.round(patterns.structure.longDescriptionLength.max / 5)
+            })))
           },
           
           // Tag count compatibility
@@ -412,25 +575,20 @@ export class VocabularyBuilder {
           // Bullet count compatibility
           bullet_count: {
             mean: patterns.structure.bulletPoints.avg,
-            median: patterns.structure.bulletPoints.median,
-            std: this.calculateStd(exemplars.map(e => {
-              const desc = (e.long_description || e.short_description || '').toLowerCase();
-              const bullets = (desc.match(/[⚡•▪▫◦‣⁃]|<li>/g) || []).length;
-              return bullets;
-            }))
+            median: patterns.structure.bulletPoints.median
           },
           
           // Price patterns (compatible format)
           price: patterns.price.avg ? {
             mean: patterns.price.avg,
-            median: patterns.price.median,
+            median: patterns.price.median || null,
             std: this.calculateStd(exemplars.map(e => e.price || 0).filter(p => p > 0)),
-            min: patterns.price.min,
-            max: patterns.price.max,
+            min: patterns.price.min || null,
+            max: patterns.price.max || null,
             q1: patterns.price.iqr.q1,
             q3: patterns.price.iqr.q3
           } : {
-            mean: 0, median: 0, std: 0, min: 0, max: 0, q1: 0, q3: 0
+            mean: 0, median: null, std: 0, min: null, max: null, q1: null, q3: null
           },
           
           // Additional exemplar-specific metrics
@@ -447,13 +605,27 @@ export class VocabularyBuilder {
           extraction_date: patterns.metadata.extractedAt,
           top_exemplar_score: patterns.metadata.topExemplarScore,
           has_video_percentage: patterns.media.hasVideo,
-          common_structures: patterns.structure.commonStructures
+          common_structures: patterns.structure.commonStructures,
+
+          // Legacy compatibility fields
+          top_unigrams: [],
+          top_bigrams: [],
+          top_tags: [],
+          med_images: patterns.media.images.median,
+          med_videos: patterns.media.videos.median,
+          med_price: patterns.price.median || null,
+          price_mean: patterns.price.avg || null,
+          price_std: this.calculateStd(exemplars.map(e => e.price || 0).filter(p => p > 0)),
+          long_desc_length: { median: null, mean: null, std: null },
+          word_count_short: { median: null, mean: null, std: null },
+          short_desc_length: { median: null, mean: null, std: null }
         };
         
+        const categoryVocab = vocabByCategory[category];
         this.logger.info(`Built exemplar vocabulary for ${category}`, {
-          titleWords: vocabByCategory[category].title_words.length,
-          commonTags: vocabByCategory[category].common_tags.length,
-          qualityScore: vocabByCategory[category].quality_score.mean.toFixed(1)
+          titleWords: categoryVocab?.title_words?.length || 0,
+          commonTags: categoryVocab?.common_tags?.length || 0,
+          qualityScore: categoryVocab?.quality_score?.mean?.toFixed(1) || 'N/A'
         });
       }
       
@@ -468,7 +640,7 @@ export class VocabularyBuilder {
   /**
    * Convert pattern format to vocabulary format
    */
-  convertToVocabFormat(patternData) {
+  private convertToVocabFormat(patternData: Array<{ item: string; frequency: number }>): ExemplarVocabTerm[] {
     if (!Array.isArray(patternData)) return [];
     
     return patternData.map(item => ({
@@ -481,7 +653,7 @@ export class VocabularyBuilder {
   /**
    * Calculate standard deviation
    */
-  calculateStd(values) {
+  private calculateStd(values: number[]): number {
     if (values.length === 0) return 0;
     const mean = values.reduce((a, b) => a + b, 0) / values.length;
     const variance = values.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / values.length;
@@ -491,11 +663,18 @@ export class VocabularyBuilder {
   /**
    * Calculate median
    */
-  calculateMedian(values) {
+  private calculateMedian(values: number[]): number {
     if (values.length === 0) return 0;
     const sorted = [...values].sort((a, b) => a - b);
     const mid = Math.floor(sorted.length / 2);
-    return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
+    if (sorted.length % 2 === 0) {
+      const val1 = sorted[mid - 1];
+      const val2 = sorted[mid];
+      return val1 !== undefined && val2 !== undefined ? (val1 + val2) / 2 : 0;
+    } else {
+      const val = sorted[mid];
+      return val !== undefined ? val : 0;
+    }
   }
 }
 

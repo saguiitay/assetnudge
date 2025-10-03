@@ -6,6 +6,7 @@
 import OpenAI from 'openai';
 import { Logger } from './utils/logger';
 import { AssetValidator } from './utils/validation';
+import HeuristicSuggestions from './heuristic-suggestions.mjs';
 
 const logger = new Logger('ai');
 
@@ -733,7 +734,6 @@ BENCHMARKS:
     this.logger.debug('Generating heuristic fallback suggestions');
 
     // Use heuristic suggestions as fallback
-    const { default: HeuristicSuggestions } = await import('./heuristic-suggestions.mjs');
     const heuristicEngine = new HeuristicSuggestions(this.config);
     
     return {
