@@ -92,3 +92,187 @@ export interface Asset {
   /** Array of video previews */
   videos: AssetVideo[];
 }
+
+/**
+ * Configuration interface for the asset grader
+ */
+export interface GraderConfig {
+  weights: WeightConfig;
+  thresholds: ThresholdConfig;
+  textProcessing?: {
+    ignoreStopWords?: boolean;
+  };
+}
+
+/**
+ * Weight configuration for different scoring dimensions
+ */
+export interface WeightConfig {
+  content: {
+    title: number;
+    short: number;
+    long: number;
+    bullets: number;
+    cta: number;
+    uvp: number;
+  };
+  media: {
+    images: number;
+    video: number;
+    gif: number;
+  };
+  trust: {
+    rating: number;
+    reviews: number;
+    freshness: number;
+  };
+  find: {
+    tagcov: number;
+    titlekw: number;
+    pricez: number;
+  };
+  perf: {
+    cvr: number;
+    hv_lc_penalty: number;
+  };
+}
+
+/**
+ * Threshold configuration for various metrics
+ */
+export interface ThresholdConfig {
+  title: {
+    minLength: number;
+    maxLength: number;
+  };
+  shortDesc: {
+    minLength: number;
+    maxLength: number;
+  };
+  longDesc: {
+    minWords: number;
+  };
+  bullets: {
+    minimum: number;
+  };
+  images: {
+    minimum: number;
+  };
+  videos: {
+    minimum: number;
+  };
+  rating: {
+    minimum: number;
+  };
+  reviews: {
+    minimum: number;
+  };
+  freshness: {
+    maxDays: number;
+  };
+  similarity: {
+    topUnigrams: number;
+    topBigrams: number;
+    topTags: number;
+  };
+}
+
+/**
+ * Vocabulary data structure for a category
+ */
+export interface CategoryVocabulary {
+  top_unigrams: Array<{ t: string; c: number }>;
+  top_bigrams: Array<{ t: string; c: number }>;
+  top_tags: Array<{ t: string; c: number }>;
+  med_images: number | null;
+  med_videos: number | null;
+  med_price: number | null;
+  price_mean: number | null;
+  price_std: number | null;
+  title_length: {
+    median: number | null;
+    mean: number | null;
+    std: number | null;
+  };
+  short_desc_length: {
+    median: number | null;
+    mean: number | null;
+    std: number | null;
+  };
+  long_desc_length: {
+    median: number | null;
+    mean: number | null;
+    std: number | null;
+  };
+  word_count_short: {
+    median: number | null;
+    mean: number | null;
+    std: number | null;
+  };
+  word_count_long: {
+    median: number | null;
+    mean: number | null;
+    std: number | null;
+  };
+  tag_count: {
+    median: number | null;
+    mean: number | null;
+    std: number | null;
+  };
+  bullet_count: {
+    median: number | null;
+    mean: number | null;
+  };
+  sample_size: number;
+}
+
+/**
+ * Complete vocabulary structure with categories
+ */
+export interface Vocabulary {
+  [category: string]: CategoryVocabulary;
+}
+
+/**
+ * Prepared content for analysis
+ */
+export interface PreparedContent {
+  title: string;
+  shortDesc: string;
+  longDesc: string;
+  description: string;
+  short: string;
+  bullets: number;
+  hasCTA: boolean;
+  hasUVP: boolean;
+  wordCount: number;
+}
+
+/**
+ * Scoring result with score and reasons
+ */
+export interface ScoreResult {
+  score: number;
+  reasons: string[];
+}
+
+/**
+ * Grade breakdown by dimension
+ */
+export interface GradeBreakdown {
+  content: number;
+  media: number;
+  trust: number;
+  findability: number;
+  performance: number;
+}
+
+/**
+ * Complete grade result
+ */
+export interface GradeResult {
+  score: number;
+  letter: 'A' | 'B' | 'C' | 'D' | 'F';
+  reasons: string[];
+  breakdown: GradeBreakdown;
+}

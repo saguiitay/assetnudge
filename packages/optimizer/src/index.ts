@@ -3,11 +3,12 @@
  * Main entry point for programmatic use of the optimizer
  */
 
-import UnityAssetOptimizer from './src/optimizer.mjs';
-import Config from './src/config';
-import { scrapeAssetWithHTML } from './src/scrappers/html-scraper.mjs';
-import { scrapeAssetWithGraphQL } from './src/scrappers/graphql-scraper.mjs';
-// Types are exported via TypeScript declaration files
+import UnityAssetOptimizer from './optimizer.mjs';
+import Config from './config';
+import { scrapeAssetWithHTML } from './scrappers/html-scraper.mjs';
+import { scrapeAssetWithGraphQL } from './scrappers/graphql-scraper.mjs';
+import { Asset as ValidatorAsset, Vocabulary as ValidatorVocabulary } from './utils/validation';
+import { GradeResult, Vocabulary as TypesVocabulary } from './types';
 
 /**
  * Export Config class as OptimizerConfig for compatibility
@@ -17,9 +18,9 @@ export class OptimizerConfig extends Config {}
 /**
  * Scrape asset function wrapper (uses fallback strategy by default)
  */
-export async function scrapeAsset(url, config = null) {
+export async function scrapeAsset(url: string, config: { debug?: boolean; apiKey?: string } | null = null) {
   // Convert config to args array if provided
-  const args = [];
+  const args: string[] = [];
   if (config) {
     if (config.debug) args.push('--debug', 'true');
     if (config.apiKey) args.push('--apiKey', config.apiKey);
@@ -37,7 +38,7 @@ export async function scrapeAsset(url, config = null) {
   } catch (error) {
     return {
       success: false,
-      error: error.message
+      error: error instanceof Error ? error.message : 'Unknown error'
     };
   }
 }
@@ -45,8 +46,8 @@ export async function scrapeAsset(url, config = null) {
 /**
  * Scrape asset with GraphQL API (most reliable)
  */
-export async function scrapeAssetWithGraphQLAPI(url, config = null) {
-  const args = [];
+export async function scrapeAssetWithGraphQLAPI(url: string, config: { debug?: boolean } | null = null) {
+  const args: string[] = [];
   if (config) {
     if (config.debug) args.push('--debug', 'true');
   }
@@ -59,12 +60,12 @@ export async function scrapeAssetWithGraphQLAPI(url, config = null) {
     return {
       success: true,
       asset: asset,
-      method: 'graphql'
+      method: 'graphql' as const
     };
   } catch (error) {
     return {
       success: false,
-      error: error.message
+      error: error instanceof Error ? error.message : 'Unknown error'
     };
   }
 }
@@ -72,8 +73,8 @@ export async function scrapeAssetWithGraphQLAPI(url, config = null) {
 /**
  * Scrape asset with HTML parser (lightweight)
  */
-export async function scrapeAssetWithHTMLAPI(url, config = null) {
-  const args = [];
+export async function scrapeAssetWithHTMLAPI(url: string, config: { debug?: boolean } | null = null) {
+  const args: string[] = [];
   if (config) {
     if (config.debug) args.push('--debug', 'true');
   }
@@ -86,12 +87,12 @@ export async function scrapeAssetWithHTMLAPI(url, config = null) {
     return {
       success: true,
       asset: asset,
-      method: 'html'
+      method: 'html' as const
     };
   } catch (error) {
     return {
       success: false,
-      error: error.message
+      error: error instanceof Error ? error.message : 'Unknown error'
     };
   }
 }
@@ -99,17 +100,17 @@ export async function scrapeAssetWithHTMLAPI(url, config = null) {
 /**
  * Grade asset function wrapper
  */
-export async function gradeAsset(assetData, vocabPath = null, config = null) {
-  const args = [];
+export async function gradeAsset(assetData: ValidatorAsset, vocabPath: string | null = null, config: { debug?: boolean } | null = null): Promise<{ grade: GradeResult }> {
+  const args: string[] = [];
   if (config && config.debug) args.push('--debug', 'true');
   
   const optimizer = new UnityAssetOptimizer(args);
   await optimizer.validateSetup();
   
   // Load vocabulary if provided
-  let vocabulary = {};
+  let vocabulary: TypesVocabulary = {};
   if (vocabPath) {
-    const { FileValidator } = await import('./src/utils/validation');
+    const { FileValidator } = await import('./utils/validation');
     vocabulary = await FileValidator.validateJSONFile(vocabPath);
   }
   
@@ -122,8 +123,8 @@ export async function gradeAsset(assetData, vocabPath = null, config = null) {
 /**
  * Optimize asset function wrapper
  */
-export async function optimizeAsset(options, config = null) {
-  const args = [];
+export async function optimizeAsset(options: any, config: { debug?: boolean } | null = null) {
+  const args: string[] = [];
   if (config && config.debug) args.push('--debug', 'true');
   
   const optimizer = new UnityAssetOptimizer(args);
@@ -142,3 +143,6 @@ export {
   scrapeAssetWithHTML,
   scrapeAssetWithGraphQL
 };
+
+// Re-export types
+export type { ValidatorAsset as Asset, TypesVocabulary as Vocabulary, GradeResult };
