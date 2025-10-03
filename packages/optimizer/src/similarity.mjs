@@ -3,7 +3,7 @@
  * Provides TF-IDF vector similarity calculations for competitive analysis
  */
 
-import { tfVector, cosine } from './utils/utils.mjs';
+import { tfVector, cosine } from './utils/utils.js';
 import { Logger } from './utils/logger';
 import { AssetValidator } from './utils/validation.mjs';
 

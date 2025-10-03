@@ -1,5 +1,5 @@
 import { Logger } from './utils/logger';
-import { isStopWord, filterStopWords } from './utils/utils.mjs';
+import { isStopWord, filterStopWords } from './utils/utils.js';
 
 /**
  * Pattern Extraction from Exemplars
@@ -332,7 +332,7 @@ function extractBigrams(words) {
     return bigrams;
 }
 
-// Remove the old isStopWord function since we're using the centralized one from utils.mjs
+// Remove the old isStopWord function since we're using the centralized one from utils.ts
 
 function filterAndRank(frequencyMap, minFrequency) {
     return Object.entries(frequencyMap)

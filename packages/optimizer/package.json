@@ -62,7 +62,7 @@
   "files": [
     "main.mjs",
     "src/",
-    "utils.mjs",
+    "utils.ts",
     "data/",
     "README.md"
   ]

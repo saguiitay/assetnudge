@@ -3,7 +3,7 @@
  * Handles vocabulary generation and category analysis for Unity Asset Store listings
  */
 
-import { tokenize, median, meanStd } from './utils/utils.mjs';
+import { tokenize, median, meanStd } from './utils/utils.js';
 import { Logger } from './utils/logger';
 import { AssetValidator } from './utils/validation.mjs';
 

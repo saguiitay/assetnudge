@@ -39,6 +39,15 @@ export interface AssetImage {
 }
 
 /**
+ * Video data for an asset
+ */
+export interface AssetVideo
+{
+  imageUrl: string;
+  thumbnailUrl: string;
+}
+
+/**
  * Complete Unity Asset Store asset data structure
  */
 export interface Asset {
@@ -80,4 +89,6 @@ export interface Asset {
   mainImage: AssetMainImage;
   /** Array of screenshot images */
   images: AssetImage[];
+  /** Array of video previews */
+  videos: AssetVideo[];
 }

@@ -321,7 +321,7 @@ node main.mjs batch \
 optimizer/
 ├── main.mjs                    # CLI entry point
 ├── package.json               # Project configuration
-├── utils.mjs                  # Utility functions
+├── utils.ts                   # Utility functions
 ├── puppeteer-scraper.mjs      # Web scraping module
 └── src/                       # Core modules
     ├── config.ts             # Configuration management
