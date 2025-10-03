@@ -7,7 +7,6 @@
  * - Direct access to Unity's official API
  * - Always up-to-date and accurate data
  * - Complete asset information including reviews, pricing, etc.
- * - No HTML parsing required
  * - Fast and efficient
  * 
  * WHAT IT CAN EXTRACT:

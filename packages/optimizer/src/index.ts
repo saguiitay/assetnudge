@@ -5,7 +5,6 @@
 
 import UnityAssetOptimizer from './optimizer.mjs';
 import Config from './config';
-import { scrapeAssetWithHTML } from './scrappers/html-scraper.mjs';
 import { scrapeAssetWithGraphQL } from './scrappers/graphql-scraper.mjs';
 import { Asset as ValidatorAsset, Vocabulary as ValidatorVocabulary, FileValidator } from './utils/validation';
 import { GradeResult, Vocabulary as TypesVocabulary } from './types';
@@ -71,33 +70,6 @@ export async function scrapeAssetWithGraphQLAPI(url: string, config: { debug?: b
 }
 
 /**
- * Scrape asset with HTML parser (lightweight)
- */
-export async function scrapeAssetWithHTMLAPI(url: string, config: { debug?: boolean } | null = null) {
-  const args: string[] = [];
-  if (config) {
-    if (config.debug) args.push('--debug', 'true');
-  }
-  
-  const optimizer = new UnityAssetOptimizer(args);
-  await optimizer.validateSetup();
-  
-  try {
-    const asset = await optimizer.scrapeAssetWithHTML(url);
-    return {
-      success: true,
-      asset: asset,
-      method: 'html' as const
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error'
-    };
-  }
-}
-
-/**
  * Grade asset function wrapper
  */
 export async function gradeAsset(assetData: ValidatorAsset, vocabPath: string | null = null, config: { debug?: boolean } | null = null): Promise<{ grade: GradeResult }> {
@@ -139,7 +111,6 @@ export { UnityAssetOptimizer as default };
 export { 
   UnityAssetOptimizer, 
   Config,
-  scrapeAssetWithHTML,
   scrapeAssetWithGraphQL
 };
 

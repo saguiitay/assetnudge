@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { scrapeAsset, scrapeAssetWithHTMLAPI, scrapeAssetWithGraphQLAPI } from '@repo/optimizer';
+import { scrapeAsset, scrapeAssetWithGraphQLAPI } from '@repo/optimizer';
 
 export const runtime = 'nodejs';
 
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { url, method = 'html', debug = false } = body;
+    const { url, method = 'graphql', debug = false } = body;
 
     // Validate request body
     if (!url) {
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate scraping method
-    const validMethods = ['graphql', 'html', 'puppeteer', 'fallback'];
+    const validMethods = ['graphql', 'fallback'];
     if (!validMethods.includes(method)) {
       return NextResponse.json(
         { success: false, error: `Method must be one of: ${validMethods.join(', ')}` },
@@ -71,9 +71,6 @@ export async function POST(request: NextRequest) {
     switch (method) {
       case 'graphql':
         result = await scrapeAssetWithGraphQLAPI(url);
-        break;
-      case 'html':
-        result = await scrapeAssetWithHTMLAPI(url);
         break;
       case 'fallback':
       default:
@@ -124,8 +121,8 @@ export async function GET() {
         type: 'string',
         required: false,
         default: 'graphql',
-        enum: ['graphql', 'html', 'puppeteer', 'fallback'],
-        description: 'Scraping method: graphql (official API), html (fast, lightweight), puppeteer (full-featured), fallback (tries graphql then others)'
+        enum: ['graphql', 'fallback'],
+        description: 'Scraping method: graphql (official API), fallback (tries graphql then others)'
       },
       debug: {
         type: 'boolean',
@@ -141,20 +138,8 @@ export async function GET() {
         cons: ['May require CSRF token', 'Depends on Unity API availability'],
         use_case: 'Production environments, real-time applications, high-accuracy needs'
       },
-      html: {
-        description: 'Fast HTML-only scraping without JavaScript execution',
-        pros: ['Fast (~1.5s)', 'No browser dependencies', 'Lightweight'],
-        cons: ['Limited to static content', '~90-95% data extraction accuracy'],
-        use_case: 'Bulk operations, CI/CD, resource-constrained environments'
-      },
-      puppeteer: {
-        description: 'Full browser scraping with JavaScript rendering',
-        pros: ['Complete data extraction', 'JavaScript-rendered content', 'High accuracy'],
-        cons: ['Slower (~10s)', 'Browser dependencies', 'Resource intensive'],
-        use_case: 'Maximum accuracy needed, research, detailed analysis'
-      },
       fallback: {
-        description: 'Smart strategy that tries graphql first, then puppeteer, then html',
+        description: 'Smart strategy that tries graphql first',
         pros: ['Best reliability', 'Optimal data quality', 'Graceful degradation'],
         cons: ['Variable speed depending on method used'],
         use_case: 'Production environments, mixed usage scenarios'

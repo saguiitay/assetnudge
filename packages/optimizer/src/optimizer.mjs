@@ -10,14 +10,13 @@ import path from 'path';
 import Config from './config';
 import { Logger } from './utils/logger';
 import { URLValidator, FileValidator } from './utils/validation';
-import VocabularyBuilder from './vocabulary.mjs';
+import VocabularyBuilder from './vocabulary';
 import AssetGrader from './grader';
-import SimilarityEngine from './similarity.mjs';
+import SimilarityEngine from './similarity';
 import AISuggestionEngine from './ai-suggestions.mjs';
 import HeuristicSuggestions from './heuristic-suggestions.mjs';
 
 // External dependencies
-import { scrapeAssetWithHTML } from './scrappers/html-scraper.mjs';
 import { scrapeAssetWithGraphQL } from './scrappers/graphql-scraper.mjs';
 
 // Exemplar and pattern modules
@@ -294,35 +293,7 @@ export class UnityAssetOptimizer {
   }
 
   /**
-   * Scrape asset data from URL using HTML scraper (lightweight)
-   */
-  async scrapeAssetWithHTML(url, outputPath) {
-    return this.logger.time('scrapeAssetWithHTML', async () => {
-      this.logger.info('Scraping asset with HTML parser', { url });
-      
-      // Validate URL
-      URLValidator.validateAssetStoreURL(url);
-      
-      // Scrape the asset using HTML parser
-      const asset = await scrapeAssetWithHTML(url);
-      
-      // Save scraped data if output path provided
-      if (outputPath) {
-        await this.writeJSON(outputPath, asset);
-      }
-      
-      this.logger.success('Asset scraped successfully with HTML parser', {
-        title: asset.title,
-        category: asset.category,
-        outputPath
-      });
-      
-      return asset;
-    });
-  }
-
-  /**
-   * Scrape asset data with fallback strategy (GraphQL first, then HTML)
+   * Scrape asset data with fallback strategy (GraphQL first)
    */
   async scrapeAssetWithFallback(url, outputPath) {
     return this.logger.time('scrapeAssetWithFallback', async () => {
@@ -341,19 +312,10 @@ export class UnityAssetOptimizer {
         method = 'graphql';
         this.logger.info('GraphQL API scraping successful');
       } catch (graphqlError) {
-        
-        try {
-          // Fallback to HTML scraping
-          asset = await scrapeAssetWithHTML(url);
-          method = 'html';
-          this.logger.info('HTML scraping successful');
-        } catch (htmlError) {
-          this.logger.error('All scraping methods failed', {
-            graphqlError: graphqlError.message,
-            htmlError: htmlError.message
-          });
-          throw new Error(`Scraping failed: GraphQL (${graphqlError.message}), HTML (${htmlError.message})`);
-        }
+        this.logger.error('All scraping methods failed', {
+          graphqlError: graphqlError.message,
+        });
+        throw new Error(`Scraping failed: GraphQL (${graphqlError.message})`);
       }
       
       // Add metadata about scraping method

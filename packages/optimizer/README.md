@@ -68,24 +68,14 @@ Traditional optimization tools use global rules and heuristics. **This tool lear
 ### 🕷️ Web Scraping Options
 Choose the right scraping method for your needs:
 
-#### **HTML Scraping** (Lightweight)
-- Fast, lightweight HTML-only parsing
-- No JavaScript dependencies
-- ~90-95% data extraction accuracy
-- Perfect for bulk scraping or resource-constrained environments
-
 #### **Fallback Strategy** (Recommended)
 - Tries GraphQL first for complete data
-- Automatically falls back to HTML scraping if GraphQL fails
 - Best reliability with optimal data quality
 - Smart error handling and logging
 
 ```bash
 # Full-featured scraping (default)
 node main.mjs scrape --url "https://assetstore.unity.com/packages/..." --method GraphQL
-
-# Fast HTML-only scraping
-node main.mjs scrape --url "https://assetstore.unity.com/packages/..." --method html
 
 # Smart fallback strategy (recommended)
 node main.mjs scrape --url "https://assetstore.unity.com/packages/..." --method fallback
@@ -119,13 +109,11 @@ node main.mjs status
 # Corpus should be an array of Unity Asset Store listings
 
 # Option B: Scrape fresh data (choose your method)
-# Fast HTML scraping for quick analysis
-node main.mjs scrape --url "https://assetstore.unity.com/packages/..." --method html --out asset.json
 
 # Full GraphQL scraping for complete data
 node main.mjs scrape --url "https://assetstore.unity.com/packages/..." --method graphql --out asset.json
 
-# Smart fallback (recommended - tries GraphQL, falls back to HTML)
+# Smart fallback (recommended - tries GraphQL)
 node main.mjs scrape --url "https://assetstore.unity.com/packages/..." --method fallback --out asset.json
 ```
 
@@ -329,7 +317,7 @@ optimizer/
     ├── validation.ts         # Input validation
     ├── vocabulary.mjs         # Vocabulary building (enhanced with exemplar support)
     ├── grader.mjs             # Asset scoring
-    ├── similarity.mjs         # TF-IDF similarity
+    ├── similarity.ts          # TF-IDF similarity
     ├── 🎯 exemplars.mjs       # NEW: Exemplar identification & quality scoring
     ├── 🎯 pattern-extraction.mjs # NEW: Pattern extraction from exemplars
     ├── 🎯 exemplar-coaching.mjs # NEW: Neighbor-based recommendations
@@ -579,7 +567,7 @@ const grade = await grader.gradeAsset(asset, vocabulary);
 TF-IDF similarity calculations.
 
 ```javascript
-import SimilarityEngine from './src/similarity.mjs';
+import SimilarityEngine from './src/similarity';
 
 const engine = new SimilarityEngine(config);
 const similar = await engine.findSimilarAssets(asset, corpus, 5);

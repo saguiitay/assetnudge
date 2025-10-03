@@ -3,17 +3,53 @@
  * Provides TF-IDF vector similarity calculations for competitive analysis
  */
 
-import { tfVector, cosine } from './utils/utils';
+import { tfVector, cosine, TFVector } from './utils/utils';
 import { Logger } from './utils/logger';
-import { AssetValidator } from './utils/validation';
+import { AssetValidator, Asset } from './utils/validation';
+import { Config } from './config';
 
 const logger = new Logger('similarity');
+
+/**
+ * Similar asset result interface
+ */
+export interface SimilarAsset {
+  title: string;
+  url: string;
+  category?: string;
+  price?: number;
+  rating?: number;
+  overlap: number;
+  shared_tags: string[];
+  similarity_score: number;
+}
+
+/**
+ * Similarity distribution statistics interface
+ */
+export interface SimilarityDistribution {
+  count: number;
+  mean: number;
+  max: number;
+  min: number;
+  quartiles: [number, number, number];
+}
+
+/**
+ * Batch similarity results interface
+ */
+export interface BatchSimilarityResults {
+  [assetId: string]: SimilarAsset[];
+}
 
 /**
  * Asset similarity calculator using TF-IDF vectors
  */
 export class SimilarityEngine {
-  constructor(config) {
+  private config: Config;
+  private logger: Logger;
+
+  constructor(config: Config) {
     this.config = config;
     this.logger = logger.child('engine');
   }
@@ -23,12 +59,12 @@ export class SimilarityEngine {
    * Combines title, description, and tags into a single text representation
    * then calculates similarity scores against a corpus of assets
    * 
-   * @param {Object} asset - Target asset to find neighbors for
-   * @param {Array} corpus - Array of assets to search within
-   * @param {number} k - Number of similar assets to return
-   * @returns {Array} Array of similar assets with overlap scores and shared tags
+   * @param asset - Target asset to find neighbors for
+   * @param corpus - Array of assets to search within
+   * @param k - Number of similar assets to return
+   * @returns Array of similar assets with overlap scores and shared tags
    */
-  async findSimilarAssets(asset, corpus, k = null) {
+  async findSimilarAssets(asset: Asset, corpus: Asset[], k: number | null = null): Promise<SimilarAsset[]> {
     const neighborCount = k || this.config.thresholds.similarity.neighbors;
     
     return this.logger.time('findSimilarAssets', async () => {
@@ -46,7 +82,7 @@ export class SimilarityEngine {
       const targetVector = this.createAssetVector(asset);
       
       // Calculate similarity with each asset in corpus
-      const similarities = [];
+      const similarities: SimilarAsset[] = [];
       let processedCount = 0;
 
       for (const corpusAsset of corpus) {
@@ -63,16 +99,26 @@ export class SimilarityEngine {
 
           const sharedTags = this.findSharedTags(asset, corpusAsset);
           
-          similarities.push({
+          const similarAsset: SimilarAsset = {
             title: corpusAsset.title,
-            url: corpusAsset.url,
-            category: corpusAsset.category,
-            price: corpusAsset.price,
-            rating: corpusAsset.rating,
+            url: corpusAsset.url || '',
             overlap: similarity,
             shared_tags: sharedTags,
             similarity_score: Math.round(similarity * 100) / 100
-          });
+          };
+
+          // Add optional properties only if they exist
+          if (corpusAsset.category !== undefined) {
+            similarAsset.category = corpusAsset.category;
+          }
+          if (corpusAsset.price !== undefined) {
+            similarAsset.price = corpusAsset.price;
+          }
+          if (corpusAsset.rating !== undefined) {
+            similarAsset.rating = corpusAsset.rating;
+          }
+          
+          similarities.push(similarAsset);
 
           processedCount++;
 
@@ -84,7 +130,7 @@ export class SimilarityEngine {
         } catch (error) {
           this.logger.debug('Skipping invalid corpus asset', {
             title: corpusAsset.title,
-            error: error.message
+            error: (error as Error).message
           });
           continue;
         }
@@ -99,7 +145,7 @@ export class SimilarityEngine {
         targetTitle: asset.title,
         processed: processedCount,
         found: results.length,
-        topSimilarity: results.length > 0 ? results[0].similarity_score : 0
+        topSimilarity: results.length > 0 ? results[0]!.similarity_score : 0
       });
 
       return results;
@@ -109,10 +155,10 @@ export class SimilarityEngine {
   /**
    * Create TF-IDF vector for an asset
    */
-  createAssetVector(asset) {
-    const description = asset.long_description || 
-                       asset.short_description || 
-                       asset.description || '';
+  private createAssetVector(asset: Asset): TFVector {
+    const description = (asset as any).long_description || 
+                       (asset as any).short_description || 
+                       (asset as any).description || '';
     
     const tags = Array.isArray(asset.tags) ? asset.tags.join(' ') : '';
     const title = asset.title || '';
@@ -127,9 +173,9 @@ export class SimilarityEngine {
   /**
    * Check if two assets are the same (avoid self-matches)
    */
-  isSameAsset(asset1, asset2) {
+  private isSameAsset(asset1: Asset, asset2: Asset): boolean {
     // Same URL
-    if (asset1.url && asset2.url && asset1.url === asset2.url) {
+    if ((asset1 as any).url && (asset2 as any).url && (asset1 as any).url === (asset2 as any).url) {
       return true;
     }
     
@@ -145,7 +191,7 @@ export class SimilarityEngine {
   /**
    * Find tags shared between two assets
    */
-  findSharedTags(asset1, asset2) {
+  private findSharedTags(asset1: Asset, asset2: Asset): string[] {
     const tags1 = (asset1.tags || []).map(t => String(t).toLowerCase());
     const tags2 = (asset2.tags || []).map(t => String(t).toLowerCase());
     
@@ -156,8 +202,8 @@ export class SimilarityEngine {
    * Calculate category-based similarity
    * Useful for finding assets in the same category with high similarity
    */
-  async findSimilarInCategory(asset, corpus, category = null, k = null) {
-    const targetCategory = category || asset.category;
+  async findSimilarInCategory(asset: Asset, corpus: Asset[], category: string | null = null, k: number | null = null): Promise<SimilarAsset[]> {
+    const targetCategory = category || (asset as any).category;
     const neighborCount = k || this.config.thresholds.similarity.neighbors;
     
     if (!targetCategory) {
@@ -167,7 +213,7 @@ export class SimilarityEngine {
 
     // Filter corpus to same category
     const categoryCorpus = corpus.filter(a => 
-      (a.category || '').toLowerCase() === targetCategory.toLowerCase()
+      ((a as any).category || '').toLowerCase() === targetCategory.toLowerCase()
     );
 
     this.logger.debug('Finding similar assets in category', {
@@ -190,7 +236,7 @@ export class SimilarityEngine {
    * Batch similarity calculation for multiple target assets
    * More efficient when analyzing many assets against the same corpus
    */
-  async batchSimilarity(assets, corpus, k = null) {
+  async batchSimilarity(assets: Asset[], corpus: Asset[], k: number | null = null): Promise<BatchSimilarityResults> {
     const neighborCount = k || this.config.thresholds.similarity.neighbors;
     
     return this.logger.time('batchSimilarity', async () => {
@@ -199,11 +245,11 @@ export class SimilarityEngine {
         corpusSize: corpus.length
       });
 
-      const results = {};
+      const results: BatchSimilarityResults = {};
       
       for (let i = 0; i < assets.length; i++) {
-        const asset = assets[i];
-        const assetId = asset.id || asset.url || `asset_${i}`;
+        const asset = assets[i]!;
+        const assetId = (asset as any).id || (asset as any).url || `asset_${i}`;
         
         try {
           results[assetId] = await this.findSimilarAssets(asset, corpus, neighborCount);
@@ -213,7 +259,7 @@ export class SimilarityEngine {
           });
           
         } catch (error) {
-          this.logger.error(`Failed to calculate similarity for asset ${i}`, error, {
+          this.logger.error(`Failed to calculate similarity for asset ${i}`, error as Error, {
             assetTitle: asset.title
           });
           results[assetId] = [];
@@ -232,7 +278,7 @@ export class SimilarityEngine {
   /**
    * Get similarity statistics for analysis
    */
-  analyzeSimilarityDistribution(similarities) {
+  analyzeSimilarityDistribution(similarities: SimilarAsset[]): SimilarityDistribution {
     if (!similarities || similarities.length === 0) {
       return {
         count: 0,
@@ -249,12 +295,12 @@ export class SimilarityEngine {
     return {
       count,
       mean: scores.reduce((a, b) => a + b, 0) / count,
-      max: scores[count - 1],
-      min: scores[0],
+      max: scores[count - 1]!,
+      min: scores[0]!,
       quartiles: [
-        scores[Math.floor(count * 0.25)],
-        scores[Math.floor(count * 0.5)],
-        scores[Math.floor(count * 0.75)]
+        scores[Math.floor(count * 0.25)]!,
+        scores[Math.floor(count * 0.5)]!,
+        scores[Math.floor(count * 0.75)]!
       ]
     };
   }

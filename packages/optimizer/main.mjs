@@ -66,12 +66,11 @@ function showHelp() {
   console.log(`Unity Asset Optimizer v2.0 - AI-Powered CLI Tool
 
 Commands:
-  scrape       --url <Unity Asset Store URL> [--out <output.json>] [--method <graphql|html|fallback>]
+  scrape       --url <Unity Asset Store URL> [--out <output.json>] [--method <graphql|fallback>]
                Extract asset data from Unity Asset Store listing
                Methods:
                  graphql: Official GraphQL API (fastest, most reliable)
-                 html: Lightweight HTML-only scraping (faster, no JavaScript)
-                 fallback: Try graphql first, then html (default)
+                 fallback: Try graphql first, then other methods
                
   build-vocab  --corpus <corpus.json> --out <vocab.json>
                Build category vocabulary from corpus data
@@ -131,7 +130,6 @@ Examples:
   # Scraping with different methods
   node main.mjs scrape --url "https://assetstore.unity.com/packages/..." --method fallback  # Recommended: try graphql, fallback to others
   node main.mjs scrape --url "https://assetstore.unity.com/packages/..." --method graphql   # Fastest: Official GraphQL API
-  node main.mjs scrape --url "https://assetstore.unity.com/packages/..." --method html     # Fast: HTML-only scraping
   
   # Live optimization with AI
   node main.mjs optimize --url "https://assetstore.unity.com/packages/..." --ai true --model gpt-4o-mini
@@ -157,7 +155,7 @@ async function cmdScrape() {
   const method = getFlag('method', 'fallback'); // Default to fallback for reliability
   
   ensure(url, '--url is required (Unity Asset Store URL)');
-  ensure(['graphql', 'html', 'fallback'].includes(method), '--method must be one of: graphql, html, fallback');
+  ensure(['graphql', 'fallback'].includes(method), '--method must be one of: graphql, fallback');
   
   const optimizer = new UnityAssetOptimizer(args);
   await optimizer.validateSetup();
@@ -166,9 +164,6 @@ async function cmdScrape() {
   switch (method) {
     case 'graphql':
       asset = await optimizer.scrapeAssetWithGraphQL(url, outPath);
-      break;
-    case 'html':
-      asset = await optimizer.scrapeAssetWithHTML(url, outPath);
       break;
     case 'fallback':
     default:
