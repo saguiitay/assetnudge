@@ -5,6 +5,7 @@
   "type": "module",
   "main": "index.mjs",
   "module": "index.mjs",
+  "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "import": "./index.mjs",
@@ -27,7 +28,9 @@
     "grade": "node main.mjs grade",
     "optimize": "node main.mjs optimize",
     "build-vocab": "node main.mjs build-vocab",
-    "status": "node main.mjs status"
+    "status": "node main.mjs status",
+    "build": "tsc",
+    "type-check": "tsc --noEmit"
   },
   "keywords": [
     "unity",
@@ -49,6 +52,10 @@
     "puppeteer": "^23.0.0",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/node": "^20.0.0"
   },
   "engines": {
     "node": ">=18.0.0"

@@ -38,12 +38,12 @@
     "version": "1.1",
     "favorites": 1,
     "mainImage": {
-                    "big": "//assetstorev1-prd-cdn.unity3d.com/key-image/d6ca6170-125c-43e4-9813-27e0bf50eeee.jpg",
-                    "facebook": "//assetstorev1-prd-cdn.unity3d.com/key-image/e681aa1a-fd00-4ed7-a2d7-1e8984fb1de0.png",
-                    "small": "//assetstorev1-prd-cdn.unity3d.com/key-image/5d39544c-e1a0-4396-8f8c-3881fb5ec781.jpg",
-                    "icon": "//assetstorev1-prd-cdn.unity3d.com/key-image/cfdb1455-b8a5-4404-927a-3a53d63c1fd8.png",
-                    "icon75": "//assetstorev1-prd-cdn.unity3d.com/key-image/63069121-ffe5-4954-b50f-3872fe80f8e8.png",
-                },
+        "big": "//assetstorev1-prd-cdn.unity3d.com/key-image/d6ca6170-125c-43e4-9813-27e0bf50eeee.jpg",
+        "facebook": "//assetstorev1-prd-cdn.unity3d.com/key-image/e681aa1a-fd00-4ed7-a2d7-1e8984fb1de0.png",
+        "small": "//assetstorev1-prd-cdn.unity3d.com/key-image/5d39544c-e1a0-4396-8f8c-3881fb5ec781.jpg",
+        "icon": "//assetstorev1-prd-cdn.unity3d.com/key-image/cfdb1455-b8a5-4404-927a-3a53d63c1fd8.png",
+        "icon75": "//assetstorev1-prd-cdn.unity3d.com/key-image/63069121-ffe5-4954-b50f-3872fe80f8e8.png"
+    },
     "images": [{
             "imageUrl": "//assetstorev1-prd-cdn.unity3d.com/package-screenshot/a871bda2-4e25-449e-94d0-47950a07ae37_scaled.jpg",
             "thumbnailUrl": "//assetstorev1-prd-cdn.unity3d.com/package-screenshot/a871bda2-4e25-449e-94d0-47950a07ae37_thumb.jpg",

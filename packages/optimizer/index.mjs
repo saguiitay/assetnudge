@@ -8,6 +8,7 @@ import Config from './src/config.mjs';
 import { scrapeAssetWithPuppeteer } from './src/puppeteer-scraper.mjs';
 import { scrapeAssetWithHTML } from './src/html-scraper.mjs';
 import { scrapeAssetWithGraphQL } from './src/graphql-scraper.mjs';
+// Types are exported via TypeScript declaration files
 
 /**
  * Export Config class as OptimizerConfig for compatibility
