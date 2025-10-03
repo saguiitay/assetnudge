@@ -6,15 +6,204 @@
 import { daysBetween, clamp, zscore, jaccard, tokenize } from './utils/utils';
 import { Logger } from './utils/logger';
 import { AssetValidator, Asset } from './utils/validation';
-import { VocabularyBuilder } from './vocabulary';
+// Note: VocabularyBuilder is imported from the .mjs file for now
 
 const logger = new Logger('grader');
+
+/**
+ * Configuration interface for the asset grader
+ */
+export interface GraderConfig {
+  weights: WeightConfig;
+  thresholds: ThresholdConfig;
+  textProcessing?: {
+    ignoreStopWords?: boolean;
+  };
+}
+
+/**
+ * Weight configuration for different scoring dimensions
+ */
+export interface WeightConfig {
+  content: {
+    title: number;
+    short: number;
+    long: number;
+    bullets: number;
+    cta: number;
+    uvp: number;
+  };
+  media: {
+    images: number;
+    video: number;
+    gif: number;
+  };
+  trust: {
+    rating: number;
+    reviews: number;
+    freshness: number;
+  };
+  find: {
+    tagcov: number;
+    titlekw: number;
+    pricez: number;
+  };
+  perf: {
+    cvr: number;
+    hv_lc_penalty: number;
+  };
+}
+
+/**
+ * Threshold configuration for various metrics
+ */
+export interface ThresholdConfig {
+  title: {
+    minLength: number;
+    maxLength: number;
+  };
+  shortDesc: {
+    minLength: number;
+    maxLength: number;
+  };
+  longDesc: {
+    minWords: number;
+  };
+  bullets: {
+    minimum: number;
+  };
+  images: {
+    minimum: number;
+  };
+  videos: {
+    minimum: number;
+  };
+  rating: {
+    minimum: number;
+  };
+  reviews: {
+    minimum: number;
+  };
+  freshness: {
+    maxDays: number;
+  };
+  similarity: {
+    topUnigrams: number;
+    topBigrams: number;
+    topTags: number;
+  };
+}
+
+/**
+ * Vocabulary data structure for a category
+ */
+export interface CategoryVocabulary {
+  top_unigrams: Array<{ t: string; c: number }>;
+  top_bigrams: Array<{ t: string; c: number }>;
+  top_tags: Array<{ t: string; c: number }>;
+  med_images: number | null;
+  med_videos: number | null;
+  med_price: number | null;
+  price_mean: number | null;
+  price_std: number | null;
+  title_length: {
+    median: number | null;
+    mean: number | null;
+    std: number | null;
+  };
+  short_desc_length: {
+    median: number | null;
+    mean: number | null;
+    std: number | null;
+  };
+  long_desc_length: {
+    median: number | null;
+    mean: number | null;
+    std: number | null;
+  };
+  word_count_short: {
+    median: number | null;
+    mean: number | null;
+    std: number | null;
+  };
+  word_count_long: {
+    median: number | null;
+    mean: number | null;
+    std: number | null;
+  };
+  tag_count: {
+    median: number | null;
+    mean: number | null;
+    std: number | null;
+  };
+  bullet_count: {
+    median: number | null;
+    mean: number | null;
+  };
+  sample_size: number;
+}
+
+/**
+ * Complete vocabulary structure with categories
+ */
+export interface Vocabulary {
+  [category: string]: CategoryVocabulary;
+}
+
+/**
+ * Prepared content for analysis
+ */
+export interface PreparedContent {
+  title: string;
+  shortDesc: string;
+  longDesc: string;
+  description: string;
+  short: string;
+  bullets: number;
+  hasCTA: boolean;
+  hasUVP: boolean;
+  wordCount: number;
+}
+
+/**
+ * Scoring result with score and reasons
+ */
+export interface ScoreResult {
+  score: number;
+  reasons: string[];
+}
+
+/**
+ * Grade breakdown by dimension
+ */
+export interface GradeBreakdown {
+  content: number;
+  media: number;
+  trust: number;
+  findability: number;
+  performance: number;
+}
+
+/**
+ * Complete grade result
+ */
+export interface GradeResult {
+  score: number;
+  letter: 'A' | 'B' | 'C' | 'D' | 'F';
+  reasons: string[];
+  breakdown: GradeBreakdown;
+}
 
 /**
  * Asset grading and scoring engine
  */
 export class AssetGrader {
-  constructor(config) {
+  private config: GraderConfig;
+  private weights: WeightConfig;
+  private thresholds: ThresholdConfig;
+  private logger: Logger;
+
+  constructor(config: GraderConfig) {
     this.config = config;
     this.weights = config.weights;
     this.thresholds = config.thresholds;
@@ -25,17 +214,17 @@ export class AssetGrader {
    * Grades a Unity Asset Store listing using heuristic scoring
    * Evaluates content quality, media presence, trust signals, discoverability, and performance
    * 
-   * @param {Object} asset - Asset data (title, descriptions, tags, stats, etc.)
-   * @param {Object} vocab - Category vocabulary and statistics from buildVocabAndMedians()
-   * @returns {Object} Grade with score (0-100), letter grade (A-F), and detailed reasons
+   * @param asset - Asset data (title, descriptions, tags, stats, etc.)
+   * @param vocab - Category vocabulary and statistics from buildVocabAndMedians()
+   * @returns Grade with score (0-100), letter grade (A-F), and detailed reasons
    */
-  async gradeAsset(asset, vocab) {
+  async gradeAsset(asset: Asset, vocab: Vocabulary): Promise<GradeResult> {
     return this.logger.time('gradeAsset', async () => {
       // Validate input
       AssetValidator.validateAsset(asset);
 
       // Get appropriate vocabulary for this asset's category
-      const categoryVocab = VocabularyBuilder.getVocabularyForCategory(vocab, asset.category);
+      const categoryVocab = this.getVocabularyForCategory(vocab, asset.category);
       
       this.logger.debug('Grading asset', {
         title: asset.title,
@@ -94,7 +283,7 @@ export class AssetGrader {
   /**
    * Prepare and clean content for analysis
    */
-  prepareContent(asset) {
+  prepareContent(asset: Asset): PreparedContent {
     const title = String(asset.title || '');
     const shortDesc = String(asset.short_description || '');
     const longDesc = String(asset.long_description || '');
@@ -120,18 +309,18 @@ export class AssetGrader {
   /**
    * Score content quality (titles, descriptions, structure, messaging)
    */
-  scoreContent(content, vocab) {
-    const score = { score: 0, reasons: [] };
+  scoreContent(content: PreparedContent, vocab: CategoryVocabulary): ScoreResult {
+    const score: ScoreResult = { score: 0, reasons: [] };
     const w = this.weights.content;
 
     // Title length scoring
     const idealTitleMin = Math.max(
       this.thresholds.title.minLength,
-      vocab.title_length.median - vocab.title_length.std
+      (vocab.title_length.median ?? 60) - (vocab.title_length.std ?? 15)
     );
     const idealTitleMax = Math.min(
       this.thresholds.title.maxLength,
-      vocab.title_length.median + vocab.title_length.std
+      (vocab.title_length.median ?? 60) + (vocab.title_length.std ?? 15)
     );
     
     const titleOK = content.title.length >= idealTitleMin && 
@@ -142,7 +331,7 @@ export class AssetGrader {
     } else {
       score.reasons.push(
         `Title not in ${Math.round(idealTitleMin)}–${Math.round(idealTitleMax)} chars ` +
-        `(category median: ${Math.round(vocab.title_length.median)}) - currently ${content.title.length} chars`
+        `(category median: ${Math.round(vocab.title_length.median ?? 60)}) - currently ${content.title.length} chars`
       );
     }
 
@@ -162,7 +351,7 @@ export class AssetGrader {
     // Long description word count
     const minWords = Math.max(
       this.thresholds.longDesc.minWords,
-      Math.round(vocab.word_count_long.median - vocab.word_count_long.std)
+      Math.round((vocab.word_count_long.median ?? 300) - (vocab.word_count_long.std ?? 100))
     );
     
     const longOK = content.wordCount >= minWords;
@@ -171,7 +360,7 @@ export class AssetGrader {
     } else {
       score.reasons.push(
         `Long description under ${minWords} words ` +
-        `(category median: ${Math.round(vocab.word_count_long.median)}) - only ${content.wordCount} words`
+        `(category median: ${Math.round(vocab.word_count_long.median ?? 300)}) - only ${content.wordCount} words`
       );
     }
 
@@ -203,8 +392,8 @@ export class AssetGrader {
   /**
    * Score media presence and quality
    */
-  scoreMedia(asset) {
-    const score = { score: 0, reasons: [] };
+  scoreMedia(asset: Asset): ScoreResult {
+    const score: ScoreResult = { score: 0, reasons: [] };
     const w = this.weights.media;
 
     // Images
@@ -236,8 +425,8 @@ export class AssetGrader {
   /**
    * Score trust signals (ratings, reviews, freshness)
    */
-  scoreTrust(asset) {
-    const score = { score: 0, reasons: [] };
+  scoreTrust(asset: Asset): ScoreResult {
+    const score: ScoreResult = { score: 0, reasons: [] };
     const w = this.weights.trust;
 
     // Rating
@@ -273,8 +462,8 @@ export class AssetGrader {
   /**
    * Score findability and SEO factors
    */
-  scoreFindability(asset, vocab) {
-    const score = { score: 0, reasons: [] };
+  scoreFindability(asset: Asset, vocab: CategoryVocabulary): ScoreResult {
+    const score: ScoreResult = { score: 0, reasons: [] };
     const w = this.weights.find;
 
     // Title keywords
@@ -319,8 +508,8 @@ export class AssetGrader {
   /**
    * Score performance metrics (if available)
    */
-  scorePerformance(asset) {
-    const score = { score: 0, reasons: [] };
+  scorePerformance(asset: Asset): ScoreResult {
+    const score: ScoreResult = { score: 0, reasons: [] };
     const w = this.weights.perf;
 
     if (asset.stats && typeof asset.stats.conversion === 'number') {
@@ -333,7 +522,7 @@ export class AssetGrader {
       score.score += cvrScore;
 
       // Penalty for high views but low conversion
-      if (asset.stats.pageviews > 1000 && cvr < medianCVR * 0.5) {
+      if (asset.stats.pageviews && asset.stats.pageviews > 1000 && cvr < medianCVR * 0.5) {
         score.score -= w.hv_lc_penalty;
         score.reasons.push('High views but low conversion');
       }
@@ -345,7 +534,7 @@ export class AssetGrader {
   /**
    * Calculate letter grade from numeric score
    */
-  calculateLetterGrade(score) {
+  calculateLetterGrade(score: number): 'A' | 'B' | 'C' | 'D' | 'F' {
     if (score >= 85) return 'A';
     if (score >= 70) return 'B';
     if (score >= 55) return 'C';
@@ -356,13 +545,64 @@ export class AssetGrader {
   /**
    * Get maximum possible score
    */
-  getMaxScore() {
+  getMaxScore(): number {
     const w = this.weights;
     return Object.values(w.content).reduce((a, b) => a + b, 0) +
            Object.values(w.media).reduce((a, b) => a + b, 0) +
            Object.values(w.trust).reduce((a, b) => a + b, 0) +
            Object.values(w.find).reduce((a, b) => a + b, 0) +
            Object.values(w.perf).reduce((a, b) => a + b, 0);
+  }
+
+  /**
+   * Get vocabulary for a specific category with fallback
+   */
+  private getVocabularyForCategory(vocab: Vocabulary, category?: string): CategoryVocabulary {
+    if (!vocab || typeof vocab !== 'object') {
+      return this.getDefaultVocabulary();
+    }
+
+    const vocabKeys = Object.keys(vocab);
+    
+    // Try exact category match first
+    if (category && vocab[category]) {
+      return vocab[category];
+    }
+    
+    // Fallback to first available category
+    if (vocabKeys.length > 0) {
+      const firstKey = vocabKeys[0];
+      if (firstKey && vocab[firstKey]) {
+        return vocab[firstKey];
+      }
+    }
+    
+    // Ultimate fallback
+    return this.getDefaultVocabulary();
+  }
+
+  /**
+   * Get default vocabulary when none is available
+   */
+  private getDefaultVocabulary(): CategoryVocabulary {
+    return {
+      top_unigrams: [],
+      top_bigrams: [],
+      top_tags: [],
+      med_images: 5,
+      med_videos: 1,
+      med_price: null,
+      price_mean: null,
+      price_std: null,
+      title_length: { median: 60, mean: 60, std: 15 },
+      short_desc_length: { median: 150, mean: 150, std: 30 },
+      long_desc_length: { median: 400, mean: 400, std: 100 },
+      word_count_short: { median: 25, mean: 25, std: 10 },
+      word_count_long: { median: 300, mean: 350, std: 100 },
+      tag_count: { median: 8, mean: 8, std: 3 },
+      bullet_count: { median: 6, mean: 6 },
+      sample_size: 0
+    };
   }
 }
 

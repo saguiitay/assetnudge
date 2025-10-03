@@ -9,9 +9,9 @@ import path from 'path';
 // Core modules
 import Config from './config';
 import { Logger } from './utils/logger';
-import { AssetValidator, URLValidator, FileValidator } from './utils/validation';
+import { URLValidator, FileValidator } from './utils/validation';
 import VocabularyBuilder from './vocabulary.mjs';
-import AssetGrader from './grader.mjs';
+import AssetGrader from './grader';
 import SimilarityEngine from './similarity.mjs';
 import AISuggestionEngine from './ai-suggestions.mjs';
 import HeuristicSuggestions from './heuristic-suggestions.mjs';
