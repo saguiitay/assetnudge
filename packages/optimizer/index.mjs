@@ -134,7 +134,17 @@ export async function gradeAsset(assetData, vocabPath = null, config = null) {
   const optimizer = new UnityAssetOptimizer(args);
   await optimizer.validateSetup();
   
-  return optimizer.gradeAsset(assetData, vocabPath);
+  // Load vocabulary if provided
+  let vocabulary = {};
+  if (vocabPath) {
+    const { FileValidator } = await import('./src/validation.mjs');
+    vocabulary = await FileValidator.validateJSONFile(vocabPath);
+  }
+  
+  // Grade the asset directly using the grader
+  const grade = await optimizer.grader.gradeAsset(assetData, vocabulary);
+  
+  return { grade };
 }
 
 /**
