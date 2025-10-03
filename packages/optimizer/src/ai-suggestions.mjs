@@ -4,7 +4,7 @@
  */
 
 import OpenAI from 'openai';
-import { Logger } from './logger.mjs';
+import { Logger } from './utils/logger.mjs';
 import { AssetValidator } from './validation.mjs';
 
 const logger = new Logger('ai');

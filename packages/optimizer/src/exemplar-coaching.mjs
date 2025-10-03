@@ -1,4 +1,4 @@
-import { Logger } from './logger.mjs';
+import { Logger } from './utils/logger.mjs';
 import { loadExemplars } from './exemplars.mjs';
 
 /**

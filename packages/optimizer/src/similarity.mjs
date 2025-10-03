@@ -4,7 +4,7 @@
  */
 
 import { tfVector, cosine } from '../utils.mjs';
-import { Logger } from './logger.mjs';
+import { Logger } from './utils/logger.mjs';
 import { AssetValidator } from './validation.mjs';
 
 const logger = new Logger('similarity');

@@ -5,9 +5,9 @@
 
 import UnityAssetOptimizer from './src/optimizer.mjs';
 import Config from './src/config.mjs';
-import { scrapeAssetWithPuppeteer } from './src/puppeteer-scraper.mjs';
-import { scrapeAssetWithHTML } from './src/html-scraper.mjs';
-import { scrapeAssetWithGraphQL } from './src/graphql-scraper.mjs';
+import { scrapeAssetWithPuppeteer } from './src/scrappers/puppeteer-scraper.mjs';
+import { scrapeAssetWithHTML } from './src/scrappers/html-scraper.mjs';
+import { scrapeAssetWithGraphQL } from './src/scrappers/graphql-scraper.mjs';
 // Types are exported via TypeScript declaration files
 
 /**

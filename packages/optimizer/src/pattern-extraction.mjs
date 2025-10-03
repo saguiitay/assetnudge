@@ -1,4 +1,4 @@
-import { Logger } from './logger.mjs';
+import { Logger } from './utils/logger.mjs';
 import { isStopWord, filterStopWords } from '../utils.mjs';
 
 /**

@@ -8,7 +8,7 @@ import path from 'path';
 
 // Core modules
 import Config from './config.mjs';
-import { Logger } from './logger.mjs';
+import { Logger } from './utils/logger.mjs';
 import { AssetValidator, URLValidator, FileValidator } from './validation.mjs';
 import VocabularyBuilder from './vocabulary.mjs';
 import AssetGrader from './grader.mjs';
@@ -17,9 +17,9 @@ import AISuggestionEngine from './ai-suggestions.mjs';
 import HeuristicSuggestions from './heuristic-suggestions.mjs';
 
 // External dependencies
-import { scrapeAssetWithPuppeteer } from './puppeteer-scraper.mjs';
-import { scrapeAssetWithHTML } from './html-scraper.mjs';
-import { scrapeAssetWithGraphQL } from './graphql-scraper.mjs';
+import { scrapeAssetWithPuppeteer } from './scrappers/puppeteer-scraper.mjs';
+import { scrapeAssetWithHTML } from './scrappers/html-scraper.mjs';
+import { scrapeAssetWithGraphQL } from './scrappers/graphql-scraper.mjs';
 
 /**
  * Main optimizer class that orchestrates all functionality

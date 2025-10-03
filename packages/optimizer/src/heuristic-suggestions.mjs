@@ -4,7 +4,7 @@
  */
 
 import { tokenize, jaccard, zscore, tfVector, cosine } from '../utils.mjs';
-import { Logger } from './logger.mjs';
+import { Logger } from './utils/logger.mjs';
 import { VocabularyBuilder } from './vocabulary.mjs';
 
 const logger = new Logger('heuristic');
