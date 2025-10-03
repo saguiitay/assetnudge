@@ -66,8 +66,12 @@ function showHelp() {
   console.log(`Unity Asset Optimizer v2.0 - AI-Powered CLI Tool
 
 Commands:
-  scrape       --url <Unity Asset Store URL> [--out <output.json>]
+  scrape       --url <Unity Asset Store URL> [--out <output.json>] [--method <puppeteer|html|fallback>]
                Extract asset data from Unity Asset Store listing
+               Methods:
+                 puppeteer: Full-featured scraping with JavaScript rendering (default)
+                 html: Lightweight HTML-only scraping (faster, no JavaScript)
+                 fallback: Try puppeteer first, fallback to html if it fails
                
   build-vocab  --corpus <corpus.json> --out <vocab.json>
                Build category vocabulary from corpus data
@@ -124,6 +128,11 @@ Examples:
   node main.mjs build-exemplars --corpus data/corpus.json --out data/exemplars.json --top-percent 15
   node main.mjs optimize --input asset.json --ai true
   
+  # Scraping with different methods
+  node main.mjs scrape --url "https://assetstore.unity.com/packages/..." --method fallback  # Recommended: try puppeteer, fallback to html
+  node main.mjs scrape --url "https://assetstore.unity.com/packages/..." --method html     # Fast: HTML-only scraping
+  node main.mjs scrape --url "https://assetstore.unity.com/packages/..." --method puppeteer # Full: JavaScript-enabled scraping
+  
   # Live optimization with AI
   node main.mjs optimize --url "https://assetstore.unity.com/packages/..." --ai true --model gpt-4o-mini
   
@@ -145,13 +154,27 @@ Notes:
 async function cmdScrape() {
   const url = getFlag('url');
   const outPath = getFlag('out', 'scraped_asset.json');
+  const method = getFlag('method', 'fallback'); // Default to fallback for reliability
   
   ensure(url, '--url is required (Unity Asset Store URL)');
+  ensure(['puppeteer', 'html', 'fallback'].includes(method), '--method must be one of: puppeteer, html, fallback');
   
   const optimizer = new UnityAssetOptimizer(args);
   await optimizer.validateSetup();
   
-  const asset = await optimizer.scrapeAsset(url, outPath);
+  let asset;
+  switch (method) {
+    case 'puppeteer':
+      asset = await optimizer.scrapeAsset(url, outPath);
+      break;
+    case 'html':
+      asset = await optimizer.scrapeAssetWithHTML(url, outPath);
+      break;
+    case 'fallback':
+    default:
+      asset = await optimizer.scrapeAssetWithFallback(url, outPath);
+      break;
+  }
   
   console.log(JSON.stringify({
     success: true,
@@ -160,6 +183,7 @@ async function cmdScrape() {
       category: asset.category,
       price: asset.price || 'Free',
       tags: (asset.tags || []).slice(0, 3),
+      scraping_method: asset.scraping_method || method,
       output_file: outPath
     }
   }, null, 2));

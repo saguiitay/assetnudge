@@ -18,6 +18,7 @@ import HeuristicSuggestions from './heuristic-suggestions.mjs';
 
 // External dependencies
 import { scrapeAssetWithPuppeteer } from './puppeteer-scraper.mjs';
+import { scrapeAssetWithHTML } from './html-scraper.mjs';
 
 /**
  * Main optimizer class that orchestrates all functionality
@@ -267,11 +268,39 @@ export class UnityAssetOptimizer {
   }
 
   /**
-   * Scrape asset data from URL
+   * Scrape asset data from URL using HTML scraper (lightweight)
+   */
+  async scrapeAssetWithHTML(url, outputPath) {
+    return this.logger.time('scrapeAssetWithHTML', async () => {
+      this.logger.info('Scraping asset with HTML parser', { url });
+      
+      // Validate URL
+      URLValidator.validateAssetStoreURL(url);
+      
+      // Scrape the asset using HTML parser
+      const asset = await scrapeAssetWithHTML(url);
+      
+      // Save scraped data if output path provided
+      if (outputPath) {
+        await this.writeJSON(outputPath, asset);
+      }
+      
+      this.logger.success('Asset scraped successfully with HTML parser', {
+        title: asset.title,
+        category: asset.category,
+        outputPath
+      });
+      
+      return asset;
+    });
+  }
+
+  /**
+   * Scrape asset data from URL using Puppeteer (full-featured)
    */
   async scrapeAsset(url, outputPath) {
     return this.logger.time('scrapeAsset', async () => {
-      this.logger.info('Scraping asset', { url });
+      this.logger.info('Scraping asset with Puppeteer', { url });
       
       // Validate URL
       URLValidator.validateAssetStoreURL(url);
@@ -280,11 +309,70 @@ export class UnityAssetOptimizer {
       const asset = await scrapeAssetWithPuppeteer(url);
       
       // Save scraped data
-      await this.writeJSON(outputPath, asset);
+      if (outputPath) {
+        await this.writeJSON(outputPath, asset);
+      }
       
-      this.logger.success('Asset scraped successfully', {
+      this.logger.success('Asset scraped successfully with Puppeteer', {
         title: asset.title,
         category: asset.category,
+        outputPath
+      });
+      
+      return asset;
+    });
+  }
+
+  /**
+   * Scrape asset data with fallback strategy (Puppeteer first, then HTML)
+   */
+  async scrapeAssetWithFallback(url, outputPath) {
+    return this.logger.time('scrapeAssetWithFallback', async () => {
+      this.logger.info('Scraping asset with fallback strategy', { url });
+      
+      // Validate URL
+      URLValidator.validateAssetStoreURL(url);
+      
+      let asset;
+      let method = 'unknown';
+      
+      try {
+        // Try Puppeteer first for complete data
+        this.logger.info('Attempting Puppeteer scraping...');
+        asset = await scrapeAssetWithPuppeteer(url);
+        method = 'puppeteer';
+        this.logger.info('Puppeteer scraping successful');
+      } catch (puppeteerError) {
+        this.logger.warn('Puppeteer scraping failed, falling back to HTML parser', {
+          error: puppeteerError.message
+        });
+        
+        try {
+          // Fallback to HTML scraping
+          asset = await scrapeAssetWithHTML(url);
+          method = 'html';
+          this.logger.info('HTML scraping successful');
+        } catch (htmlError) {
+          this.logger.error('Both scraping methods failed', {
+            puppeteerError: puppeteerError.message,
+            htmlError: htmlError.message
+          });
+          throw new Error(`Scraping failed: Puppeteer (${puppeteerError.message}), HTML (${htmlError.message})`);
+        }
+      }
+      
+      // Add metadata about scraping method
+      asset.scraping_method = method;
+      
+      // Save scraped data
+      if (outputPath) {
+        await this.writeJSON(outputPath, asset);
+      }
+      
+      this.logger.success('Asset scraped successfully with fallback strategy', {
+        title: asset.title,
+        category: asset.category,
+        method,
         outputPath
       });
       
@@ -312,8 +400,8 @@ export class UnityAssetOptimizer {
       let asset;
       if (url) {
         URLValidator.validateAssetStoreURL(url);
-        asset = await scrapeAssetWithPuppeteer(url);
-        this.logger.info('Asset scraped from URL', { title: asset.title });
+        asset = await this.scrapeAssetWithFallback(url);
+        this.logger.info('Asset scraped from URL', { title: asset.title, method: asset.scraping_method });
       } else if (input) {
         asset = await FileValidator.validateJSONFile(input);
         this.logger.info('Asset loaded from file', { title: asset.title });
