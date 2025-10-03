@@ -35,7 +35,12 @@ const assetSchema = z.object({
 
 type AssetFormData = z.infer<typeof assetSchema>;
 
-export function AssetEditor() {
+interface AssetEditorProps {
+  onAssetUpdate?: (assetData: AssetFormData) => void;
+  onAssetClear?: () => void;
+}
+
+export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
   const [newTag, setNewTag] = useState('');
   const [importUrl, setImportUrl] = useState('');
   const [isImporting, setIsImporting] = useState(false);
@@ -72,6 +77,7 @@ export function AssetEditor() {
 
   const onSubmit = (data: AssetFormData) => {
     console.log('Asset data:', data);
+    onAssetUpdate?.(data);
     // Here you would typically save the asset
   };
 
@@ -80,6 +86,7 @@ export function AssetEditor() {
     setImportError(null);
     setImportSuccess(false);
     setImportedData(null);
+    onAssetClear?.();
     
     // Reset form to defaults
     form.reset({
@@ -173,6 +180,11 @@ export function AssetEditor() {
       }
 
       setImportSuccess(true);
+      
+      // Notify parent component immediately with imported data
+      const formData = form.getValues();
+      onAssetUpdate?.(formData);
+      
       // Keep the URL for reference but don't clear it immediately
     } catch (error) {
       console.error('Import error:', error);
@@ -223,31 +235,6 @@ export function AssetEditor() {
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>{importError}</AlertDescription>
-            </Alert>
-          )}
-          
-          {importSuccess && importedData && (
-            <Alert>
-              <CheckCircle className="h-4 w-4" />
-              <AlertDescription className="space-y-1">
-                <div>Asset data imported successfully!</div>
-                <div className="text-xs text-muted-foreground">
-                  Imported: {importedData.title} • {importedData.tags?.length || 0} tags • Fast HTML extraction
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  Review and edit the details below as needed.
-                </div>
-                <div className="mt-2">
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={clearImportedData}
-                  >
-                    Clear & Start Over
-                  </Button>
-                </div>
-              </AlertDescription>
             </Alert>
           )}
         </CardContent>
@@ -425,10 +412,7 @@ export function AssetEditor() {
 
             <div className="flex justify-end space-x-4">
               <Button type="button" variant="outline">
-                Cancel
-              </Button>
-              <Button type="submit">
-                Create Asset
+                Reset
               </Button>
             </div>
           </form>

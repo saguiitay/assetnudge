@@ -2,7 +2,7 @@ import { auth } from '@repo/auth/server';
 import type { Metadata } from 'next';
 import dynamic from 'next/dynamic';
 import { notFound } from 'next/navigation';
-import { Header } from './components/header';
+import { Header } from '../components/header';
 
 const title = 'Asset Nudge';
 const description = 'Optimize your assets with ease.';
