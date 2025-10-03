@@ -9,7 +9,7 @@ import path from 'path';
 // Core modules
 import Config from './config.mjs';
 import { Logger } from './utils/logger.mjs';
-import { AssetValidator, URLValidator, FileValidator } from './validation.mjs';
+import { AssetValidator, URLValidator, FileValidator } from './utils/validation.mjs';
 import VocabularyBuilder from './vocabulary.mjs';
 import AssetGrader from './grader.mjs';
 import SimilarityEngine from './similarity.mjs';

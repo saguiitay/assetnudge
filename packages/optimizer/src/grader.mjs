@@ -3,9 +3,9 @@
  * Provides heuristic scoring and evaluation for Unity Asset Store listings
  */
 
-import { daysBetween, clamp, zscore, jaccard, tokenize } from '../utils.mjs';
+import { daysBetween, clamp, zscore, jaccard, tokenize } from './utils/utils.mjs';
 import { Logger } from './utils/logger.mjs';
-import { AssetValidator } from './validation.mjs';
+import { AssetValidator } from './utils/validation.mjs';
 import { VocabularyBuilder } from './vocabulary.mjs';
 
 const logger = new Logger('grader');

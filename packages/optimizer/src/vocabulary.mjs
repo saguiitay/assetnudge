@@ -3,9 +3,9 @@
  * Handles vocabulary generation and category analysis for Unity Asset Store listings
  */
 
-import { tokenize, median, meanStd } from '../utils.mjs';
+import { tokenize, median, meanStd } from './utils/utils.mjs';
 import { Logger } from './utils/logger.mjs';
-import { AssetValidator } from './validation.mjs';
+import { AssetValidator } from './utils/validation.mjs';
 
 const logger = new Logger('vocab');
 

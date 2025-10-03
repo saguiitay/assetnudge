@@ -3,7 +3,7 @@
  * Provides caching, memory optimization, and performance monitoring
  */
 
-import { Logger } from './logger.mjs';
+import { Logger } from './utils/logger.mjs';
 
 const logger = new Logger('performance');
 

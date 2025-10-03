@@ -1,5 +1,5 @@
 import { Logger } from './utils/logger.mjs';
-import { isStopWord, filterStopWords } from '../utils.mjs';
+import { isStopWord, filterStopWords } from './utils/utils.mjs';
 
 /**
  * Pattern Extraction from Exemplars
