@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate scraping method
-    const validMethods = ['html', 'puppeteer', 'fallback'];
+    const validMethods = ['graphql', 'html', 'puppeteer', 'fallback'];
     if (!validMethods.includes(method)) {
       return NextResponse.json(
         { success: false, error: `Method must be one of: ${validMethods.join(', ')}` },
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Dynamically import the optimizer to avoid bundling issues
-    const { scrapeAsset, scrapeAssetWithHTMLAPI, scrapeAssetWithPuppeteerAPI } = await import('@repo/optimizer');
+    const { scrapeAsset, scrapeAssetWithHTMLAPI, scrapeAssetWithPuppeteerAPI, scrapeAssetWithGraphQLAPI } = await import('@repo/optimizer');
 
     // Choose scraping method
     let result;
@@ -71,6 +71,9 @@ export async function POST(request: NextRequest) {
     }
     
     switch (method) {
+      case 'graphql':
+        result = await scrapeAssetWithGraphQLAPI(url);
+        break;
       case 'html':
         result = await scrapeAssetWithHTMLAPI(url);
         break;
@@ -125,9 +128,9 @@ export async function GET() {
       method: {
         type: 'string',
         required: false,
-        default: 'html',
-        enum: ['html', 'puppeteer', 'fallback'],
-        description: 'Scraping method: html (fast, lightweight), puppeteer (full-featured), fallback (tries puppeteer then html)'
+        default: 'graphql',
+        enum: ['graphql', 'html', 'puppeteer', 'fallback'],
+        description: 'Scraping method: graphql (official API), html (fast, lightweight), puppeteer (full-featured), fallback (tries graphql then others)'
       },
       debug: {
         type: 'boolean',
@@ -137,6 +140,12 @@ export async function GET() {
       }
     },
     scraping_methods: {
+      graphql: {
+        description: 'Official Unity Asset Store GraphQL API',
+        pros: ['Fastest (~500ms)', 'Most reliable', 'Official data source', 'Complete accuracy'],
+        cons: ['May require CSRF token', 'Depends on Unity API availability'],
+        use_case: 'Production environments, real-time applications, high-accuracy needs'
+      },
       html: {
         description: 'Fast HTML-only scraping without JavaScript execution',
         pros: ['Fast (~1.5s)', 'No browser dependencies', 'Lightweight'],
@@ -150,7 +159,7 @@ export async function GET() {
         use_case: 'Maximum accuracy needed, research, detailed analysis'
       },
       fallback: {
-        description: 'Smart strategy that tries puppeteer first, falls back to html',
+        description: 'Smart strategy that tries graphql first, then puppeteer, then html',
         pros: ['Best reliability', 'Optimal data quality', 'Graceful degradation'],
         cons: ['Variable speed depending on method used'],
         use_case: 'Production environments, mixed usage scenarios'
@@ -158,7 +167,7 @@ export async function GET() {
     },
     example_request: {
       url: 'https://assetstore.unity.com/packages/...',
-      method: 'html',
+      method: 'graphql',
       debug: false
     },
     example_response: {
@@ -174,7 +183,7 @@ export async function GET() {
         reviews_count: 123,
         url: 'https://assetstore.unity.com/packages/...'
       },
-      scraping_method: 'html',
+      scraping_method: 'graphql',
       scraped_at: '2025-10-03T12:00:00.000Z'
     }
   });

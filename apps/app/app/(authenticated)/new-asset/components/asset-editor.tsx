@@ -118,7 +118,7 @@ export function AssetEditor() {
         },
         body: JSON.stringify({ 
           url: importUrl.trim(),
-          method: 'html',
+          method: 'graphql',
           debug: true
         }),
       });
