@@ -4,8 +4,7 @@
  */
 
 import UnityAssetOptimizer from './src/optimizer.mjs';
-import Config from './src/config.mjs';
-import { scrapeAssetWithPuppeteer } from './src/scrappers/puppeteer-scraper.mjs';
+import Config from './src/config';
 import { scrapeAssetWithHTML } from './src/scrappers/html-scraper.mjs';
 import { scrapeAssetWithGraphQL } from './src/scrappers/graphql-scraper.mjs';
 // Types are exported via TypeScript declaration files
@@ -34,34 +33,6 @@ export async function scrapeAsset(url, config = null) {
     return {
       success: true,
       asset: asset
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: error.message
-    };
-  }
-}
-
-/**
- * Scrape asset with Puppeteer (full-featured)
- */
-export async function scrapeAssetWithPuppeteerAPI(url, config = null) {
-  const args = [];
-  if (config) {
-    if (config.debug) args.push('--debug', 'true');
-    if (config.apiKey) args.push('--apiKey', config.apiKey);
-  }
-  
-  const optimizer = new UnityAssetOptimizer(args);
-  await optimizer.validateSetup();
-  
-  try {
-    const asset = await optimizer.scrapeAsset(url);
-    return {
-      success: true,
-      asset: asset,
-      method: 'puppeteer'
     };
   } catch (error) {
     return {
@@ -168,7 +139,6 @@ export { UnityAssetOptimizer as default };
 export { 
   UnityAssetOptimizer, 
   Config,
-  scrapeAssetWithPuppeteer,
   scrapeAssetWithHTML,
   scrapeAssetWithGraphQL
 };

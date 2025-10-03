@@ -4,7 +4,7 @@
  */
 
 import { Logger } from './logger.mjs';
-import { OFFICIAL_CATEGORIES } from '../config.mjs';
+import { OFFICIAL_CATEGORIES } from '../config';
 
 const logger = new Logger('validator');
 

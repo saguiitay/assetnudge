@@ -47,11 +47,7 @@
   "author": "Unity Asset Optimizer Team",
   "license": "MIT",
   "dependencies": {
-    "openai": "^4.0.0",
-    "crawlee": "^3.0.0",
-    "puppeteer": "^23.0.0",
-    "puppeteer-extra": "^3.3.6",
-    "puppeteer-extra-plugin-stealth": "^2.11.2"
+    "openai": "^4.0.0"
   },
   "devDependencies": {
     "typescript": "^5.0.0",

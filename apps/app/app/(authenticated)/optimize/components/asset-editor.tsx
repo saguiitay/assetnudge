@@ -22,11 +22,34 @@ import { Alert, AlertDescription } from '@repo/design-system/components/ui/alert
 import { Separator } from '@repo/design-system/components/ui/separator';
 import { X, Download, AlertCircle, CheckCircle } from 'lucide-react';
 
+// HTML validation function for allowed tags
+const validateHtml = (html: string) => {
+  // Allow only specific tags: b, i, a, ol, ul, li
+  const allowedTags = /<\/?(?:b|i|a(?:\s+href=["'][^"']*["'])?|ol|ul|li)(?:\s[^>]*)?>|[^<]+/gi;
+  const cleanHtml = html.match(allowedTags)?.join('') || '';
+  
+  // Check if the cleaned HTML matches the original (meaning no disallowed tags)
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = cleanHtml;
+  const hasDisallowedTags = cleanHtml !== html && /<[^>]+>/g.test(html);
+  
+  return !hasDisallowedTags;
+};
+
 // Zod schema for Asset validation
 const assetSchema = z.object({
   title: z.string().min(1, 'Title is required').max(100, 'Title must be 100 characters or less'),
   short_description: z.string().min(1, 'Short description is required').max(200, 'Short description must be 200 characters or less'),
-  long_description: z.string().min(1, 'Long description is required').max(2000, 'Long description must be 2000 characters or less'),
+  long_description: z.string()
+    .min(1, 'Long description is required')
+    .max(5000, 'Long description must be 5000 characters or less')
+    .refine(
+      (html) => {
+        if (typeof window === 'undefined') return true; // Skip validation on server
+        return validateHtml(html);
+      },
+      { message: 'Only the following HTML tags are allowed: <b>, <i>, <a>, <ol>, <ul>, <li>' }
+    ),
   tags: z.array(z.string()).min(1, 'At least one tag is required'),
   category: z.string().min(1, 'Category is required'),
   price: z.number().min(0, 'Price must be non-negative'),
@@ -149,10 +172,23 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
       if (asset.title) form.setValue('title', asset.title);
       if (asset.short_description) form.setValue('short_description', asset.short_description);
       
-      // Handle long description - strip HTML tags if present
+      // Handle long description - preserve HTML but clean up disallowed tags
       if (asset.long_description) {
-        const cleanDescription = asset.long_description.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
-        form.setValue('long_description', cleanDescription.slice(0, 2000)); // Respect max length
+        let htmlDescription = asset.long_description;
+        
+        // If it's plain text, wrap it properly
+        if (!/<[^>]+>/g.test(htmlDescription)) {
+          // Convert line breaks to proper HTML
+          htmlDescription = htmlDescription.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>');
+          if (!htmlDescription.startsWith('<p>')) {
+            htmlDescription = '<p>' + htmlDescription + '</p>';
+          }
+        } else {
+          // Clean up existing HTML - remove disallowed tags but keep content
+          htmlDescription = htmlDescription.replace(/<(?!\/?(b|i|a|ol|ul|li)(?:\s[^>]*)?\/?)[^>]*>/gi, '');
+        }
+        
+        form.setValue('long_description', htmlDescription.slice(0, 5000)); // Respect max length
       }
       
       if (asset.category) form.setValue('category', asset.category);
@@ -312,16 +348,30 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
               name="long_description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Long Description</FormLabel>
+                  <FormLabel>Long Description (HTML)</FormLabel>
                   <FormControl>
-                    <Textarea
-                      placeholder="Enter detailed description"
-                      className="min-h-32 resize-y"
-                      {...field}
-                    />
+                    <div className="space-y-2">
+                      <div className="flex gap-2 text-xs text-muted-foreground border-b pb-2">
+                        <span>Allowed tags: &lt;b&gt;, &lt;i&gt;, &lt;a&gt;, &lt;ol&gt;, &lt;ul&gt;, &lt;li&gt;</span>
+                      </div>
+                      <Textarea
+                        placeholder="Enter detailed description with HTML formatting"
+                        className="min-h-32 resize-y font-mono text-sm"
+                        {...field}
+                      />
+                      {field.value && (
+                        <div className="border rounded p-3 bg-muted/50">
+                          <div className="text-xs text-muted-foreground mb-2">Preview:</div>
+                          <div 
+                            className="prose prose-sm max-w-none"
+                            dangerouslySetInnerHTML={{ __html: field.value }}
+                          />
+                        </div>
+                      )}
+                    </div>
                   </FormControl>
                   <FormDescription>
-                    A detailed description of the asset (max 2000 characters)
+                    A detailed description with HTML formatting (max 5000 characters including HTML tags)
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

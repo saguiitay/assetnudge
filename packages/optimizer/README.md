@@ -68,12 +68,6 @@ Traditional optimization tools use global rules and heuristics. **This tool lear
 ### 🕷️ Web Scraping Options
 Choose the right scraping method for your needs:
 
-#### **Puppeteer Scraping** (Full-Featured)
-- Complete JavaScript rendering
-- Extracts all dynamic content including review breakdowns
-- Slower but most comprehensive
-- Requires Chrome/Chromium installation
-
 #### **HTML Scraping** (Lightweight)
 - Fast, lightweight HTML-only parsing
 - No JavaScript dependencies
@@ -81,14 +75,14 @@ Choose the right scraping method for your needs:
 - Perfect for bulk scraping or resource-constrained environments
 
 #### **Fallback Strategy** (Recommended)
-- Tries Puppeteer first for complete data
-- Automatically falls back to HTML scraping if Puppeteer fails
+- Tries GraphQL first for complete data
+- Automatically falls back to HTML scraping if GraphQL fails
 - Best reliability with optimal data quality
 - Smart error handling and logging
 
 ```bash
 # Full-featured scraping (default)
-node main.mjs scrape --url "https://assetstore.unity.com/packages/..." --method puppeteer
+node main.mjs scrape --url "https://assetstore.unity.com/packages/..." --method GraphQL
 
 # Fast HTML-only scraping
 node main.mjs scrape --url "https://assetstore.unity.com/packages/..." --method html
@@ -128,10 +122,10 @@ node main.mjs status
 # Fast HTML scraping for quick analysis
 node main.mjs scrape --url "https://assetstore.unity.com/packages/..." --method html --out asset.json
 
-# Full Puppeteer scraping for complete data
-node main.mjs scrape --url "https://assetstore.unity.com/packages/..." --method puppeteer --out asset.json
+# Full GraphQL scraping for complete data
+node main.mjs scrape --url "https://assetstore.unity.com/packages/..." --method graphql --out asset.json
 
-# Smart fallback (recommended - tries Puppeteer, falls back to HTML)
+# Smart fallback (recommended - tries GraphQL, falls back to HTML)
 node main.mjs scrape --url "https://assetstore.unity.com/packages/..." --method fallback --out asset.json
 ```
 
@@ -330,7 +324,7 @@ optimizer/
 ├── utils.mjs                  # Utility functions
 ├── puppeteer-scraper.mjs      # Web scraping module
 └── src/                       # Core modules
-    ├── config.mjs             # Configuration management
+    ├── config.ts             # Configuration management
     ├── logger.mjs             # Structured logging
     ├── validation.mjs         # Input validation
     ├── vocabulary.mjs         # Vocabulary building (enhanced with exemplar support)
@@ -574,7 +568,7 @@ Heuristic scoring engine.
 
 ```javascript
 import AssetGrader from './src/grader.mjs';
-import Config from './src/config.mjs';
+import Config from './src/config';
 
 const config = Config.fromEnvironment();
 const grader = new AssetGrader(config);

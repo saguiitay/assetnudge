@@ -3,8 +3,109 @@
  * Centralized configuration for the Unity Asset Optimizer
  */
 
+// Type definitions
+export interface WeightConfig {
+  content: {
+    title: number;
+    short: number;
+    long: number;
+    bullets: number;
+    cta: number;
+    uvp: number;
+  };
+  media: {
+    images: number;
+    video: number;
+    gif: number;
+  };
+  trust: {
+    rating: number;
+    reviews: number;
+    freshness: number;
+  };
+  find: {
+    tagcov: number;
+    titlekw: number;
+    pricez: number;
+  };
+  perf: {
+    cvr: number;
+    hv_lc_penalty: number;
+  };
+}
+
+export interface ThresholdConfig {
+  title: {
+    minLength: number;
+    maxLength: number;
+  };
+  shortDesc: {
+    minLength: number;
+    maxLength: number;
+  };
+  longDesc: {
+    minWords: number;
+  };
+  images: {
+    minimum: number;
+  };
+  videos: {
+    minimum: number;
+  };
+  bullets: {
+    minimum: number;
+  };
+  rating: {
+    minimum: number;
+  };
+  reviews: {
+    minimum: number;
+  };
+  freshness: {
+    maxDays: number;
+  };
+  tags: {
+    minimum: number;
+    maximum: number;
+  };
+  similarity: {
+    neighbors: number;
+    topUnigrams: number;
+    topBigrams: number;
+    topTags: number;
+  };
+}
+
+export interface AIConfig {
+  defaultModel: string;
+  maxRetries: number;
+  timeout: number;
+  fallbackToHeuristic: boolean;
+}
+
+export interface PathConfig {
+  defaultVocab: string;
+  defaultAsset: string;
+  dataDir: string;
+}
+
+export interface TextProcessingConfig {
+  ignoreStopWords: boolean;
+}
+
+export interface CategoryMap {
+  [key: string]: string[];
+}
+
+export interface OpenAIClientConfig {
+  apiKey: string | null;
+  model: string;
+  maxRetries: number;
+  timeout: number;
+}
+
 // Default scoring weights
-export const DEFAULT_WEIGHTS = {
+export const DEFAULT_WEIGHTS: WeightConfig = {
   content: { title: 6, short: 6, long: 8, bullets: 7, cta: 3, uvp: 5 },
   media: { images: 8, video: 8, gif: 4 },
   trust: { rating: 5, reviews: 5, freshness: 5 },
@@ -13,7 +114,7 @@ export const DEFAULT_WEIGHTS = {
 };
 
 // Default content thresholds and limits
-export const DEFAULT_THRESHOLDS = {
+export const DEFAULT_THRESHOLDS: ThresholdConfig = {
   title: { minLength: 50, maxLength: 80 },
   shortDesc: { minLength: 120, maxLength: 180 },
   longDesc: { minWords: 300 },
@@ -28,7 +129,7 @@ export const DEFAULT_THRESHOLDS = {
 };
 
 // AI model configuration
-export const AI_CONFIG = {
+export const AI_CONFIG: AIConfig = {
   defaultModel: 'gpt-4o-mini',
   maxRetries: 3,
   timeout: 30000,
@@ -36,7 +137,7 @@ export const AI_CONFIG = {
 };
 
 // Official Unity Asset Store categories and subcategories
-export const OFFICIAL_CATEGORIES = {
+export const OFFICIAL_CATEGORIES: CategoryMap = {
   '3D': [
     'Animations',
     'Characters', 
@@ -97,14 +198,14 @@ export const OFFICIAL_CATEGORIES = {
 };
 
 // File paths and naming conventions
-export const PATHS = {
+export const PATHS: PathConfig = {
   defaultVocab: 'vocab.json',
   defaultAsset: 'scraped_asset.json',
   dataDir: 'data'
 };
 
 // Text processing configuration
-export const TEXT_PROCESSING = {
+export const TEXT_PROCESSING: TextProcessingConfig = {
   ignoreStopWords: true // Filter common stop words during tokenization
 };
 
@@ -112,6 +213,15 @@ export const TEXT_PROCESSING = {
  * Configuration manager class
  */
 export class Config {
+  public weights: WeightConfig;
+  public thresholds: ThresholdConfig;
+  public ai: AIConfig;
+  public paths: PathConfig;
+  public categories: CategoryMap;
+  public textProcessing: TextProcessingConfig;
+  public apiKey: string | null;
+  public debug: boolean;
+
   constructor() {
     this.weights = { ...DEFAULT_WEIGHTS };
     this.thresholds = { ...DEFAULT_THRESHOLDS };
@@ -126,25 +236,28 @@ export class Config {
   /**
    * Initialize configuration from environment variables and command line args
    */
-  static fromEnvironment(args = []) {
+  static fromEnvironment(args: string[] = []): Config {
     const config = new Config();
     
     // Parse command line arguments
-    const getFlag = (name, def) => {
+    const getFlag = (name: string, def?: string): string | undefined => {
       const i = args.indexOf('--' + name);
       return i !== -1 && i + 1 < args.length ? args[i + 1] : def;
     };
     
-    const getBool = (name, def = false) => {
+    const getBool = (name: string, def: boolean = false): boolean => {
       const v = getFlag(name, def ? 'true' : 'false');
       return String(v).toLowerCase() === 'true';
     };
 
     // Set API key from environment or command line
-    config.apiKey = getFlag('apiKey', process.env.OPENAI_API_KEY);
+    config.apiKey = getFlag('apiKey', process.env.OPENAI_API_KEY) || null;
     
     // Set AI model
-    config.ai.defaultModel = getFlag('model', config.ai.defaultModel);
+    const modelFlag = getFlag('model', config.ai.defaultModel);
+    if (modelFlag) {
+      config.ai.defaultModel = modelFlag;
+    }
     
     // Set debug mode
     config.debug = getBool('debug', false);
@@ -156,7 +269,7 @@ export class Config {
     const customWeights = getFlag('weights');
     if (customWeights) {
       try {
-        const parsed = JSON.parse(customWeights);
+        const parsed = JSON.parse(customWeights) as Partial<WeightConfig>;
         config.weights = { ...config.weights, ...parsed };
       } catch (error) {
         console.warn('Invalid weights JSON, using defaults');
@@ -169,8 +282,8 @@ export class Config {
   /**
    * Validate configuration and check dependencies
    */
-  validate() {
-    const issues = [];
+  validate(): string[] {
+    const issues: string[] = [];
 
     // Check if AI features are properly configured
     if (!this.apiKey) {
@@ -195,7 +308,7 @@ export class Config {
   /**
    * Get OpenAI client configuration
    */
-  getOpenAIConfig() {
+  getOpenAIConfig(): OpenAIClientConfig {
     return {
       apiKey: this.apiKey,
       model: this.ai.defaultModel,
@@ -207,15 +320,15 @@ export class Config {
   /**
    * Check if AI features are available
    */
-  hasAI() {
+  hasAI(): boolean {
     return Boolean(this.apiKey);
   }
 
   /**
    * Get valid categories as flat list for validation
    */
-  getValidCategories() {
-    const categories = [];
+  getValidCategories(): string[] {
+    const categories: string[] = [];
     for (const [mainCategory, subCategories] of Object.entries(this.categories)) {
       for (const subCategory of subCategories) {
         categories.push(`${mainCategory}/${subCategory}`);
@@ -227,29 +340,29 @@ export class Config {
   /**
    * Validate if a category is in the official list
    */
-  isValidCategory(category) {
+  isValidCategory(category: string): boolean {
     return this.getValidCategories().includes(category);
   }
 
   /**
    * Get main category from full category path
    */
-  getMainCategory(fullCategory) {
-    return fullCategory.split('/')[0];
+  getMainCategory(fullCategory: string): string {
+    return fullCategory.split('/')[0] || '';
   }
 
   /**
    * Get subcategory from full category path  
    */
-  getSubCategory(fullCategory) {
+  getSubCategory(fullCategory: string): string | undefined {
     return fullCategory.split('/')[1];
   }
 
   /**
    * Convert config back to command line args format
    */
-  toArgs() {
-    const args = [];
+  toArgs(): string[] {
+    const args: string[] = [];
     
     if (this.debug) {
       args.push('--debug', 'true');
