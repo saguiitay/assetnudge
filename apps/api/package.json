@@ -13,8 +13,6 @@
   },
   "dependencies": {
     "@repo/optimizer": "*",
-    "@repo/auth": "*",
-    "@repo/design-system": "*",
     "@sentry/nextjs": "^10.17.0",
     "@t3-oss/env-nextjs": "^0.13.8",
     "next": "15.5.4",
