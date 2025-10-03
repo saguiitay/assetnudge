@@ -4,7 +4,7 @@
  */
 
 import { daysBetween, clamp, zscore, jaccard, tokenize } from './utils/utils.mjs';
-import { Logger } from './utils/logger.mjs';
+import { Logger } from './utils/logger';
 import { AssetValidator } from './utils/validation.mjs';
 import { VocabularyBuilder } from './vocabulary.mjs';
 

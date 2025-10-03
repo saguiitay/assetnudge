@@ -8,7 +8,7 @@ import path from 'path';
 
 // Core modules
 import Config from './config';
-import { Logger } from './utils/logger.mjs';
+import { Logger } from './utils/logger';
 import { AssetValidator, URLValidator, FileValidator } from './utils/validation.mjs';
 import VocabularyBuilder from './vocabulary.mjs';
 import AssetGrader from './grader.mjs';

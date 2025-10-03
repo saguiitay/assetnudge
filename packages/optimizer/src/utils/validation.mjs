@@ -3,7 +3,7 @@
  * Provides robust validation for all inputs to the Unity Asset Optimizer
  */
 
-import { Logger } from './logger.mjs';
+import { Logger } from './logger';
 import { OFFICIAL_CATEGORIES } from '../config';
 
 const logger = new Logger('validator');

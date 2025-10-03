@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { Logger } from './utils/logger.mjs';
+import { Logger } from './utils/logger';
 
 /**
  * Exemplar Management System

@@ -1,4 +1,4 @@
-import { Logger } from './utils/logger.mjs';
+import { Logger } from './utils/logger';
 
 /**
  * Exemplar-Based Coaching System
