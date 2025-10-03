@@ -19,6 +19,7 @@ import HeuristicSuggestions from './heuristic-suggestions.mjs';
 // External dependencies
 import { scrapeAssetWithPuppeteer } from './puppeteer-scraper.mjs';
 import { scrapeAssetWithHTML } from './html-scraper.mjs';
+import { scrapeAssetWithGraphQL } from './graphql-scraper.mjs';
 
 /**
  * Main optimizer class that orchestrates all functionality
@@ -268,6 +269,34 @@ export class UnityAssetOptimizer {
   }
 
   /**
+   * Scrape asset data from URL using GraphQL API (most reliable)
+   */
+  async scrapeAssetWithGraphQL(url, outputPath) {
+    return this.logger.time('scrapeAssetWithGraphQL', async () => {
+      this.logger.info('Scraping asset with GraphQL API', { url });
+      
+      // Validate URL
+      URLValidator.validateAssetStoreURL(url);
+      
+      // Scrape the asset using GraphQL API
+      const asset = await scrapeAssetWithGraphQL(url);
+      
+      // Save scraped data if output path provided
+      if (outputPath) {
+        await this.writeJSON(outputPath, asset);
+      }
+      
+      this.logger.success('Asset scraped successfully with GraphQL API', {
+        title: asset.title,
+        category: asset.category,
+        outputPath
+      });
+      
+      return asset;
+    });
+  }
+
+  /**
    * Scrape asset data from URL using HTML scraper (lightweight)
    */
   async scrapeAssetWithHTML(url, outputPath) {
@@ -324,7 +353,7 @@ export class UnityAssetOptimizer {
   }
 
   /**
-   * Scrape asset data with fallback strategy (Puppeteer first, then HTML)
+   * Scrape asset data with fallback strategy (GraphQL first, then Puppeteer, then HTML)
    */
   async scrapeAssetWithFallback(url, outputPath) {
     return this.logger.time('scrapeAssetWithFallback', async () => {
@@ -337,27 +366,40 @@ export class UnityAssetOptimizer {
       let method = 'unknown';
       
       try {
-        // Try Puppeteer first for complete data
-        this.logger.info('Attempting Puppeteer scraping...');
-        asset = await scrapeAssetWithPuppeteer(url);
-        method = 'puppeteer';
-        this.logger.info('Puppeteer scraping successful');
-      } catch (puppeteerError) {
-        this.logger.warn('Puppeteer scraping failed, falling back to HTML parser', {
-          error: puppeteerError.message
+        // Try GraphQL first for most reliable data
+        this.logger.info('Attempting GraphQL API scraping...');
+        asset = await scrapeAssetWithGraphQL(url);
+        method = 'graphql';
+        this.logger.info('GraphQL API scraping successful');
+      } catch (graphqlError) {
+        this.logger.warn('GraphQL scraping failed, falling back to Puppeteer', {
+          error: graphqlError.message
         });
         
         try {
-          // Fallback to HTML scraping
-          asset = await scrapeAssetWithHTML(url);
-          method = 'html';
-          this.logger.info('HTML scraping successful');
-        } catch (htmlError) {
-          this.logger.error('Both scraping methods failed', {
-            puppeteerError: puppeteerError.message,
-            htmlError: htmlError.message
+          // Try Puppeteer second for complete data
+          this.logger.info('Attempting Puppeteer scraping...');
+          asset = await scrapeAssetWithPuppeteer(url);
+          method = 'puppeteer';
+          this.logger.info('Puppeteer scraping successful');
+        } catch (puppeteerError) {
+          this.logger.warn('Puppeteer scraping failed, falling back to HTML parser', {
+            error: puppeteerError.message
           });
-          throw new Error(`Scraping failed: Puppeteer (${puppeteerError.message}), HTML (${htmlError.message})`);
+          
+          try {
+            // Fallback to HTML scraping
+            asset = await scrapeAssetWithHTML(url);
+            method = 'html';
+            this.logger.info('HTML scraping successful');
+          } catch (htmlError) {
+            this.logger.error('All scraping methods failed', {
+              graphqlError: graphqlError.message,
+              puppeteerError: puppeteerError.message,
+              htmlError: htmlError.message
+            });
+            throw new Error(`Scraping failed: GraphQL (${graphqlError.message}), Puppeteer (${puppeteerError.message}), HTML (${htmlError.message})`);
+          }
         }
       }
       

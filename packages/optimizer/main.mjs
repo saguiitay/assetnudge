@@ -66,12 +66,13 @@ function showHelp() {
   console.log(`Unity Asset Optimizer v2.0 - AI-Powered CLI Tool
 
 Commands:
-  scrape       --url <Unity Asset Store URL> [--out <output.json>] [--method <puppeteer|html|fallback>]
+  scrape       --url <Unity Asset Store URL> [--out <output.json>] [--method <graphql|puppeteer|html|fallback>]
                Extract asset data from Unity Asset Store listing
                Methods:
-                 puppeteer: Full-featured scraping with JavaScript rendering (default)
+                 graphql: Official GraphQL API (fastest, most reliable)
+                 puppeteer: Full-featured scraping with JavaScript rendering
                  html: Lightweight HTML-only scraping (faster, no JavaScript)
-                 fallback: Try puppeteer first, fallback to html if it fails
+                 fallback: Try graphql first, then puppeteer, then html (default)
                
   build-vocab  --corpus <corpus.json> --out <vocab.json>
                Build category vocabulary from corpus data
@@ -129,7 +130,8 @@ Examples:
   node main.mjs optimize --input asset.json --ai true
   
   # Scraping with different methods
-  node main.mjs scrape --url "https://assetstore.unity.com/packages/..." --method fallback  # Recommended: try puppeteer, fallback to html
+  node main.mjs scrape --url "https://assetstore.unity.com/packages/..." --method fallback  # Recommended: try graphql, fallback to others
+  node main.mjs scrape --url "https://assetstore.unity.com/packages/..." --method graphql   # Fastest: Official GraphQL API
   node main.mjs scrape --url "https://assetstore.unity.com/packages/..." --method html     # Fast: HTML-only scraping
   node main.mjs scrape --url "https://assetstore.unity.com/packages/..." --method puppeteer # Full: JavaScript-enabled scraping
   
@@ -157,13 +159,16 @@ async function cmdScrape() {
   const method = getFlag('method', 'fallback'); // Default to fallback for reliability
   
   ensure(url, '--url is required (Unity Asset Store URL)');
-  ensure(['puppeteer', 'html', 'fallback'].includes(method), '--method must be one of: puppeteer, html, fallback');
+  ensure(['graphql', 'puppeteer', 'html', 'fallback'].includes(method), '--method must be one of: graphql, puppeteer, html, fallback');
   
   const optimizer = new UnityAssetOptimizer(args);
   await optimizer.validateSetup();
   
   let asset;
   switch (method) {
+    case 'graphql':
+      asset = await optimizer.scrapeAssetWithGraphQL(url, outPath);
+      break;
     case 'puppeteer':
       asset = await optimizer.scrapeAsset(url, outPath);
       break;
