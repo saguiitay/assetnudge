@@ -41,6 +41,7 @@ export function AssetEditor() {
   const [isImporting, setIsImporting] = useState(false);
   const [importError, setImportError] = useState<string | null>(null);
   const [importSuccess, setImportSuccess] = useState(false);
+  const [importedData, setImportedData] = useState<any>(null);
 
   const form = useForm<AssetFormData>({
     resolver: zodResolver(assetSchema),
@@ -74,6 +75,24 @@ export function AssetEditor() {
     // Here you would typically save the asset
   };
 
+  const clearImportedData = () => {
+    setImportUrl('');
+    setImportError(null);
+    setImportSuccess(false);
+    setImportedData(null);
+    
+    // Reset form to defaults
+    form.reset({
+      title: '',
+      short_description: '',
+      long_description: '',
+      tags: [],
+      category: '',
+      price: 0,
+      size: 0,
+    });
+  };
+
   const importFromUrl = async () => {
     if (!importUrl.trim()) {
       setImportError('Please enter a valid URL');
@@ -88,6 +107,7 @@ export function AssetEditor() {
     setIsImporting(true);
     setImportError(null);
     setImportSuccess(false);
+    setImportedData(null);
 
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
@@ -96,7 +116,11 @@ export function AssetEditor() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ url: importUrl.trim() }),
+        body: JSON.stringify({ 
+          url: importUrl.trim(),
+          method: 'html',
+          debug: true
+        }),
       });
 
       const result = await response.json();
@@ -106,21 +130,53 @@ export function AssetEditor() {
         return;
       }
 
+      // Store the imported data for reference
+      setImportedData({
+        ...result.asset,
+        scraping_method: result.scraping_method,
+        scraped_at: result.scraped_at
+      });
+
       // Populate the form with scraped data
       const asset = result.asset;
       if (asset.title) form.setValue('title', asset.title);
       if (asset.short_description) form.setValue('short_description', asset.short_description);
-      if (asset.long_description) form.setValue('long_description', asset.long_description);
+      
+      // Handle long description - strip HTML tags if present
+      if (asset.long_description) {
+        const cleanDescription = asset.long_description.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+        form.setValue('long_description', cleanDescription.slice(0, 2000)); // Respect max length
+      }
+      
       if (asset.category) form.setValue('category', asset.category);
-      if (asset.tags && Array.isArray(asset.tags)) form.setValue('tags', asset.tags);
+      if (asset.tags && Array.isArray(asset.tags)) form.setValue('tags', asset.tags.slice(0, 20)); // Limit tags
       if (typeof asset.price === 'number') form.setValue('price', asset.price);
-      if (typeof asset.size === 'number') form.setValue('size', asset.size);
+      
+      // Parse size if it's a string (e.g., "222.0 KB")
+      if (asset.size) {
+        let sizeInMB = 0;
+        if (typeof asset.size === 'string') {
+          const sizeMatch = asset.size.match(/([\d.]+)\s*(KB|MB|GB)/i);
+          if (sizeMatch) {
+            const value = parseFloat(sizeMatch[1]);
+            const unit = sizeMatch[2].toLowerCase();
+            switch (unit) {
+              case 'kb': sizeInMB = value / 1024; break;
+              case 'mb': sizeInMB = value; break;
+              case 'gb': sizeInMB = value * 1024; break;
+            }
+          }
+        } else if (typeof asset.size === 'number') {
+          sizeInMB = asset.size;
+        }
+        form.setValue('size', Math.round(sizeInMB * 100) / 100); // Round to 2 decimals
+      }
 
       setImportSuccess(true);
-      setImportUrl('');
+      // Keep the URL for reference but don't clear it immediately
     } catch (error) {
       console.error('Import error:', error);
-      setImportError('Failed to import asset data. Please try again.');
+      setImportError('Failed to import asset data. Please check your connection and try again.');
     } finally {
       setIsImporting(false);
     }
@@ -152,6 +208,7 @@ export function AssetEditor() {
                 }
               }}
               disabled={isImporting}
+              className="flex-1"
             />
             <Button 
               onClick={importFromUrl} 
@@ -169,11 +226,27 @@ export function AssetEditor() {
             </Alert>
           )}
           
-          {importSuccess && (
+          {importSuccess && importedData && (
             <Alert>
               <CheckCircle className="h-4 w-4" />
-              <AlertDescription>
-                Asset data imported successfully! Review and edit the details below as needed.
+              <AlertDescription className="space-y-1">
+                <div>Asset data imported successfully!</div>
+                <div className="text-xs text-muted-foreground">
+                  Imported: {importedData.title} • {importedData.tags?.length || 0} tags • Fast HTML extraction
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  Review and edit the details below as needed.
+                </div>
+                <div className="mt-2">
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={clearImportedData}
+                  >
+                    Clear & Start Over
+                  </Button>
+                </div>
               </AlertDescription>
             </Alert>
           )}
