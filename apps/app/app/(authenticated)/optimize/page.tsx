@@ -5,8 +5,8 @@ import { notFound } from 'next/navigation';
 import { Header } from '../components/header';
 import { AssetEditor } from './components/asset-editor';
 
-const title = 'Acme Inc';
-const description = 'My application.';
+const title = 'Asset Nudge';
+const description = 'Optimize your assets with ease.';
 
 export const metadata: Metadata = {
   title,
@@ -18,7 +18,7 @@ const App = async () => {
 
   return (
     <>
-      <Header pages={['Building Your Application']} page="New Asset">
+      <Header pages={['Home']} page="Optimize Asset">
       </Header>
       <div className="container mx-auto py-8">
         <AssetEditor />

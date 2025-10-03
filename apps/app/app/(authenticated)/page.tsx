@@ -4,8 +4,8 @@ import dynamic from 'next/dynamic';
 import { notFound } from 'next/navigation';
 import { Header } from './components/header';
 
-const title = 'Acme Inc';
-const description = 'My application.';
+const title = 'Asset Nudge';
+const description = 'Optimize your assets with ease.';
 
 export const metadata: Metadata = {
   title,
@@ -17,7 +17,7 @@ const App = async () => {
 
   return (
     <>
-      <Header pages={['Building Your Application']} page="Optimize Your Asset">
+      <Header pages={[]} page="Optimize Your Assets">
         {/* {env.LIVEBLOCKS_SECRET && (
           <CollaborationProvider orgId={orgId}>
             <AvatarStack />
