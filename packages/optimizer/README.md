@@ -326,7 +326,7 @@ optimizer/
 └── src/                       # Core modules
     ├── config.ts             # Configuration management
     ├── logger.mjs             # Structured logging
-    ├── validation.mjs         # Input validation
+    ├── validation.ts         # Input validation
     ├── vocabulary.mjs         # Vocabulary building (enhanced with exemplar support)
     ├── grader.mjs             # Asset scoring
     ├── similarity.mjs         # TF-IDF similarity

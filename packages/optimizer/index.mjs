@@ -109,7 +109,7 @@ export async function gradeAsset(assetData, vocabPath = null, config = null) {
   // Load vocabulary if provided
   let vocabulary = {};
   if (vocabPath) {
-    const { FileValidator } = await import('./src/utils/validation.mjs');
+    const { FileValidator } = await import('./src/utils/validation');
     vocabulary = await FileValidator.validateJSONFile(vocabPath);
   }
   

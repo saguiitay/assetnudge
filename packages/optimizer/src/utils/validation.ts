@@ -12,12 +12,104 @@ const logger = new Logger('validator');
  * Validation error class
  */
 export class ValidationError extends Error {
-  constructor(message, field = null, value = null) {
+  public field: string | null;
+  public value: any;
+
+  constructor(message: string, field: string | null = null, value: any = null) {
     super(message);
     this.name = 'ValidationError';
     this.field = field;
     this.value = value;
   }
+}
+
+/**
+ * Asset interface for type safety
+ */
+export interface Asset {
+  title: string;
+  price?: number;
+  images_count?: number;
+  videos_count?: number;
+  rating?: number;
+  reviews_count?: number;
+  tags?: string[];
+  last_update?: string | Date;
+  stats?: AssetStats;
+  [key: string]: any;
+}
+
+/**
+ * Asset stats interface
+ */
+export interface AssetStats {
+  pageviews?: number;
+  sales?: number;
+  downloads?: number;
+  conversion?: number;
+  [key: string]: any;
+}
+
+/**
+ * Vocabulary interface
+ */
+export interface Vocabulary {
+  [category: string]: CategoryVocabulary;
+}
+
+/**
+ * Category vocabulary interface
+ */
+export interface CategoryVocabulary {
+  top_unigrams: string[];
+  top_bigrams: string[];
+  top_tags: string[];
+  med_images: number;
+  med_videos: number;
+  sample_size: number;
+  [key: string]: any;
+}
+
+/**
+ * Category suggestion interface
+ */
+export interface CategorySuggestion {
+  category: string;
+  confidence?: number;
+  [key: string]: any;
+}
+
+/**
+ * Weights configuration interface (using the one from config.ts)
+ */
+export interface WeightConfig {
+  content: {
+    title: number;
+    short: number;
+    long: number;
+    bullets: number;
+    cta: number;
+    uvp: number;
+  };
+  media: {
+    images: number;
+    video: number;
+    gif: number;
+  };
+  trust: {
+    rating: number;
+    reviews: number;
+    freshness: number;
+  };
+  find: {
+    tagcov: number;
+    titlekw: number;
+    pricez: number;
+  };
+  perf: {
+    cvr: number;
+    hv_lc_penalty: number;
+  };
 }
 
 /**
@@ -27,8 +119,8 @@ export class AssetValidator {
   /**
    * Validate basic asset structure
    */
-  static validateAsset(asset) {
-    const errors = [];
+  static validateAsset(asset: any): boolean {
+    const errors: string[] = [];
 
     if (!asset || typeof asset !== 'object') {
       throw new ValidationError('Asset must be a valid object');
@@ -40,10 +132,10 @@ export class AssetValidator {
     }
 
     // Validate optional numeric fields
-    const numericFields = ['price', 'images_count', 'videos_count', 'rating', 'reviews_count'];
+    const numericFields: (keyof Asset)[] = ['price', 'images_count', 'videos_count', 'rating', 'reviews_count'];
     for (const field of numericFields) {
       if (asset[field] !== undefined && asset[field] !== null) {
-        if (typeof asset[field] !== 'number' || isNaN(asset[field]) || asset[field] < 0) {
+        if (typeof asset[field] !== 'number' || isNaN(asset[field] as number) || (asset[field] as number) < 0) {
           errors.push(`${field} must be a non-negative number`);
         }
       }
@@ -63,10 +155,10 @@ export class AssetValidator {
     }
 
     // Validate date fields
-    const dateFields = ['last_update'];
+    const dateFields: (keyof Asset)[] = ['last_update'];
     for (const field of dateFields) {
       if (asset[field] !== undefined && asset[field] !== null) {
-        const date = new Date(asset[field]);
+        const date = new Date(asset[field] as string | Date);
         if (isNaN(date.getTime())) {
           errors.push(`${field} must be a valid date`);
         }
@@ -78,10 +170,10 @@ export class AssetValidator {
       if (typeof asset.stats !== 'object') {
         errors.push('stats must be an object');
       } else {
-        const statsFields = ['pageviews', 'sales', 'downloads', 'conversion'];
+        const statsFields: (keyof AssetStats)[] = ['pageviews', 'sales', 'downloads', 'conversion'];
         for (const field of statsFields) {
           if (asset.stats[field] !== undefined && asset.stats[field] !== null) {
-            if (typeof asset.stats[field] !== 'number' || isNaN(asset.stats[field]) || asset.stats[field] < 0) {
+            if (typeof asset.stats[field] !== 'number' || isNaN(asset.stats[field] as number) || (asset.stats[field] as number) < 0) {
               errors.push(`stats.${field} must be a non-negative number`);
             }
           }
@@ -99,7 +191,7 @@ export class AssetValidator {
   /**
    * Validate corpus data (array of assets)
    */
-  static validateCorpus(corpus) {
+  static validateCorpus(corpus: any): number {
     if (!Array.isArray(corpus)) {
       throw new ValidationError('Corpus must be an array');
     }
@@ -108,12 +200,12 @@ export class AssetValidator {
       throw new ValidationError('Corpus cannot be empty');
     }
 
-    const errors = [];
+    const errors: string[] = [];
     for (let i = 0; i < corpus.length; i++) {
       try {
         this.validateAsset(corpus[i]);
       } catch (error) {
-        errors.push(`Asset ${i}: ${error.message}`);
+        errors.push(`Asset ${i}: ${(error as Error).message}`);
       }
     }
 
@@ -137,7 +229,7 @@ export class AssetValidator {
   /**
    * Validate vocabulary data structure
    */
-  static validateVocabulary(vocab) {
+  static validateVocabulary(vocab: any): boolean {
     if (!vocab || typeof vocab !== 'object') {
       throw new ValidationError('Vocabulary must be a valid object');
     }
@@ -155,7 +247,7 @@ export class AssetValidator {
       }
 
       // Validate required arrays
-      const requiredArrays = ['top_unigrams', 'top_bigrams', 'top_tags'];
+      const requiredArrays: (keyof CategoryVocabulary)[] = ['top_unigrams', 'top_bigrams', 'top_tags'];
       for (const field of requiredArrays) {
         if (!Array.isArray(catData[field])) {
           throw new ValidationError(`Category '${category}' ${field} must be an array`);
@@ -163,9 +255,9 @@ export class AssetValidator {
       }
 
       // Validate required numeric fields
-      const requiredNumbers = ['med_images', 'med_videos', 'sample_size'];
+      const requiredNumbers: (keyof CategoryVocabulary)[] = ['med_images', 'med_videos', 'sample_size'];
       for (const field of requiredNumbers) {
-        if (typeof catData[field] !== 'number' || isNaN(catData[field])) {
+        if (typeof catData[field] !== 'number' || isNaN(catData[field] as number)) {
           throw new ValidationError(`Category '${category}' ${field} must be a number`);
         }
       }
@@ -182,7 +274,7 @@ export class URLValidator {
   /**
    * Validate Unity Asset Store URL
    */
-  static validateAssetStoreURL(url) {
+  static validateAssetStoreURL(url: any): boolean {
     if (!url || typeof url !== 'string') {
       throw new ValidationError('URL must be a non-empty string');
     }
@@ -210,7 +302,7 @@ export class FileValidator {
   /**
    * Validate file exists and is readable
    */
-  static async validateFile(filePath) {
+  static async validateFile(filePath: any): Promise<boolean> {
     if (!filePath || typeof filePath !== 'string') {
       throw new ValidationError('File path must be a non-empty string');
     }
@@ -227,7 +319,7 @@ export class FileValidator {
   /**
    * Validate JSON file and parse it
    */
-  static async validateJSONFile(filePath) {
+  static async validateJSONFile(filePath: any): Promise<any> {
     await this.validateFile(filePath);
     
     try {
@@ -250,12 +342,12 @@ export class ConfigValidator {
   /**
    * Validate scoring weights configuration
    */
-  static validateWeights(weights) {
+  static validateWeights(weights: any): boolean {
     if (!weights || typeof weights !== 'object') {
       throw new ValidationError('Weights must be a valid object');
     }
 
-    const requiredSections = ['content', 'media', 'trust', 'find', 'perf'];
+    const requiredSections: (keyof WeightConfig)[] = ['content', 'media', 'trust', 'find', 'perf'];
     for (const section of requiredSections) {
       if (!weights[section] || typeof weights[section] !== 'object') {
         throw new ValidationError(`Weights must include '${section}' section`);
@@ -275,8 +367,8 @@ export class ConfigValidator {
   /**
    * Get all valid categories as flat list
    */
-  static getValidCategories() {
-    const categories = [];
+  static getValidCategories(): string[] {
+    const categories: string[] = [];
     for (const [mainCategory, subCategories] of Object.entries(OFFICIAL_CATEGORIES)) {
       for (const subCategory of subCategories) {
         categories.push(`${mainCategory}/${subCategory}`);
@@ -288,7 +380,7 @@ export class ConfigValidator {
   /**
    * Validate if a category is in the official Unity Asset Store list
    */
-  static validateCategory(category) {
+  static validateCategory(category: any): boolean {
     if (!category || typeof category !== 'string') {
       throw new ValidationError('Category must be a non-empty string', 'category', category);
     }
@@ -308,13 +400,13 @@ export class ConfigValidator {
   /**
    * Validate suggested categories from AI/heuristic systems
    */
-  static validateSuggestedCategories(suggestions) {
+  static validateSuggestedCategories(suggestions: any): boolean {
     if (!suggestions) {
       throw new ValidationError('Category suggestions are required');
     }
 
     // Handle both single category suggestion (AI) and array of suggestions (heuristic)
-    const categoriesToValidate = Array.isArray(suggestions) ? suggestions : [suggestions];
+    const categoriesToValidate: CategorySuggestion[] = Array.isArray(suggestions) ? suggestions : [suggestions];
 
     for (const suggestion of categoriesToValidate) {
       if (!suggestion || typeof suggestion !== 'object') {
@@ -348,7 +440,7 @@ export class ConfigValidator {
   /**
    * Sanitize and validate a category string, mapping legacy names if needed
    */
-  static sanitizeCategory(category) {
+  static sanitizeCategory(category: any): string | null {
     if (!category || typeof category !== 'string') {
       return null;
     }
@@ -366,7 +458,7 @@ export class ConfigValidator {
     }
 
     // Map legacy category names to official ones
-    const legacyMapping = {
+    const legacyMapping: Record<string, string> = {
       'Templates': 'Templates/Systems',
       'Scripts': 'Tools/Utilities', 
       'Tools': 'Tools/Utilities',

@@ -3,7 +3,7 @@
  * Provides fallback suggestion algorithms when AI is unavailable
  */
 
-import { tokenize, jaccard, zscore, tfVector, cosine } from './utils/utils.js';
+import { tokenize, jaccard, zscore, tfVector, cosine } from './utils/utils';
 import { Logger } from './utils/logger';
 import { VocabularyBuilder } from './vocabulary.mjs';
 
