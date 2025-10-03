@@ -11,13 +11,17 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
     "@repo/auth": "*",
     "@repo/design-system": "*",
     "@repo/internationalization": "*",
     "@repo/seo": "*",
+    "lucide-react": "^0.544.0",
     "next": "^15.4.2",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "react-hook-form": "^7.63.0",
+    "zod": "^4.1.11"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^15.4.6",
