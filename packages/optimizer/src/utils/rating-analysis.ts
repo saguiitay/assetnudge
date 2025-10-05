@@ -3,8 +3,8 @@
  * Advanced analysis of Unity Asset Store rating distributions
  */
 
-import { AssetRating } from '../types.js';
-import { Logger } from './logger.js';
+import { AssetRating } from '../types';
+import { Logger } from './logger';
 
 const logger = new Logger('rating-analysis');
 

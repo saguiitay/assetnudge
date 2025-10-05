@@ -3,11 +3,11 @@
  * Provides heuristic scoring and evaluation for Unity Asset Store listings
  */
 
-import { daysBetween, clamp, zscore, jaccard, tokenize } from './utils/utils.js';
-import { Logger } from './utils/logger.js';
-import { AssetValidator, Asset } from './utils/validation.js';
-import { CategoryVocabulary, GraderConfig, GradeResult, PreparedContent, ScoreResult, ThresholdConfig, Vocabulary, WeightConfig } from './types.js';
-import { calculateDetailedRating, DetailedRatingResult } from './utils/rating-analysis.js';
+import { daysBetween, clamp, zscore, jaccard, tokenize } from './utils/utils';
+import { Logger } from './utils/logger';
+import { AssetValidator, Asset } from './utils/validation';
+import { CategoryVocabulary, GraderConfig, GradeResult, PreparedContent, ScoreResult, ThresholdConfig, Vocabulary, WeightConfig } from './types';
+import { calculateDetailedRating, DetailedRatingResult } from './utils/rating-analysis';
 // Note: VocabularyBuilder is imported from the .mjs file for now
 
 const logger = new Logger('grader');

@@ -7,14 +7,14 @@ import fs from 'fs';
 import path from 'path';
 
 // Core modules
-import Config from './config';
+import { Config } from './config';
 import { Logger } from './utils/logger';
 import { URLValidator, FileValidator } from './utils/validation';
-import VocabularyBuilder from './vocabulary';
-import AssetGrader from './grader';
-import SimilarityEngine from './similarity';
-import AISuggestionEngine from './ai-suggestions';
-import HeuristicSuggestions from './heuristic-suggestions';
+import { VocabularyBuilder } from './vocabulary';
+import { AssetGrader } from './grader';
+import { SimilarityEngine } from './similarity';
+import { AISuggestionEngine } from './ai-suggestions';
+import { HeuristicSuggestions as HeuristicSuggestionsEngine } from './heuristic-suggestions';
 
 // External dependencies
 import { scrapeAssetWithGraphQL } from './scrappers/graphql-scraper';
@@ -25,15 +25,183 @@ import { extractGradingRules } from './dynamic-grading-rules';
 import { DynamicAssetGrader } from './dynamic-asset-grader';
 
 // Exemplar and pattern modules
-import { identifyExemplars, saveExemplars, getExemplarStats } from './exemplars';
+import { identifyExemplars, saveExemplars, getExemplarStats, type ExemplarsByCategory } from './exemplars';
 import { extractCategoryPatterns } from './pattern-extraction';
 import { generateCategoryPlaybook, generateExemplarRecommendations } from './exemplar-coaching';
+
+// Types
+import type { 
+  Asset, 
+  Vocabulary, 
+  GradeResult, 
+  BestSellerAsset,
+  GraderConfig,
+  CategoryVocabulary,
+  DynamicGradingRulesFile
+} from './types';
+import type { Asset as ValidatedAsset } from './utils/validation';
+
+/**
+ * Configuration for optimization analysis
+ */
+export interface OptimizeOptions {
+  /** Input file path for asset data */
+  input?: string | undefined;
+  /** URL to scrape asset data from */
+  url?: string | undefined;
+  /** Path to vocabulary file */
+  vocabPath?: string | undefined;
+  /** Path to exemplars file */
+  exemplarsPath?: string | undefined;
+  /** Path to neighbors/corpus file */
+  neighborsPath?: string | undefined;
+  /** Whether to use AI suggestions */
+  useAI?: boolean;
+}
+
+/**
+ * Grading result with metadata
+ */
+export interface GradeResultWithMetadata {
+  grade: GradeResult;
+  metadata: {
+    gradingMethod: string;
+    assetCategory: string;
+    vocabProvided: boolean;
+    rulesProvided: boolean;
+    gradedAt: string;
+  };
+}
+
+/**
+ * Optimization analysis result
+ */
+export interface OptimizationResult {
+  grade: GradeResult;
+  suggested_tags: string[];
+  suggested_title: string;
+  suggested_description: string;
+  recommendations: any[];
+  suggested_category: string;
+  similar_assets: any[];
+  exemplar_coaching: any;
+  ai_suggestions: any;
+  analysis_metadata: {
+    coaching_method: string;
+    ai_used: boolean;
+    vocabulary_categories: number;
+    similar_assets_found: number;
+    exemplar_neighbors: number;
+    category_alignment: number | null;
+    timestamp: string;
+  };
+}
+
+/**
+ * Heuristic suggestions structure
+ */
+export interface HeuristicSuggestionsResult {
+  suggested_tags: string[];
+  suggested_title: string;
+  suggested_description: string;
+  suggested_category: string;
+  recommendations: any[];
+}
+
+/**
+ * Batch optimization result for a single asset
+ */
+export interface BatchOptimizationResult {
+  asset_id: string;
+  title: string;
+  grade?: GradeResult;
+  suggestions?: HeuristicSuggestionsResult;
+  error?: string;
+  processed_at: string;
+}
+
+/**
+ * System status response
+ */
+export interface SystemStatus {
+  status: string;
+  version: string;
+  timestamp: string;
+  configuration: {
+    debug: boolean;
+    ai_available: boolean;
+    model: string;
+    ignore_stop_words: boolean;
+    issues: string[];
+  };
+  ai: any;
+  text_processing: {
+    stop_words_filtering: string;
+    description: string;
+  };
+  modules: {
+    vocabulary_builder: string;
+    grader: string;
+    similarity_engine: string;
+    ai_suggestions: string;
+    heuristic_suggestions: string;
+  };
+}
+
+/**
+ * Exemplar build statistics
+ */
+export interface ExemplarBuildStats {
+  categories: number;
+  totalExemplars: number;
+  bestSellersIncluded: number;
+  selectionCriteria: string;
+}
+
+/**
+ * Grading rules build statistics
+ */
+export interface GradingRulesBuildStats {
+  categories: number;
+  confidenceDistribution: {
+    high: number;
+    medium: number;
+    low: number;
+  };
+  totalExemplars: number;
+  bestSellersCount: number;
+}
+
+/**
+ * Vocabulary build statistics
+ */
+export interface VocabularyBuildStats {
+  categories: number;
+  totalCategories: number;
+  source: string;
+}
+
+/**
+ * Playbook generation statistics
+ */
+export interface PlaybookStats {
+  categories: number;
+  totalCategories: number;
+}
 
 /**
  * Main optimizer class that orchestrates all functionality
  */
 export class UnityAssetOptimizer {
-  constructor(args = []) {
+  public config: Config;
+  private logger: Logger;
+  private vocabularyBuilder: VocabularyBuilder;
+  public grader: AssetGrader;
+  private similarityEngine: SimilarityEngine;
+  private aiEngine: AISuggestionEngine;
+  private heuristicEngine: HeuristicSuggestionsEngine;
+
+  constructor(args: string[] = []) {
     this.config = Config.fromEnvironment(args);
     this.logger = new Logger('optimizer', this.config.debug);
     
@@ -41,8 +209,8 @@ export class UnityAssetOptimizer {
     this.vocabularyBuilder = new VocabularyBuilder(this.config);
     this.grader = new AssetGrader(this.config);
     this.similarityEngine = new SimilarityEngine(this.config);
-    this.aiEngine = new AISuggestionEngine(this.config);
-    this.heuristicEngine = new HeuristicSuggestions(this.config);
+    this.aiEngine = new AISuggestionEngine(this.config as any);
+    this.heuristicEngine = new HeuristicSuggestionsEngine(this.config);
     
     this.logger.info('Unity Asset Optimizer initialized', {
       hasAI: this.config.hasAI(),
@@ -53,7 +221,7 @@ export class UnityAssetOptimizer {
   /**
    * Validate configuration and dependencies
    */
-  async validateSetup() {
+  async validateSetup(): Promise<string[]> {
     this.logger.info('Validating setup...');
     
     const issues = this.config.validate();
@@ -78,7 +246,13 @@ export class UnityAssetOptimizer {
   /**
    * Build exemplars database from corpus file path
    */
-  async buildExemplars(corpusPath, outputPath, topN = null, topPercent = null, bestSellersPath = null) {
+  async buildExemplars(
+    corpusPath: string, 
+    outputPath: string, 
+    topN: number | null = null, 
+    topPercent: number | null = null, 
+    bestSellersPath: string | null = null
+  ): Promise<ExemplarBuildStats> {
     return this.logger.time('buildExemplars', async () => {
       // Default to topN = 20 if neither is specified
       const finalTopN = topN !== null ? topN : (topPercent !== null ? null : 20);
@@ -93,20 +267,20 @@ export class UnityAssetOptimizer {
       });
       
       // Validate input file
-      const corpus = await FileValidator.validateJSONFile(corpusPath);
+      const corpus = await FileValidator.validateJSONFile(corpusPath) as Asset[];
       
       // Load best sellers list if provided
-      let bestSellers = [];
+      let bestSellers: BestSellerAsset[] = [];
       if (bestSellersPath) {
         try {
-          bestSellers = await FileValidator.validateJSONFile(bestSellersPath);
+          bestSellers = await FileValidator.validateJSONFile(bestSellersPath) as BestSellerAsset[];
           this.logger.info('Best sellers list loaded', { 
             count: bestSellers.length,
             source: bestSellersPath
           });
         } catch (error) {
-          this.logger.error('Failed to load best sellers', error, { path: bestSellersPath });
-          throw new Error(`Failed to load best sellers from ${bestSellersPath}: ${error.message}`);
+          this.logger.error('Failed to load best sellers', error as Error, { path: bestSellersPath });
+          throw new Error(`Failed to load best sellers from ${bestSellersPath}: ${(error as Error).message}`);
         }
       }
       
@@ -117,7 +291,13 @@ export class UnityAssetOptimizer {
   /**
    * Build exemplars database from corpus array
    */
-  async buildExemplarsFromCorpus(corpus, outputPath, topN = null, topPercent = null, bestSellers = []) {
+  async buildExemplarsFromCorpus(
+    corpus: Asset[], 
+    outputPath: string, 
+    topN: number | null = null, 
+    topPercent: number | null = null, 
+    bestSellers: BestSellerAsset[] = []
+  ): Promise<ExemplarBuildStats> {
     return this.logger.time('buildExemplarsFromCorpus', async () => {
       // Default to topN = 20 if neither is specified
       const finalTopN = topN !== null ? topN : (topPercent !== null ? null : 20);
@@ -145,7 +325,7 @@ export class UnityAssetOptimizer {
       const exemplarsByCategory = identifyExemplars(corpus, finalTopN, finalTopPercent, bestSellers);
       
       // Extract patterns for each category
-      const categoryPatterns = {};
+      const categoryPatterns: Record<string, any> = {};
       for (const [category, exemplars] of Object.entries(exemplarsByCategory)) {
         if (exemplars.length > 0) {
           categoryPatterns[category] = extractCategoryPatterns(exemplars, this.config);
@@ -172,7 +352,7 @@ export class UnityAssetOptimizer {
       };
       
       // Save exemplars
-      saveExemplars(exemplarsData, outputPath);
+      saveExemplars(exemplarsByCategory, outputPath);
       
       this.logger.success('Exemplars built successfully', {
         categories: Object.keys(exemplarsByCategory).length,
@@ -182,22 +362,24 @@ export class UnityAssetOptimizer {
         outputPath
       });
       
-      return exemplarsData.metadata.stats;
+      return {
+        categories: Object.keys(exemplarsByCategory).length,
+        totalExemplars: exemplarsData.metadata.stats.totalExemplars,
+        bestSellersIncluded: exemplarsData.metadata.stats.totalBestSellers || 0,
+        selectionCriteria: exemplarsData.metadata.selectionCriteria
+      };
     });
   }
 
   /**
    * Build dynamic grading rules from exemplars
    */
-  async buildGradingRules(exemplarsPath, outputPath) {
+  async buildGradingRules(exemplarsPath: string, outputPath: string): Promise<GradingRulesBuildStats> {
     return this.logger.time('buildGradingRules', async () => {
       this.logger.info('Building dynamic grading rules', { exemplarsPath, outputPath });
       
       // Load exemplars data
       const exemplarsData = await FileValidator.validateJSONFile(exemplarsPath);
-      
-      // Import dynamic rules module
-      const { extractGradingRules } = await import('./dynamic-grading-rules');
       
       // Generate dynamic rules from exemplars
       const fallbackConfig = {
@@ -230,7 +412,7 @@ export class UnityAssetOptimizer {
   /**
    * Build exemplar-based vocabulary
    */
-  async buildExemplarVocabulary(exemplarsPath, outputPath) {
+  async buildExemplarVocabulary(exemplarsPath: string, outputPath: string): Promise<VocabularyBuildStats> {
     return this.logger.time('buildExemplarVocabulary', async () => {
       this.logger.info('Building exemplar vocabulary', { exemplarsPath, outputPath });
       
@@ -259,7 +441,7 @@ export class UnityAssetOptimizer {
   /**
    * Generate category playbooks from exemplars
    */
-  async generatePlaybooks(exemplarsPath, outputPath) {
+  async generatePlaybooks(exemplarsPath: string, outputPath: string): Promise<PlaybookStats> {
     return this.logger.time('generatePlaybooks', async () => {
       this.logger.info('Generating category playbooks', { exemplarsPath, outputPath });
       
@@ -267,13 +449,13 @@ export class UnityAssetOptimizer {
       const exemplarsData = await FileValidator.validateJSONFile(exemplarsPath);
       
       // Generate playbooks for each category
-      const playbooks = {};
+      const playbooks: Record<string, any> = {};
       for (const [category, exemplars] of Object.entries(exemplarsData.exemplars)) {
-        if (exemplars.length > 0 && exemplarsData.patterns[category]) {
+        if (Array.isArray(exemplars) && exemplars.length > 0 && exemplarsData.patterns[category]) {
           playbooks[category] = generateCategoryPlaybook(
             category,
             exemplarsData.patterns[category],
-            exemplars
+            exemplars as any[]
           );
           this.logger.info(`Generated playbook for ${category}`, {
             exemplarCount: exemplars.length
@@ -308,7 +490,11 @@ export class UnityAssetOptimizer {
   /**
    * Grade an asset using static or dynamic rules
    */
-  async gradeAsset(assetPath, vocabPath = null, rulesPath = null) {
+  async gradeAsset(
+    assetPath: string, 
+    vocabPath: string | null = null, 
+    rulesPath: string | null = null
+  ): Promise<GradeResultWithMetadata> {
     return this.logger.time('gradeAsset', async () => {
       this.logger.info('Grading asset', { 
         assetPath, 
@@ -318,31 +504,28 @@ export class UnityAssetOptimizer {
       });
       
       // Load asset data
-      const asset = await FileValidator.validateJSONFile(assetPath);
+      const asset = await FileValidator.validateJSONFile(assetPath) as Asset;
       
       // Load vocabulary if provided
-      let vocabulary = {};
+      let vocabulary: Vocabulary = {};
       if (vocabPath) {
-        vocabulary = await FileValidator.validateJSONFile(vocabPath);
+        vocabulary = await FileValidator.validateJSONFile(vocabPath) as Vocabulary;
       }
       
       // Grade the asset using dynamic or static rules
-      let grade;
+      let grade: GradeResult;
       let gradingMethod = 'static';
       
       if (rulesPath) {
         try {
           // Load dynamic rules
-          const gradingRules = await FileValidator.validateJSONFile(rulesPath);
-          
-          // Import DynamicAssetGrader
-          const { DynamicAssetGrader } = await import('./dynamic-asset-grader');
+          const gradingRules = await FileValidator.validateJSONFile(rulesPath) as DynamicGradingRulesFile;
           
           // Create dynamic grader
           const dynamicGrader = new DynamicAssetGrader(this.config, gradingRules);
           
           // Grade with dynamic rules
-          grade = await dynamicGrader.gradeAsset(asset, vocabulary);
+          grade = await dynamicGrader.gradeAsset(asset as unknown as ValidatedAsset, vocabulary);
           gradingMethod = 'dynamic';
           
           this.logger.info('Used dynamic grading rules', {
@@ -351,13 +534,13 @@ export class UnityAssetOptimizer {
           });
           
         } catch (error) {
-          this.logger.warn('Failed to load dynamic rules, falling back to static grading', error);
-          grade = await this.grader.gradeAsset(asset, vocabulary);
+          this.logger.warn('Failed to load dynamic rules, falling back to static grading', error as Error);
+          grade = await this.grader.gradeAsset(asset as unknown as ValidatedAsset, vocabulary);
           gradingMethod = 'static-fallback';
         }
       } else {
         // Use static grading
-        grade = await this.grader.gradeAsset(asset, vocabulary);
+        grade = await this.grader.gradeAsset(asset as unknown as ValidatedAsset, vocabulary);
       }
       
       this.logger.success('Asset graded', {
@@ -383,7 +566,7 @@ export class UnityAssetOptimizer {
   /**
    * Scrape asset data from URL using GraphQL API (most reliable)
    */
-  async scrapeAssetWithGraphQL(url, outputPath) {
+  async scrapeAssetWithGraphQL(url: string, outputPath?: string): Promise<Asset> {
     return this.logger.time('scrapeAssetWithGraphQL', async () => {
       this.logger.info('Scraping asset with GraphQL API', { url });
       
@@ -404,14 +587,14 @@ export class UnityAssetOptimizer {
         outputPath
       });
       
-      return asset;
+      return asset as Asset;
     });
   }
 
   /**
    * Comprehensive optimization analysis
    */
-  async optimizeAsset(options) {
+  async optimizeAsset(options: OptimizeOptions): Promise<OptimizationResult> {
     return this.logger.time('optimizeAsset', async () => {
       const { input, url, vocabPath, exemplarsPath, neighborsPath, useAI = false } = options;
       
@@ -425,30 +608,32 @@ export class UnityAssetOptimizer {
       });
 
       // Get asset data
-      let asset;
+      let asset: Asset;
       if (url) {
         URLValidator.validateAssetStoreURL(url);
         asset = await this.scrapeAssetWithGraphQL(url);
-        this.logger.info('Asset scraped from URL', { title: asset.title, method: asset.scraping_method });
+        this.logger.info('Asset scraped from URL', { title: asset.title, method: (asset as any).scraping_method });
       } else if (input) {
-        asset = await FileValidator.validateJSONFile(input);
+        asset = await FileValidator.validateJSONFile(input) as Asset;
         this.logger.info('Asset loaded from file', { title: asset.title });
       } else {
         throw new Error('Either input file or URL must be provided');
       }
 
       // Load vocabulary
-      let vocabulary = {};
+      let vocabulary: Vocabulary = {};
       if (vocabPath) {
-        vocabulary = await FileValidator.validateJSONFile(vocabPath);
+        vocabulary = await FileValidator.validateJSONFile(vocabPath) as Vocabulary;
         this.logger.info('Vocabulary loaded', { categories: Object.keys(vocabulary).length });
       }
 
       // Perform grading
-      const grade = await this.grader.gradeAsset(asset, vocabulary);
+      const grade = await this.grader.gradeAsset(asset as unknown as ValidatedAsset, vocabulary);
       
       // Choose coaching strategy: exemplar-based (preferred) or legacy similarity
-      let suggestions, similarAssets = [], exemplarRecommendations = null;
+      let suggestions: HeuristicSuggestionsResult;
+      let similarAssets: any[] = [];
+      let exemplarRecommendations: any = null;
       
       if (exemplarsPath) {
         // Use exemplar-based coaching (recommended approach)
@@ -463,16 +648,21 @@ export class UnityAssetOptimizer {
         
         // Use heuristic suggestions as fallback for areas not covered by exemplars
         try {
-          const heuristicSuggestions = {
-            suggested_tags: this.heuristicEngine.suggestTags(asset, vocabulary),
-            suggested_title: this.heuristicEngine.suggestTitle(asset, vocabulary),
-            suggested_description: this.heuristicEngine.suggestDescription(asset, vocabulary),
-            suggested_category: this.heuristicEngine.suggestCategory(asset, vocabulary),
-            recommendations: [] // Individual methods don't provide recommendations array
+          const tagSuggestions = this.heuristicEngine.suggestTags(asset, vocabulary);
+          const titleSuggestions = this.heuristicEngine.suggestTitle(asset, vocabulary);
+          const descSuggestions = this.heuristicEngine.suggestDescription(asset, vocabulary);
+          const categorySuggestions = this.heuristicEngine.suggestCategory(asset, vocabulary);
+          
+          const heuristicSuggestions: HeuristicSuggestionsResult = {
+            suggested_tags: tagSuggestions.map(t => t.tag),
+            suggested_title: titleSuggestions.length > 0 ? titleSuggestions[0]!.text : asset.title,
+            suggested_description: descSuggestions.short,
+            suggested_category: categorySuggestions.length > 0 ? categorySuggestions[0]!.category : (asset.category || ''),
+            recommendations: this.heuristicEngine.generateRecommendations(asset, vocabulary)
           };
           suggestions = heuristicSuggestions;
         } catch (error) {
-          this.logger.warn('Heuristic suggestions failed, using empty fallback', { error: error.message });
+          this.logger.warn('Heuristic suggestions failed, using empty fallback', { error: (error as Error).message });
           suggestions = {
             suggested_tags: [],
             suggested_title: '',
@@ -484,21 +674,26 @@ export class UnityAssetOptimizer {
         
       } else if (neighborsPath) {
         // Legacy approach: similarity-based coaching
-        const corpus = await FileValidator.validateJSONFile(neighborsPath);
+        const corpus = await FileValidator.validateJSONFile(neighborsPath) as Asset[];
         this.logger.info('Corpus loaded for similarity analysis', { size: corpus.length });
         
-        similarAssets = await this.similarityEngine.findSimilarAssets(asset, corpus, 5);
+        similarAssets = await this.similarityEngine.findSimilarAssets(asset as unknown as ValidatedAsset, corpus as unknown as ValidatedAsset[], 5);
         try {
-          const heuristicSuggestions = {
-            suggested_tags: this.heuristicEngine.suggestTags(asset, vocabulary),
-            suggested_title: this.heuristicEngine.suggestTitle(asset, vocabulary),
-            suggested_description: this.heuristicEngine.suggestDescription(asset, vocabulary),
-            suggested_category: this.heuristicEngine.suggestCategory(asset, vocabulary),
-            recommendations: [] // Individual methods don't provide recommendations array
+          const tagSuggestions = this.heuristicEngine.suggestTags(asset, vocabulary);
+          const titleSuggestions = this.heuristicEngine.suggestTitle(asset, vocabulary);
+          const descSuggestions = this.heuristicEngine.suggestDescription(asset, vocabulary);
+          const categorySuggestions = this.heuristicEngine.suggestCategory(asset, vocabulary);
+          
+          const heuristicSuggestions: HeuristicSuggestionsResult = {
+            suggested_tags: tagSuggestions.map(t => t.tag),
+            suggested_title: titleSuggestions.length > 0 ? titleSuggestions[0]!.text : asset.title,
+            suggested_description: descSuggestions.short,
+            suggested_category: categorySuggestions.length > 0 ? categorySuggestions[0]!.category : (asset.category || ''),
+            recommendations: this.heuristicEngine.generateRecommendations(asset, vocabulary)
           };
           suggestions = heuristicSuggestions;
         } catch (error) {
-          this.logger.warn('Heuristic suggestions failed, using empty fallback', { error: error.message });
+          this.logger.warn('Heuristic suggestions failed, using empty fallback', { error: (error as Error).message });
           suggestions = {
             suggested_tags: [],
             suggested_title: '',
@@ -511,16 +706,21 @@ export class UnityAssetOptimizer {
       } else {
         // Basic heuristic suggestions only
         try {
-          const heuristicSuggestions = {
-            suggested_tags: this.heuristicEngine.suggestTags(asset, vocabulary),
-            suggested_title: this.heuristicEngine.suggestTitle(asset, vocabulary),
-            suggested_description: this.heuristicEngine.suggestDescription(asset, vocabulary),
-            suggested_category: this.heuristicEngine.suggestCategory(asset, vocabulary),
-            recommendations: [] // Individual methods don't provide recommendations array
+          const tagSuggestions = this.heuristicEngine.suggestTags(asset, vocabulary);
+          const titleSuggestions = this.heuristicEngine.suggestTitle(asset, vocabulary);
+          const descSuggestions = this.heuristicEngine.suggestDescription(asset, vocabulary);
+          const categorySuggestions = this.heuristicEngine.suggestCategory(asset, vocabulary);
+          
+          const heuristicSuggestions: HeuristicSuggestionsResult = {
+            suggested_tags: tagSuggestions.map(t => t.tag),
+            suggested_title: titleSuggestions.length > 0 ? titleSuggestions[0]!.text : asset.title,
+            suggested_description: descSuggestions.short,
+            suggested_category: categorySuggestions.length > 0 ? categorySuggestions[0]!.category : (asset.category || ''),
+            recommendations: this.heuristicEngine.generateRecommendations(asset, vocabulary)
           };
           suggestions = heuristicSuggestions;
         } catch (error) {
-          this.logger.warn('Heuristic suggestions failed, using empty fallback', { error: error.message });
+          this.logger.warn('Heuristic suggestions failed, using empty fallback', { error: (error as Error).message });
           suggestions = {
             suggested_tags: [],
             suggested_title: '',
@@ -532,35 +732,25 @@ export class UnityAssetOptimizer {
       }
 
       // Generate AI suggestions if requested and available
-      let aiSuggestions = null;
+      let aiSuggestions: any = null;
       if (useAI && this.config.hasAI()) {
         try {
           // For exemplar-based coaching, provide exemplar context to AI
-          const aiContext = exemplarRecommendations ? {
+          const aiContext = {
             asset,
-            vocab: vocabulary,
-            neighbors: exemplarRecommendations.neighbors.map(n => ({
-              title: n.title,
-              url: n.url,
-              tags: n.tags,
-              description: n.short_description || n.long_description
-            })),
-            categoryAlignment: exemplarRecommendations.categoryAlignment,
-            exemplarInsights: exemplarRecommendations.recommendations
-          } : {
-            asset,
-            vocab: vocabulary,
-            neighbors: similarAssets
-          };
+            exemplars: { exemplars: {} },
+            exemplarVocab: {},
+            playbooks: {}
+          } as any;
           
           aiSuggestions = await this.aiEngine.generateSuggestions(aiContext);
           this.logger.info('AI suggestions generated');
         } catch (error) {
-          this.logger.warn('AI suggestions failed', { error: error.message });
+          this.logger.warn('AI suggestions failed', { error: (error as Error).message });
         }
       }
 
-      const result = {
+      const result: OptimizationResult = {
         grade,
         // Legacy suggestions format (for backward compatibility)
         suggested_tags: suggestions?.suggested_tags || [],
@@ -599,20 +789,29 @@ export class UnityAssetOptimizer {
   /**
    * Generate heuristic suggestions
    */
-  generateHeuristicSuggestions(asset, vocabulary) {
+  generateHeuristicSuggestions(asset: Asset, vocabulary: Vocabulary): HeuristicSuggestionsResult {
+    const tagSuggestions = this.heuristicEngine.suggestTags(asset, vocabulary);
+    const titleSuggestions = this.heuristicEngine.suggestTitle(asset, vocabulary);
+    const descSuggestions = this.heuristicEngine.suggestDescription(asset, vocabulary);
+    const categorySuggestions = this.heuristicEngine.suggestCategory(asset, vocabulary);
+    
     return {
-      suggested_tags: this.heuristicEngine.suggestTags(asset, vocabulary),
-      suggested_title: this.heuristicEngine.suggestTitle(asset, vocabulary),
-      suggested_description: this.heuristicEngine.suggestDescription(asset, vocabulary),
+      suggested_tags: tagSuggestions.map(t => t.tag),
+      suggested_title: titleSuggestions.length > 0 ? titleSuggestions[0]!.text : asset.title,
+      suggested_description: descSuggestions.short,
       recommendations: this.heuristicEngine.generateRecommendations(asset, vocabulary),
-      suggested_category: this.heuristicEngine.suggestCategory(asset, vocabulary)
+      suggested_category: categorySuggestions.length > 0 ? categorySuggestions[0]!.category : (asset.category || '')
     };
   }
 
   /**
    * Batch processing for multiple assets
    */
-  async batchOptimize(assets, vocabulary = {}, corpus = []) {
+  async batchOptimize(
+    assets: Asset[], 
+    vocabulary: Vocabulary = {}, 
+    corpus: Asset[] = []
+  ): Promise<BatchOptimizationResult[]> {
     return this.logger.time('batchOptimize', async () => {
       this.logger.info('Starting batch optimization', {
         assetCount: assets.length,
@@ -620,17 +819,17 @@ export class UnityAssetOptimizer {
         hasCorpus: corpus.length > 0
       });
 
-      const results = [];
+      const results: BatchOptimizationResult[] = [];
       
       for (let i = 0; i < assets.length; i++) {
-        const asset = assets[i];
+        const asset = assets[i]!;
         
         try {
           this.logger.progress('Batch processing', i + 1, assets.length, {
             currentAsset: asset.title
           });
 
-          const grade = await this.grader.gradeAsset(asset, vocabulary);
+          const grade = await this.grader.gradeAsset(asset as unknown as ValidatedAsset, vocabulary);
           const suggestions = this.generateHeuristicSuggestions(asset, vocabulary);
           
           results.push({
@@ -642,14 +841,14 @@ export class UnityAssetOptimizer {
           });
 
         } catch (error) {
-          this.logger.error(`Failed to process asset ${i}`, error, {
+          this.logger.error(`Failed to process asset ${i}`, error as Error, {
             assetTitle: asset.title
           });
           
           results.push({
             asset_id: asset.id || asset.url || `asset_${i}`,
             title: asset.title,
-            error: error.message,
+            error: (error as Error).message,
             processed_at: new Date().toISOString()
           });
         }
@@ -669,7 +868,7 @@ export class UnityAssetOptimizer {
   /**
    * Get system status and health check
    */
-  async getStatus() {
+  async getStatus(): Promise<SystemStatus> {
     const aiStatus = this.aiEngine.getUsageStats();
     const configIssues = this.config.validate();
     
@@ -704,7 +903,7 @@ export class UnityAssetOptimizer {
   /**
    * Helper method to write JSON files
    */
-  async writeJSON(filePath, data) {
+  async writeJSON(filePath: string, data: any): Promise<void> {
     const dir = path.dirname(filePath);
     await fs.promises.mkdir(dir, { recursive: true });
     await fs.promises.writeFile(filePath, JSON.stringify(data, null, 2));
@@ -713,7 +912,7 @@ export class UnityAssetOptimizer {
   /**
    * Helper method to read JSON files
    */
-  async readJSON(filePath) {
+  async readJSON(filePath: string): Promise<any> {
     return FileValidator.validateJSONFile(filePath);
   }
 }

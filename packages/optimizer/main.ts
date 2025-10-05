@@ -35,24 +35,29 @@
  */
 
 import fs from 'fs/promises';
-import UnityAssetOptimizer from './src/optimizer.mjs';
-import { SimpleLogger } from './utils/logger';
+import { UnityAssetOptimizer } from './src/optimizer';
+import type { Asset, BestSellerAsset } from './src/types';
+
+// Simple logger interface for CLI output
+interface SimpleLogger {
+  error(message: string): void;
+}
 
 // CLI helpers
 const args = process.argv.slice(2);
 const cmd = args[0];
 
-const getFlag = (name, def) => {
+const getFlag = (name: string, def?: string): string | undefined => {
   const i = args.indexOf('--' + name);
   return i !== -1 && i + 1 < args.length ? args[i + 1] : def;
 };
 
-const getBool = (name, def = false) => {
+const getBool = (name: string, def: boolean = false): boolean => {
   const v = getFlag(name, def ? 'true' : 'false');
   return String(v).toLowerCase() === 'true';
 };
 
-const ensure = (condition, message) => {
+const ensure = (condition: boolean, message: string): void => {
   if (!condition) {
     console.error(message);
     process.exit(1);
@@ -60,20 +65,35 @@ const ensure = (condition, message) => {
 };
 
 /**
- * Load and merge multiple corpus files
- * @param {string} corpusPaths - Comma-separated list of corpus file paths
- * @returns {Promise<Array>} Merged corpus array
+ * Simple logger implementation
  */
-async function loadMultipleCorpusFiles(corpusPaths) {
+class SimpleLoggerImpl implements SimpleLogger {
+  private debug: boolean;
+
+  constructor(debug: boolean) {
+    this.debug = debug;
+  }
+
+  error(message: string): void {
+    console.error(`❌ ${message}`);
+  }
+}
+
+/**
+ * Load and merge multiple corpus files
+ * @param corpusPaths - Comma-separated list of corpus file paths
+ * @returns Merged corpus array
+ */
+async function loadMultipleCorpusFiles(corpusPaths: string): Promise<Asset[]> {
   const paths = corpusPaths.split(',').map(p => p.trim());
   const optimizer = new UnityAssetOptimizer([]);
   
-  let mergedCorpus = [];
+  let mergedCorpus: Asset[] = [];
   
   for (const path of paths) {
     try {
       console.log(`Loading corpus file: ${path}`);
-      const corpus = await optimizer.readJSON(path);
+      const corpus = await optimizer.readJSON(path) as Asset[];
       
       if (!Array.isArray(corpus)) {
         throw new Error(`Corpus file ${path} must contain an array of assets`);
@@ -82,7 +102,7 @@ async function loadMultipleCorpusFiles(corpusPaths) {
       mergedCorpus = mergedCorpus.concat(corpus);
       console.log(`Loaded ${corpus.length} assets from ${path}`);
     } catch (error) {
-      throw new Error(`Failed to load corpus file ${path}: ${error.message}`);
+      throw new Error(`Failed to load corpus file ${path}: ${(error as Error).message}`);
     }
   }
   
@@ -93,7 +113,7 @@ async function loadMultipleCorpusFiles(corpusPaths) {
 /**
  * Display help information
  */
-function showHelp() {
+function showHelp(): void {
   console.log(`Unity Asset Optimizer v2.0 - AI-Powered CLI Tool
 
 Commands:
@@ -202,16 +222,16 @@ Notes:
 /**
  * SCRAPE COMMAND: Extract asset data from Unity Asset Store URL
  */
-async function cmdScrape() {
+async function cmdScrape(): Promise<void> {
   const url = getFlag('url');
   const outPath = getFlag('out', 'scraped_asset.json');
   
-  ensure(url, '--url is required (Unity Asset Store URL)');
+  ensure(!!url, '--url is required (Unity Asset Store URL)');
   
   const optimizer = new UnityAssetOptimizer(args);
   await optimizer.validateSetup();
   
-  let asset = await optimizer.scrapeAssetWithGraphQL(url, outPath);
+  const asset = await optimizer.scrapeAssetWithGraphQL(url!, outPath);
   
   console.log(JSON.stringify({
     success: true,
@@ -220,7 +240,7 @@ async function cmdScrape() {
       category: asset.category,
       price: asset.price || 'Free',
       tags: (asset.tags || []).slice(0, 3),
-      scraping_method: asset.scraping_method || method,
+      scraping_method: (asset as any).scraping_method || 'graphql',
       output_file: outPath
     }
   }, null, 2));
@@ -229,15 +249,15 @@ async function cmdScrape() {
 /**
  * BUILD-EXEMPLARS COMMAND: Identify exemplar assets and extract patterns
  */
-async function cmdBuildExemplars() {
+async function cmdBuildExemplars(): Promise<void> {
   const corpusPaths = getFlag('corpus');
   const outPath = getFlag('out', 'exemplars.json');
   const topN = getFlag('top-n');
   const topPercent = getFlag('top-percent');
   const bestSellersPath = getFlag('best-sellers'); // New parameter
   
-  ensure(corpusPaths, '--corpus path(s) required (comma-separated for multiple files)');
-  ensure(outPath, '--out path is required');
+  ensure(!!corpusPaths, '--corpus path(s) required (comma-separated for multiple files)');
+  ensure(!!outPath, '--out path is required');
   ensure(!(topN && topPercent), 'Cannot specify both --top-n and --top-percent');
   
   // Default to top 20 if neither is specified
@@ -255,22 +275,22 @@ async function cmdBuildExemplars() {
   await optimizer.validateSetup();
   
   // Load corpus files
-  const corpus = await loadMultipleCorpusFiles(corpusPaths);
+  const corpus = await loadMultipleCorpusFiles(corpusPaths!);
   
   // Load best sellers if provided
-  let bestSellers = [];
+  let bestSellers: BestSellerAsset[] = [];
   if (bestSellersPath) {
     try {
       const bestSellersData = await fs.readFile(bestSellersPath, 'utf8');
-      bestSellers = JSON.parse(bestSellersData);
+      bestSellers = JSON.parse(bestSellersData) as BestSellerAsset[];
       console.log(`📌 Loaded ${bestSellers.length} best sellers from ${bestSellersPath}`);
     } catch (error) {
-      console.error(`❌ Failed to load best sellers from ${bestSellersPath}:`, error.message);
+      console.error(`❌ Failed to load best sellers from ${bestSellersPath}:`, (error as Error).message);
       process.exit(1);
     }
   }
   
-  const result = await optimizer.buildExemplarsFromCorpus(corpus, outPath, finalTopN, finalTopPercent, bestSellers);
+  const result = await optimizer.buildExemplarsFromCorpus(corpus, outPath!, finalTopN, finalTopPercent, bestSellers);
   
   console.log(JSON.stringify({
     success: true,
@@ -278,7 +298,7 @@ async function cmdBuildExemplars() {
       ...result,
       total_assets_processed: corpus.length,
       best_sellers_provided: bestSellers.length,
-      corpus_files: corpusPaths.split(',').length
+      corpus_files: corpusPaths!.split(',').length
     },
     output_file: outPath
   }, null, 2));
@@ -287,17 +307,17 @@ async function cmdBuildExemplars() {
 /**
  * BUILD-GRADING-RULES COMMAND: Generate dynamic grading rules from exemplars
  */
-async function cmdBuildGradingRules() {
+async function cmdBuildGradingRules(): Promise<void> {
   const exemplarsPath = getFlag('exemplars');
   const outPath = getFlag('out', 'grading-rules.json');
   
-  ensure(exemplarsPath, '--exemplars path is required');
-  ensure(outPath, '--out path is required');
+  ensure(!!exemplarsPath, '--exemplars path is required');
+  ensure(!!outPath, '--out path is required');
   
   const optimizer = new UnityAssetOptimizer(args);
   await optimizer.validateSetup();
   
-  const result = await optimizer.buildGradingRules(exemplarsPath, outPath);
+  const result = await optimizer.buildGradingRules(exemplarsPath!, outPath!);
   
   console.log(JSON.stringify({
     success: true,
@@ -309,17 +329,17 @@ async function cmdBuildGradingRules() {
 /**
  * BUILD-EXEMPLAR-VOCAB COMMAND: Build vocabulary from exemplars only
  */
-async function cmdBuildExemplarVocab() {
+async function cmdBuildExemplarVocab(): Promise<void> {
   const exemplarsPath = getFlag('exemplars');
   const outPath = getFlag('out', 'exemplar_vocab.json');
   
-  ensure(exemplarsPath, '--exemplars path is required');
-  ensure(outPath, '--out path is required');
+  ensure(!!exemplarsPath, '--exemplars path is required');
+  ensure(!!outPath, '--out path is required');
   
   const optimizer = new UnityAssetOptimizer(args);
   await optimizer.validateSetup();
   
-  const result = await optimizer.buildExemplarVocabulary(exemplarsPath, outPath);
+  const result = await optimizer.buildExemplarVocabulary(exemplarsPath!, outPath!);
   
   console.log(JSON.stringify({
     success: true,
@@ -331,17 +351,17 @@ async function cmdBuildExemplarVocab() {
 /**
  * GENERATE-PLAYBOOKS COMMAND: Generate category playbooks from exemplars
  */
-async function cmdGeneratePlaybooks() {
+async function cmdGeneratePlaybooks(): Promise<void> {
   const exemplarsPath = getFlag('exemplars');
   const outPath = getFlag('out', 'playbooks.json');
   
-  ensure(exemplarsPath, '--exemplars path is required');
-  ensure(outPath, '--out path is required');
+  ensure(!!exemplarsPath, '--exemplars path is required');
+  ensure(!!outPath, '--out path is required');
   
   const optimizer = new UnityAssetOptimizer(args);
   await optimizer.validateSetup();
   
-  const result = await optimizer.generatePlaybooks(exemplarsPath, outPath);
+  const result = await optimizer.generatePlaybooks(exemplarsPath!, outPath!);
   
   console.log(JSON.stringify({
     success: true,
@@ -354,13 +374,13 @@ async function cmdGeneratePlaybooks() {
  * BUILD-ALL COMMAND: One-stop command to build complete exemplar ecosystem
  * Creates exemplars, exemplar vocabulary, and playbooks from a single corpus
  */
-async function cmdBuildAll() {
+async function cmdBuildAll(): Promise<void> {
   const corpusPaths = getFlag('corpus');
   const outDir = getFlag('out-dir', 'data/');
   const topN = getFlag('top-n');
   const topPercent = getFlag('top-percent');
   
-  ensure(corpusPaths, '--corpus path(s) required (comma-separated for multiple files)');
+  ensure(!!corpusPaths, '--corpus path(s) required (comma-separated for multiple files)');
   ensure(!(topN && topPercent), 'Cannot specify both --top-n and --top-percent');
   
   // Default to top 20 if neither is specified
@@ -375,7 +395,7 @@ async function cmdBuildAll() {
   }
   
   // Ensure output directory ends with slash
-  const outputDir = outDir.endsWith('/') || outDir.endsWith('\\') ? outDir : outDir + '/';
+  const outputDir = outDir!.endsWith('/') || outDir!.endsWith('\\') ? outDir! : outDir! + '/';
   
   // Define output paths
   const exemplarsPath = outputDir + 'exemplars.json';
@@ -390,12 +410,12 @@ async function cmdBuildAll() {
   try {
     // Load corpus files
     console.log('📁 Loading corpus files...');
-    const corpus = await loadMultipleCorpusFiles(corpusPaths);
+    const corpus = await loadMultipleCorpusFiles(corpusPaths!);
     
     // Step 1: Build exemplars
     console.log('\n📊 Step 1/3: Identifying exemplar assets...');
     const exemplarStats = await optimizer.buildExemplarsFromCorpus(corpus, exemplarsPath, finalTopN, finalTopPercent);
-    console.log(`✅ Exemplars built: ${exemplarStats.totalExemplars} assets across ${exemplarStats.totalCategories} categories\n`);
+    console.log(`✅ Exemplars built: ${exemplarStats.totalExemplars} assets across ${exemplarStats.categories} categories\n`);
     
     // Step 2: Build exemplar vocabulary
     console.log('📚 Step 2/3: Building exemplar-based vocabulary...');
@@ -411,11 +431,11 @@ async function cmdBuildAll() {
     const result = {
       success: true,
       summary: {
-        corpus_files_processed: corpusPaths.split(',').length,
+        corpus_files_processed: corpusPaths!.split(',').length,
         total_assets_processed: corpus.length,
         exemplars_per_category: finalTopN || `${finalTopPercent}%`,
         total_exemplars: exemplarStats.totalExemplars,
-        total_categories: exemplarStats.totalCategories,
+        total_categories: exemplarStats.categories,
         output_directory: outputDir
       },
       files_created: {
@@ -434,7 +454,7 @@ async function cmdBuildAll() {
     console.log(JSON.stringify(result, null, 2));
     
   } catch (error) {
-    console.error(`❌ Build failed at step: ${error.message}`);
+    console.error(`❌ Build failed at step: ${(error as Error).message}`);
     console.log('\n💡 Try individual commands for debugging:');
     console.log(`  node main.mjs build-exemplars --corpus "${corpusPaths}" --out ${exemplarsPath} --debug true`);
     throw error;
@@ -444,17 +464,17 @@ async function cmdBuildAll() {
 /**
  * GRADE COMMAND: Score an asset
  */
-async function cmdGrade() {
+async function cmdGrade(): Promise<void> {
   const inputPath = getFlag('input');
   const vocabPath = getFlag('vocab');
   const rulesPath = getFlag('rules'); // New parameter for dynamic rules
   
-  ensure(inputPath, '--input path is required');
+  ensure(!!inputPath, '--input path is required');
   
   const optimizer = new UnityAssetOptimizer(args);
   await optimizer.validateSetup();
   
-  const result = await optimizer.gradeAsset(inputPath, vocabPath, rulesPath);
+  const result = await optimizer.gradeAsset(inputPath!, vocabPath, rulesPath);
   
   console.log(JSON.stringify(result, null, 2));
 }
@@ -462,7 +482,7 @@ async function cmdGrade() {
 /**
  * OPTIMIZE COMMAND: Comprehensive optimization analysis
  */
-async function cmdOptimize() {
+async function cmdOptimize(): Promise<void> {
   const input = getFlag('input');
   const url = getFlag('url');
   const vocabPath = getFlag('vocab');
@@ -471,7 +491,7 @@ async function cmdOptimize() {
   const useAI = getBool('ai', false);
   const outPath = getFlag('out');
   
-  ensure(input || url, '--input asset json or --url is required');
+  ensure(!!(input || url), '--input asset json or --url is required');
   ensure(!(input && url), 'Cannot specify both --input and --url');
   
   const optimizer = new UnityAssetOptimizer(args);
@@ -489,7 +509,7 @@ async function cmdOptimize() {
   // Save to file if requested
   if (outPath) {
     await optimizer.writeJSON(outPath, result);
-    result.output_file = outPath;
+    (result as any).output_file = outPath;
   }
   
   console.log(JSON.stringify(result, null, 2));
@@ -498,26 +518,26 @@ async function cmdOptimize() {
 /**
  * BATCH COMMAND: Process multiple assets
  */
-async function cmdBatch() {
+async function cmdBatch(): Promise<void> {
   const assetsPath = getFlag('assets');
   const vocabPath = getFlag('vocab');
   const corpusPath = getFlag('corpus');
   const outPath = getFlag('out', 'batch_results.json');
   
-  ensure(assetsPath, '--assets path is required');
+  ensure(!!assetsPath, '--assets path is required');
   
   const optimizer = new UnityAssetOptimizer(args);
   await optimizer.validateSetup();
   
   // Load data
-  const assets = await optimizer.readJSON(assetsPath);
+  const assets = await optimizer.readJSON(assetsPath!) as Asset[];
   const vocabulary = vocabPath ? await optimizer.readJSON(vocabPath) : {};
-  const corpus = corpusPath ? await optimizer.readJSON(corpusPath) : [];
+  const corpus = corpusPath ? await optimizer.readJSON(corpusPath) as Asset[] : [];
   
   const results = await optimizer.batchOptimize(assets, vocabulary, corpus);
   
   // Save results
-  await optimizer.writeJSON(outPath, {
+  await optimizer.writeJSON(outPath!, {
     batch_results: results,
     summary: {
       total_assets: assets.length,
@@ -541,7 +561,7 @@ async function cmdBatch() {
 /**
  * STATUS COMMAND: Show system status
  */
-async function cmdStatus() {
+async function cmdStatus(): Promise<void> {
   const optimizer = new UnityAssetOptimizer(args);
   const status = await optimizer.getStatus();
   console.log(JSON.stringify(status, null, 2));
@@ -550,8 +570,8 @@ async function cmdStatus() {
 /**
  * Main execution
  */
-async function main() {
-  const logger = new SimpleLogger(getBool('debug', false));
+async function main(): Promise<void> {
+  const logger = new SimpleLoggerImpl(getBool('debug', false));
   
   try {
     switch (cmd) {
@@ -560,9 +580,6 @@ async function main() {
         break;
       case 'build-exemplars':
         await cmdBuildExemplars();
-        break;
-      case 'build-grading-rules':
-        await cmdBuildGradingRules();
         break;
       case 'build-grading-rules':
         await cmdBuildGradingRules();
@@ -603,9 +620,9 @@ async function main() {
         }
     }
   } catch (error) {
-    logger.error(`Error: ${error.message}`);
+    logger.error(`Error: ${(error as Error).message}`);
     if (getBool('debug', false)) {
-      console.error(error.stack);
+      console.error((error as Error).stack);
     }
     process.exit(1);
   }

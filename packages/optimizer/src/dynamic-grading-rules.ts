@@ -3,7 +3,7 @@
  * Generates category-specific grading rules from exemplar patterns
  */
 
-import { Logger } from './utils/logger.js';
+import { Logger } from './utils/logger';
 import { 
   DynamicGradingRules, 
   DynamicGradingRulesFile,
@@ -13,8 +13,8 @@ import {
   RuleConfidence,
   WeightConfig,
   ThresholdConfig
-} from './types.js';
-import { calculateDetailedRating } from './utils/rating-analysis.js';
+} from './types';
+import { calculateDetailedRating } from './utils/rating-analysis';
 
 const logger = new Logger('dynamic-rules');
 

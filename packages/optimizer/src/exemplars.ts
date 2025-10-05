@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
-import { Logger } from './utils/logger.js';
-import { calculateDetailedRating, DetailedRatingResult } from './utils/rating-analysis.js';
-import { Asset, BestSellerAsset } from './types.js';
+import { Logger } from './utils/logger';
+import { calculateDetailedRating, DetailedRatingResult } from './utils/rating-analysis';
+import { Asset, BestSellerAsset } from './types';
 
 /**
  * Exemplar Management System
@@ -261,14 +261,14 @@ function extractCategory(asset: Asset): string {
     
     // Try to extract from URL path
     const urlMatch = asset.url?.match(/\/packages\/([^\/]+)/);
-    if (urlMatch && urlMatch[1]) {
+    if (urlMatch) {
         return urlMatch[1].split('-').map(word => 
             word.charAt(0).toUpperCase() + word.slice(1)
         ).join(' ');
     }
     
     // Fall back to first tag if available
-    if (asset.tags && asset.tags.length > 0 && asset.tags[0]) {
+    if (asset.tags && asset.tags.length > 0) {
         return asset.tags[0];
     }
     
@@ -335,7 +335,7 @@ export function identifyExemplars(
     const exemplars: ExemplarsByCategory = {};
     
     Object.keys(assetsByCategory).forEach(category => {
-        const categoryAssets = assetsByCategory[category]!; // We know this exists from the keys
+        const categoryAssets = assetsByCategory[category];
         
         // Separate best sellers from regular assets
         const bestSellerAssets = categoryAssets.filter(asset => asset.isBestSeller);

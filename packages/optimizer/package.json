@@ -1,68 +1,20 @@
 {
   "name": "@repo/optimizer",
   "version": "2.0.0",
+  "private": true,
   "description": "AI-powered optimization tool for Unity Asset Store listings",
-  "type": "module",
-  "main": "dist/index.js",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "default": "./dist/index.js"
-    },
-    "./cli": {
-      "import": "./main.mjs",
-      "default": "./main.mjs"
-    },
-    "./src/*": {
-      "import": "./src/*.mjs",
-      "default": "./src/*.mjs"
-    }
-  },
   "scripts": {
-    "start": "node main.mjs",
-    "help": "node main.mjs help",
-    "test": "node --experimental-test-runner test/*.test.mjs",
-    "scrape": "node main.mjs scrape",
-    "grade": "node main.mjs grade",
-    "optimize": "node main.mjs optimize",
-    "status": "node main.mjs status",
-    "build": "tsc",
-    "type-check": "tsc --noEmit"
+    "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
-  "keywords": [
-    "unity",
-    "asset-store",
-    "optimization",
-    "ai",
-    "seo",
-    "unity3d",
-    "gamedev",
-    "scraping",
-    "analysis",
-    "monorepo-ready"
-  ],
-  "author": "Unity Asset Optimizer Team",
-  "license": "MIT",
-  "dependencies": {
+   "dependencies": {
     "openai": "^4.0.0"
   },
   "devDependencies": {
     "typescript": "^5.0.0",
     "@types/node": "^20.0.0"
   },
-  "engines": {
-    "node": ">=18.0.0"
-  },
-  "bin": {
-    "unity-optimizer": "./main.mjs"
-  },
   "files": [
-    "main.mjs",
-    "src/",
-    "dist/",
-    "data/",
-    "README.md"
+    "src/"
   ]
 }

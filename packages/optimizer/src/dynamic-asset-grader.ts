@@ -3,16 +3,16 @@
  * Uses category-specific rules derived from exemplars with composition approach
  */
 
-import { AssetGrader } from './grader.js';
-import { Logger } from './utils/logger.js';
-import { Asset as ValidatedAsset } from './utils/validation.js';
+import { AssetGrader } from './grader';
+import { Logger } from './utils/logger';
+import { Asset as ValidatedAsset } from './utils/validation';
 import { 
   Vocabulary, 
   GradeResult, 
   CategoryRules,
   DynamicGradingRulesFile,
   GraderConfig
-} from './types.js';
+} from './types';
 
 const logger = new Logger('dynamic-grader');
 

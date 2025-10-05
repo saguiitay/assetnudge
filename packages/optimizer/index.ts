@@ -3,11 +3,11 @@
  * Main entry point for programmatic use of the optimizer
  */
 
-import UnityAssetOptimizer from './optimizer.mjs';
-import Config from './config';
-import { scrapeAssetWithGraphQL, Asset as GraphQLAsset } from './scrappers/graphql-scraper';
-import { Asset as ValidatorAsset, Vocabulary as ValidatorVocabulary, FileValidator } from './utils/validation';
-import { GradeResult, Vocabulary as TypesVocabulary } from './types';
+import UnityAssetOptimizer from './src/optimizer';
+import Config from './src/config';
+import { scrapeAssetWithGraphQL, Asset as GraphQLAsset } from './src/scrappers/graphql-scraper';
+import { Asset as ValidatorAsset, Vocabulary as ValidatorVocabulary, FileValidator } from './src/utils/validation';
+import { GradeResult, Vocabulary as TypesVocabulary } from './src/types';
 
 /**
  * Export Config class as OptimizerConfig for compatibility
@@ -32,7 +32,7 @@ export async function scrapeAsset(url: string, config: { debug?: boolean; apiKey
     const asset = await optimizer.scrapeAssetWithGraphQL(url);
     return {
       success: true,
-      asset: asset
+      asset: asset as any
     };
   } catch (error) {
     return {
@@ -58,7 +58,7 @@ export async function scrapeAssetWithGraphQLAPI(url: string, config: { debug?: b
     const asset = await optimizer.scrapeAssetWithGraphQL(url);
     return {
       success: true,
-      asset: asset,
+      asset: asset as any,
       method: 'graphql' as const
     };
   } catch (error) {
