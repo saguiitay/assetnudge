@@ -189,7 +189,7 @@ interface SimilarExemplar {
 /**
  * Comprehensive AI suggestions response interface
  */
-interface AISuggestions {
+export interface AISuggestions {
   suggested_tags: TagSuggestion[];
   suggested_title: TitleSuggestion[];
   suggested_description: DescriptionSuggestion;
@@ -262,7 +262,7 @@ interface ConnectionTestResult {
 /**
  * Usage statistics interface
  */
-interface UsageStats {
+export interface UsageStats {
   available: boolean;
   model: string;
   fallbackEnabled: boolean;

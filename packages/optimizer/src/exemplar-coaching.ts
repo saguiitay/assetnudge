@@ -1,4 +1,5 @@
 import { Logger } from './utils/logger';
+import { Asset, AssetRating } from './types';
 
 /**
  * Exemplar-Based Coaching System
@@ -8,14 +9,203 @@ import { Logger } from './utils/logger';
 // Create logger instance
 const logger = new Logger('coaching');
 
+// Type definitions
+// Extend Asset with additional properties used in exemplars
+interface AssetWithQuality extends Asset {
+  qualityScore: number;
+}
+
+interface ExemplarWithSimilarity extends AssetWithQuality {
+  similarity: number;
+}
+
+interface WordFrequency {
+  item: string;
+  frequency: number;
+}
+
+interface VocabularyPatterns {
+  titleWords: WordFrequency[];
+  titleBigrams: WordFrequency[];
+  descriptionWords: WordFrequency[];
+}
+
+interface TagPatterns {
+  averageTagCount: number;
+  commonTags: WordFrequency[];
+  tagCooccurrence: WordFrequency[];
+}
+
+interface MediaPatterns {
+  images: {
+    min: number;
+    max: number;
+    median: number;
+    avg: number;
+  };
+  videos: {
+    min: number;
+    max: number;
+    median: number;
+    avg: number;
+  };
+  hasVideo: number;
+}
+
+interface PricePatterns {
+  min: number;
+  max: number;
+  median: number;
+  avg: number;
+  iqr: {
+    q1: number;
+    q3: number;
+  };
+}
+
+interface StructurePatterns {
+  titleLength: {
+    min: number;
+    max: number;
+    median: number;
+    avg: number;
+  };
+  longDescriptionLength: {
+    min: number;
+    max: number;
+    median: number;
+    avg: number;
+  };
+  bulletPoints: {
+    min: number;
+    max: number;
+    median: number;
+    avg: number;
+  };
+  hasShortLead: number;
+  commonStructures: {
+    hasFeaturesList: number;
+  };
+}
+
+interface CategoryPatterns {
+  vocabulary: VocabularyPatterns;
+  tags: TagPatterns;
+  media: MediaPatterns;
+  price: PricePatterns;
+  structure: StructurePatterns;
+  metadata: {
+    averageQualityScore: number;
+    extractedAt: string;
+  };
+}
+
+interface ExemplarsData {
+  exemplars: Record<string, AssetWithQuality[]>;
+  patterns: Record<string, CategoryPatterns>;
+}
+
+interface Suggestion {
+  type: string;
+  content: string;
+  impact: 'low' | 'medium' | 'high';
+  explanation: string;
+}
+
+interface RecommendationSection {
+  suggestions: Suggestion[];
+  reasoning: string;
+  score: number;
+  exemplarExamples?: any[];
+  categoryPricing?: {
+    median: number;
+    range: string;
+    q1: number;
+    q3: number;
+  };
+}
+
+interface CategoryAlignment {
+  score: number;
+  breakdown: {
+    title: number;
+    tags: number;
+    media: number;
+  };
+}
+
+interface NeighborSummary {
+  title: string;
+  similarity: string;
+  qualityScore: string;
+  url: string | undefined;
+}
+
+interface RecommendationResponse {
+  recommendations: Array<RecommendationSection & { category: string }>;
+  categoryAlignment: CategoryAlignment;
+  neighbors: NeighborSummary[];
+  metadata: {
+    category: string;
+    exemplarsUsed: number;
+    totalCategoryExemplars: number;
+  };
+}
+
+interface PlaybookRecommendations {
+  title: {
+    optimalLength: string;
+    mustHaveKeywords: string[];
+    commonPhrases: string[];
+  };
+  description: {
+    optimalLength: string;
+    shouldInclude: string[];
+    bulletPoints: string;
+    keyTerms: string[];
+  };
+  tags: {
+    optimalCount: number;
+    mostImportant: string[];
+    commonPairs: string[];
+  };
+  media: {
+    images: string;
+    videos: string;
+    videoAdoption: string;
+  };
+  pricing: {
+    median: string;
+    range: string;
+    sweetSpot: string;
+  };
+}
+
+interface ExemplarStrength {
+  title: string;
+  qualityScore: string;
+  keyStrengths: string[];
+}
+
+interface CategoryPlaybook {
+  category: string;
+  summary: {
+    exemplarCount: number;
+    averageQualityScore: number;
+    lastUpdated: string;
+  };
+  recommendations: PlaybookRecommendations;
+  topExemplars: ExemplarStrength[];
+}
+
 /**
  * Find nearest exemplar neighbors for an asset
- * @param {Object} asset - Target asset to find neighbors for
- * @param {Object} exemplarsData - Loaded exemplars data
- * @param {number} k - Number of neighbors to return (default: 5)
- * @returns {Array} Array of nearest exemplar neighbors
+ * @param asset - Target asset to find neighbors for
+ * @param exemplarsData - Loaded exemplars data
+ * @param k - Number of neighbors to return (default: 5)
+ * @returns Array of nearest exemplar neighbors
  */
-export function findNearestExemplars(asset, exemplarsData, k = 5) {
+export function findNearestExemplars(asset: Asset, exemplarsData: ExemplarsData, k: number = 5): ExemplarWithSimilarity[] {
     const category = extractAssetCategory(asset);
     const exemplars = exemplarsData.exemplars;
     
@@ -34,7 +224,8 @@ export function findNearestExemplars(asset, exemplarsData, k = 5) {
     // Calculate similarity scores
     const neighborsWithSimilarity = candidates.map(exemplar => ({
         ...exemplar,
-        similarity: calculateAssetSimilarity(asset, exemplar)
+        similarity: calculateAssetSimilarity(asset, exemplar),
+        qualityScore: exemplar.qualityScore || 0
     }));
     
     // Sort by similarity and return top k
@@ -45,12 +236,12 @@ export function findNearestExemplars(asset, exemplarsData, k = 5) {
 
 /**
  * Generate exemplar-grounded recommendations
- * @param {Object} asset - Target asset
- * @param {Object} exemplarsData - Loaded exemplars data
- * @param {number} maxNeighbors - Maximum neighbors to consider (default: 5)
- * @returns {Object} Comprehensive recommendations
+ * @param asset - Target asset
+ * @param exemplarsData - Loaded exemplars data
+ * @param maxNeighbors - Maximum neighbors to consider (default: 5)
+ * @returns Comprehensive recommendations
  */
-export function generateExemplarRecommendations(asset, exemplarsData, maxNeighbors = 5) {
+export function generateExemplarRecommendations(asset: Asset, exemplarsData: ExemplarsData, maxNeighbors: number = 5): RecommendationResponse {
     logger.info('Generating exemplar-based recommendations', { 
         assetTitle: asset.title,
         category: extractAssetCategory(asset)
@@ -64,8 +255,13 @@ export function generateExemplarRecommendations(asset, exemplarsData, maxNeighbo
         logger.warn('No patterns or neighbors found for category', { category });
         return {
             recommendations: [],
-            reasoning: 'Insufficient exemplar data for this category',
-            neighbors: []
+            categoryAlignment: { score: 0, breakdown: { title: 0, tags: 0, media: 0 } },
+            neighbors: [],
+            metadata: {
+                category,
+                exemplarsUsed: 0,
+                totalCategoryExemplars: 0
+            }
         };
     }
     
@@ -106,11 +302,11 @@ export function generateExemplarRecommendations(asset, exemplarsData, maxNeighbo
 /**
  * Analyze title gaps compared to exemplars
  */
-function analyzeTitleGaps(asset, neighbors, patterns) {
-    const suggestions = [];
-    const reasoning = [];
+function analyzeTitleGaps(asset: Asset, neighbors: ExemplarWithSimilarity[], patterns: CategoryPatterns): RecommendationSection {
+    const suggestions: Suggestion[] = [];
+    const reasoning: string[] = [];
     
-    const assetTitle = (asset.title || '').toLowerCase();
+    const assetTitle = asset.title.toLowerCase();
     const titleWords = extractWords(assetTitle);
     
     // Check for missing high-frequency title words from exemplars
@@ -126,7 +322,7 @@ function analyzeTitleGaps(asset, neighbors, patterns) {
             type: 'keywords',
             content: `Consider including these keywords: ${topMissing.map(w => `"${w.item}"`).join(', ')}`,
             impact: 'high',
-            explanation: `These appear in ${topMissing[0].frequency}+ top exemplars in this category`
+            explanation: `These appear in ${topMissing[0]?.frequency || 0}+ top exemplars in this category`
         });
         reasoning.push(`Missing ${topMissing.length} high-frequency title keywords`);
     }
@@ -178,11 +374,11 @@ function analyzeTitleGaps(asset, neighbors, patterns) {
 /**
  * Analyze description gaps compared to exemplars
  */
-function analyzeDescriptionGaps(asset, neighbors, patterns) {
-    const suggestions = [];
-    const reasoning = [];
+function analyzeDescriptionGaps(asset: Asset, neighbors: ExemplarWithSimilarity[], patterns: CategoryPatterns): RecommendationSection {
+    const suggestions: Suggestion[] = [];
+    const reasoning: string[] = [];
     
-    const description = (asset.long_description || asset.short_description || '').replace(/<[^>]*>/g, ' ');
+    const description = (asset.long_description || asset.short_description).replace(/<[^>]*>/g, ' ');
     const descWords = extractWords(description);
     const descLength = description.length;
     
@@ -246,11 +442,11 @@ function analyzeDescriptionGaps(asset, neighbors, patterns) {
 /**
  * Analyze tag gaps compared to exemplars
  */
-function analyzeTagGaps(asset, neighbors, patterns) {
-    const suggestions = [];
-    const reasoning = [];
+function analyzeTagGaps(asset: Asset, neighbors: ExemplarWithSimilarity[], patterns: CategoryPatterns): RecommendationSection {
+    const suggestions: Suggestion[] = [];
+    const reasoning: string[] = [];
     
-    const assetTags = (asset.tags || []).map(t => t.toLowerCase().trim());
+    const assetTags = asset.tags.map(t => t.toLowerCase().trim());
     const assetTagCount = assetTags.length;
     
     // Check tag count
@@ -276,15 +472,17 @@ function analyzeTagGaps(asset, neighbors, patterns) {
             type: 'keywords',
             content: `Consider these common tags: ${missingTags.slice(0, 4).map(t => t.item).join(', ')}`,
             impact: 'high',
-            explanation: `These tags appear in ${missingTags[0].frequency}+ exemplars`
+            explanation: `These tags appear in ${missingTags[0]?.frequency || 0}+ exemplars`
         });
     }
     
     // Check for tag co-occurrence opportunities
     const topCooccurrences = patterns.tags.tagCooccurrence.slice(0, 5);
     for (const cooccur of topCooccurrences) {
-        const [tag1, tag2] = cooccur.item.split('|');
-        if (assetTags.includes(tag1) && !assetTags.includes(tag2)) {
+        const splitTags = cooccur.item.split('|');
+        const tag1 = splitTags[0];
+        const tag2 = splitTags[1];
+        if (tag1 && tag2 && assetTags.includes(tag1) && !assetTags.includes(tag2)) {
             suggestions.push({
                 type: 'cooccurrence',
                 content: `Since you have "${tag1}", consider adding "${tag2}"`,
@@ -301,7 +499,7 @@ function analyzeTagGaps(asset, neighbors, patterns) {
         score: Math.max(0, 100 - suggestions.length * 20),
         exemplarExamples: neighbors.slice(0, 3).map(n => ({
             title: n.title,
-            tags: n.tags || []
+            tags: n.tags
         }))
     };
 }
@@ -309,12 +507,12 @@ function analyzeTagGaps(asset, neighbors, patterns) {
 /**
  * Analyze media gaps compared to exemplars
  */
-function analyzeMediaGaps(asset, neighbors, patterns) {
-    const suggestions = [];
-    const reasoning = [];
+function analyzeMediaGaps(asset: Asset, neighbors: ExemplarWithSimilarity[], patterns: CategoryPatterns): RecommendationSection {
+    const suggestions: Suggestion[] = [];
+    const reasoning: string[] = [];
     
-    const assetImages = asset.images_count || 0;
-    const assetVideos = asset.videos_count || 0;
+    const assetImages = asset.images_count;
+    const assetVideos = asset.videos_count;
     
     // Check image count
     const optimalImages = patterns.media.images;
@@ -355,9 +553,9 @@ function analyzeMediaGaps(asset, neighbors, patterns) {
 /**
  * Analyze structure gaps compared to exemplars
  */
-function analyzeStructureGaps(asset, neighbors, patterns) {
-    const suggestions = [];
-    const description = (asset.long_description || asset.short_description || '');
+function analyzeStructureGaps(asset: Asset, neighbors: ExemplarWithSimilarity[], patterns: CategoryPatterns): RecommendationSection {
+    const suggestions: Suggestion[] = [];
+    const description = asset.long_description || asset.short_description;
     
     // Check for short lead
     if (patterns.structure.hasShortLead > 0.5 && description.length > 160) {
@@ -382,9 +580,9 @@ function analyzeStructureGaps(asset, neighbors, patterns) {
 /**
  * Analyze price alignment with exemplars
  */
-function analyzePriceAlignment(asset, neighbors, patterns) {
-    const suggestions = [];
-    const assetPrice = asset.price || 0;
+function analyzePriceAlignment(asset: Asset, neighbors: ExemplarWithSimilarity[], patterns: CategoryPatterns): RecommendationSection {
+    const suggestions: Suggestion[] = [];
+    const assetPrice = asset.price;
     
     if (assetPrice > 0 && patterns.price.median > 0) {
         const medianPrice = patterns.price.median;
@@ -423,26 +621,26 @@ function analyzePriceAlignment(asset, neighbors, patterns) {
 /**
  * Calculate overall category alignment score
  */
-function calculateCategoryAlignment(asset, patterns) {
+function calculateCategoryAlignment(asset: Asset, patterns: CategoryPatterns): CategoryAlignment {
     let alignmentScore = 0;
     let maxScore = 0;
     
     // Title alignment (20 points)
-    const titleWords = extractWords((asset.title || '').toLowerCase());
+    const titleWords = extractWords(asset.title.toLowerCase());
     const topTitleWords = patterns.vocabulary.titleWords.slice(0, 10).map(w => w.item);
     const titleMatches = titleWords.filter(word => topTitleWords.includes(word)).length;
     alignmentScore += Math.min(20, (titleMatches / topTitleWords.length) * 20);
     maxScore += 20;
     
     // Tag alignment (15 points)
-    const assetTags = (asset.tags || []).map(t => t.toLowerCase().trim());
+    const assetTags = asset.tags.map(t => t.toLowerCase().trim());
     const topTags = patterns.tags.commonTags.slice(0, 10).map(t => t.item);
     const tagMatches = assetTags.filter(tag => topTags.includes(tag)).length;
-    alignmentScore += Math.min(15, (tagMatches / Math.min(topTags.length, assetTags.length || 1)) * 15);
+    alignmentScore += Math.min(15, (tagMatches / Math.min(topTags.length, assetTags.length)) * 15);
     maxScore += 15;
     
     // Media alignment (10 points)
-    const imageScore = Math.min(10, ((asset.images_count || 0) / patterns.media.images.median) * 10);
+    const imageScore = Math.min(10, (asset.images_count / patterns.media.images.median) * 10);
     alignmentScore += imageScore;
     maxScore += 10;
     
@@ -450,7 +648,7 @@ function calculateCategoryAlignment(asset, patterns) {
         score: Math.round((alignmentScore / maxScore) * 100),
         breakdown: {
             title: Math.round((titleMatches / topTitleWords.length) * 100),
-            tags: Math.round((tagMatches / Math.min(topTags.length, assetTags.length || 1)) * 100),
+            tags: Math.round((tagMatches / Math.min(topTags.length, assetTags.length)) * 100),
             media: Math.round(imageScore * 10)
         }
     };
@@ -458,16 +656,16 @@ function calculateCategoryAlignment(asset, patterns) {
 
 // Helper functions
 
-function extractAssetCategory(asset) {
-    return asset.category || asset.tags?.[0] || 'Uncategorized';
+function extractAssetCategory(asset: Asset): string {
+    return asset.category || asset.tags[0] || 'Uncategorized';
 }
 
-function findRelatedCategories(category, exemplars) {
+function findRelatedCategories(category: string, exemplars: Record<string, Asset[]>): string[] {
     const categoryLower = category.toLowerCase();
-    const related = [];
+    const related: string[] = [];
     
     // Simple category relationships
-    const relationships = {
+    const relationships: Record<string, string[]> = {
         '3d': ['vfx', 'tools'],
         '2d': ['tools', 'templates'],
         'tools': ['3d', '2d', 'templates'],
@@ -479,32 +677,32 @@ function findRelatedCategories(category, exemplars) {
     return relationships[categoryLower] || Object.keys(exemplars).filter(cat => cat !== category);
 }
 
-function calculateAssetSimilarity(asset1, asset2) {
+function calculateAssetSimilarity(asset1: Asset, asset2: Asset): number {
     let similarity = 0;
     
     // Title similarity (40% weight)
-    const title1Words = extractWords((asset1.title || '').toLowerCase());
-    const title2Words = extractWords((asset2.title || '').toLowerCase());
+    const title1Words = extractWords(asset1.title.toLowerCase());
+    const title2Words = extractWords(asset2.title.toLowerCase());
     const titleJaccard = jaccardSimilarity(title1Words, title2Words);
     similarity += titleJaccard * 0.4;
     
     // Tag similarity (30% weight)
-    const tags1 = (asset1.tags || []).map(t => t.toLowerCase());
-    const tags2 = (asset2.tags || []).map(t => t.toLowerCase());
+    const tags1 = asset1.tags.map(t => t.toLowerCase());
+    const tags2 = asset2.tags.map(t => t.toLowerCase());
     const tagJaccard = jaccardSimilarity(tags1, tags2);
     similarity += tagJaccard * 0.3;
     
     // Price similarity (15% weight)
-    const price1 = asset1.price || 0;
-    const price2 = asset2.price || 0;
+    const price1 = asset1.price;
+    const price2 = asset2.price;
     if (price1 > 0 && price2 > 0) {
         const priceSim = 1 - Math.abs(price1 - price2) / Math.max(price1, price2);
         similarity += priceSim * 0.15;
     }
     
     // Media similarity (15% weight)
-    const media1 = (asset1.images_count || 0) + (asset1.videos_count || 0);
-    const media2 = (asset2.images_count || 0) + (asset2.videos_count || 0);
+    const media1 = asset1.images_count + asset1.videos_count;
+    const media2 = asset2.images_count + asset2.videos_count;
     if (media1 > 0 || media2 > 0) {
         const mediaSim = 1 - Math.abs(media1 - media2) / Math.max(media1, media2, 1);
         similarity += mediaSim * 0.15;
@@ -513,13 +711,13 @@ function calculateAssetSimilarity(asset1, asset2) {
     return similarity;
 }
 
-function jaccardSimilarity(set1, set2) {
+function jaccardSimilarity(set1: string[], set2: string[]): number {
     const intersection = new Set([...set1].filter(x => set2.includes(x)));
     const union = new Set([...set1, ...set2]);
     return union.size === 0 ? 0 : intersection.size / union.size;
 }
 
-function extractWords(text) {
+function extractWords(text: string): string[] {
     if (!text) return [];
     return text
         .toLowerCase()
@@ -529,15 +727,15 @@ function extractWords(text) {
         .filter(word => !isStopWord(word));
 }
 
-function extractBigrams(words) {
-    const bigrams = [];
+function extractBigrams(words: string[]): string[] {
+    const bigrams: string[] = [];
     for (let i = 0; i < words.length - 1; i++) {
         bigrams.push(`${words[i]} ${words[i + 1]}`);
     }
     return bigrams;
 }
 
-function isStopWord(word) {
+function isStopWord(word: string): boolean {
     const stopWords = new Set([
         'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by',
         'this', 'that', 'these', 'those', 'you', 'your', 'it', 'its', 'is', 'are', 'was', 'were',
@@ -548,12 +746,12 @@ function isStopWord(word) {
 
 /**
  * Generate a category playbook from exemplar patterns
- * @param {string} category - Category name
- * @param {Object} patterns - Category patterns
- * @param {Array} exemplars - Category exemplars
- * @returns {Object} Category playbook
+ * @param category - Category name
+ * @param patterns - Category patterns
+ * @param exemplars - Category exemplars
+ * @returns Category playbook
  */
-export function generateCategoryPlaybook(category, patterns, exemplars) {
+export function generateCategoryPlaybook(category: string, patterns: CategoryPatterns, exemplars: AssetWithQuality[]): CategoryPlaybook {
     return {
         category,
         summary: {
@@ -597,12 +795,16 @@ export function generateCategoryPlaybook(category, patterns, exemplars) {
     };
 }
 
-function identifyExemplarStrengths(exemplar, patterns) {
-    const strengths = [];
+function identifyExemplarStrengths(exemplar: AssetWithQuality, patterns: CategoryPatterns): string[] {
+    const strengths: string[] = [];
     
     if (exemplar.reviews_count > 100) strengths.push('High review count');
-    if (exemplar.rating > 4.5) strengths.push('Excellent rating');
-    if ((exemplar.images_count || 0) >= patterns.media.images.median) strengths.push('Good media coverage');
+    // Calculate average rating from rating array
+    const avgRating = exemplar.rating.length > 0 ? 
+        exemplar.rating.reduce((sum: number, r: AssetRating) => sum + (parseInt(r.value) * parseInt(r.count)), 0) / 
+        exemplar.rating.reduce((sum: number, r: AssetRating) => sum + parseInt(r.count), 0) : 0;
+    if (avgRating > 4.5) strengths.push('Excellent rating');
+    if (exemplar.images_count >= patterns.media.images.median) strengths.push('Good media coverage');
     
     return strengths;
 }
