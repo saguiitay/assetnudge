@@ -224,7 +224,7 @@ npm run start build-all -- --corpus "data/corpus1.json,data/corpus2.json,data/co
     ├── pattern-extraction.ts  # Pattern extraction from exemplars
     ├── exemplar-coaching.mjs  # Neighbor-based recommendations
     ├── ai-suggestions.ts     # OpenAI integration
-    ├── heuristic-suggestions.mjs # Fallback suggestions
+    ├── heuristic-suggestions.ts # Fallback suggestions
     ├── scrappers/             # Web scraping modules
     │   └── graphql-scraper.ts
     └── utils/                 # Utility modules

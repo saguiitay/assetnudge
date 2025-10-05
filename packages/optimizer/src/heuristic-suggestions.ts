@@ -3,17 +3,91 @@
  * Provides fallback suggestion algorithms when AI is unavailable
  */
 
-import { tokenize, jaccard, zscore, tfVector, cosine } from './utils/utils';
+import { tokenize, jaccard, zscore, tfVector, cosine, TFVector } from './utils/utils';
 import { Logger } from './utils/logger';
 import { VocabularyBuilder } from './vocabulary';
+import { Asset } from './types';
+import { Vocabulary, CategoryVocabulary } from './types';
+
+/**
+ * Configuration interface required by HeuristicSuggestions
+ */
+interface HeuristicConfig {
+  thresholds: {
+    tags: {
+      maximum: number;
+    };
+    images: {
+      minimum: number;
+    };
+    videos: {
+      minimum: number;
+    };
+    longDesc: {
+      minWords: number;
+    };
+    reviews: {
+      minimum: number;
+    };
+    freshness: {
+      maxDays: number;
+    };
+  };
+  getValidCategories(): string[];
+  isValidCategory(category: string): boolean;
+}
 
 const logger = new Logger('heuristic');
+
+/**
+ * Tag suggestion result
+ */
+export interface TagSuggestion {
+  tag: string;
+  reason: string;
+}
+
+/**
+ * Title suggestion result
+ */
+export interface TitleSuggestion {
+  text: string;
+  rationale: string;
+}
+
+/**
+ * Description suggestion result
+ */
+export interface DescriptionSuggestion {
+  short: string;
+  long_markdown: string;
+}
+
+/**
+ * Category suggestion result
+ */
+export interface CategorySuggestion {
+  category: string;
+  confidence: number;
+}
+
+/**
+ * Recommendation item
+ */
+export interface Recommendation {
+  item: string;
+  effort: string;
+  impact: string;
+}
 
 /**
  * Heuristic-based suggestion generator
  */
 export class HeuristicSuggestions {
-  constructor(config) {
+  private config: HeuristicConfig;
+  private logger: Logger;
+
+  constructor(config: HeuristicConfig) {
     this.config = config;
     this.logger = logger.child('suggestions');
   }
@@ -21,7 +95,7 @@ export class HeuristicSuggestions {
   /**
    * Generate tag suggestions using category vocabulary
    */
-  suggestTags(asset, vocab, k = null) {
+  suggestTags(asset: Asset, vocab: Vocabulary | null, k: number | null = null): TagSuggestion[] {
     const maxTags = k || this.config.thresholds.tags.maximum;
     const categoryVocab = VocabularyBuilder.getVocabularyForCategory(vocab, asset.category);
     const currentTags = new Set((asset.tags || []).map(x => String(x).toLowerCase()));
@@ -56,7 +130,7 @@ export class HeuristicSuggestions {
   /**
    * Generate title suggestions using category keywords
    */
-  suggestTitle(asset, vocab) {
+  suggestTitle(asset: Asset, vocab: Vocabulary | null): TitleSuggestion[] {
     const category = asset.category || 'Templates';
     const categoryVocab = VocabularyBuilder.getVocabularyForCategory(vocab, asset.category);
     
@@ -100,7 +174,7 @@ export class HeuristicSuggestions {
   /**
    * Generate description suggestions with marketing structure
    */
-  suggestDescription(asset, vocab) {
+  suggestDescription(asset: Asset, vocab: Vocabulary | null): DescriptionSuggestion {
     const category = asset.category || 'Templates';
     const categoryVocab = VocabularyBuilder.getVocabularyForCategory(vocab, asset.category);
     
@@ -139,7 +213,7 @@ export class HeuristicSuggestions {
   /**
    * Build structured long description
    */
-  buildLongDescription(category, keywords) {
+  private buildLongDescription(category: string, keywords: string[]): string {
     return `## Who it's for
 - Indie devs and teams shipping ${category.toLowerCase()}
 - Prototypers who need production-ready blocks
@@ -176,9 +250,9 @@ Add to cart and start integrating today. Join thousands of developers who've acc
   /**
    * Generate general improvement recommendations
    */
-  generateRecommendations(asset, vocab) {
+  generateRecommendations(asset: Asset, vocab: Vocabulary | null): Recommendation[] {
     const categoryVocab = VocabularyBuilder.getVocabularyForCategory(vocab, asset.category);
-    const recommendations = [];
+    const recommendations: Recommendation[] = [];
 
     this.logger.debug('Generating heuristic recommendations', {
       title: asset.title
@@ -202,7 +276,8 @@ Add to cart and start integrating today. Join thousands of developers who've acc
     }
 
     // Content recommendations
-    const descWordCount = this.getWordCount(asset.long_description || asset.description || '');
+    const longDescription = (asset as any).long_description || (asset as any).description || '';
+    const descWordCount = this.getWordCount(longDescription);
     if (descWordCount < this.config.thresholds.longDesc.minWords) {
       recommendations.push({
         item: `Expand description to ${this.config.thresholds.longDesc.minWords}+ words with features, benefits, and use cases`,
@@ -263,7 +338,7 @@ Add to cart and start integrating today. Join thousands of developers who've acc
   /**
    * Suggest category classification using official Unity categories
    */
-  suggestCategory(asset, vocab) {
+  suggestCategory(asset: Asset, vocab: Vocabulary | null): CategorySuggestion[] {
     const validCategories = this.config.getValidCategories();
     const categories = Object.keys(vocab || {});
 
@@ -278,22 +353,25 @@ Add to cart and start integrating today. Join thousands of developers who've acc
     }
 
     // Use TF-IDF similarity against category vocabularies
-    const assetDesc = asset.long_description || asset.short_description || asset.description || '';
+    const longDescription = (asset as any).long_description || (asset as any).short_description || (asset as any).description || '';
+    const assetDesc = longDescription;
     const candidateVector = tfVector(`${asset.title || ''} ${assetDesc} ${(asset.tags || []).join(' ')}`);
 
     const scores = categories.map(cat => {
-      const categoryVocab = vocab[cat];
-      const centroid = {};
+      const categoryVocab = vocab![cat];
+      const centroid: TFVector = {};
 
       // Build category centroid from vocabulary
-      for (const term of (categoryVocab.top_unigrams || []).slice(0, 50)) {
-        centroid[term.t] = (centroid[term.t] || 0) + term.c;
-      }
-      for (const term of (categoryVocab.top_bigrams || []).slice(0, 30)) {
-        centroid[term.t] = (centroid[term.t] || 0) + term.c;
-      }
-      for (const term of (categoryVocab.top_tags || []).slice(0, 30)) {
-        centroid[term.t] = (centroid[term.t] || 0) + term.c;
+      if (categoryVocab) {
+        for (const term of (categoryVocab.top_unigrams || []).slice(0, 50)) {
+          centroid[term.t] = (centroid[term.t] || 0) + term.c;
+        }
+        for (const term of (categoryVocab.top_bigrams || []).slice(0, 30)) {
+          centroid[term.t] = (centroid[term.t] || 0) + term.c;
+        }
+        for (const term of (categoryVocab.top_tags || []).slice(0, 30)) {
+          centroid[term.t] = (centroid[term.t] || 0) + term.c;
+        }
       }
 
       return {
@@ -308,7 +386,8 @@ Add to cart and start integrating today. Join thousands of developers who've acc
         category: this.mapToOfficialCategory(s.category),
         sim: s.sim
       }))
-      .filter(s => s.category && this.config.isValidCategory(s.category));
+      .filter(s => s.category && this.config.isValidCategory(s.category))
+      .filter((s): s is { category: string; sim: number } => s.category !== null);
 
     const totalSim = validScores.reduce((a, b) => a + b.sim, 0) || 1;
     const results = validScores.slice(0, 3).map(s => ({
@@ -333,7 +412,7 @@ Add to cart and start integrating today. Join thousands of developers who've acc
       return results;
     } catch (validationError) {
       this.logger.warn('Heuristic category validation failed, using fallback', {
-        error: validationError.message,
+        error: (validationError as Error).message,
         results
       });
       return [{ category: 'Templates/Systems', confidence: 0.5 }];
@@ -343,13 +422,14 @@ Add to cart and start integrating today. Join thousands of developers who've acc
   /**
    * Keyword-based category classification using official categories
    */
-  classifyWithKeywords(asset) {
+  private classifyWithKeywords(asset: Asset): CategorySuggestion[] {
     const validCategories = this.config.getValidCategories();
-    const assetDesc = asset.long_description || asset.short_description || asset.description || '';
+    const longDescription = (asset as any).long_description || (asset as any).short_description || (asset as any).description || '';
+    const assetDesc = longDescription;
     const assetText = `${asset.title || ''} ${assetDesc} ${(asset.tags || []).join(' ')}`.toLowerCase();
 
     // Map keywords to official categories  
-    const categoryKeywords = {
+    const categoryKeywords: Record<string, string[]> = {
       '3D/Characters': ['character', '3d character', 'humanoid', 'avatar', 'person', 'hero'],
       '3D/Environments': ['environment', '3d environment', 'scene', 'level', 'world', 'landscape'],
       '3D/Props': ['prop', '3d prop', 'object', 'furniture', 'item', 'asset'],
@@ -430,7 +510,7 @@ Add to cart and start integrating today. Join thousands of developers who've acc
       return results;
     } catch (validationError) {
       this.logger.warn('Heuristic keyword classification validation failed', {
-        error: validationError.message,
+        error: (validationError as Error).message,
         results
       });
       return [{ category: 'Templates/Systems', confidence: 0.5 }];
@@ -440,8 +520,8 @@ Add to cart and start integrating today. Join thousands of developers who've acc
   /**
    * Map legacy category names to official categories
    */
-  mapToOfficialCategory(legacyCategory) {
-    const mapping = {
+  private mapToOfficialCategory(legacyCategory: string): string | null {
+    const mapping: Record<string, string> = {
       'Templates': 'Templates/Systems',
       'Scripts': 'Tools/Utilities', 
       'Tools': 'Tools/Utilities',
@@ -464,7 +544,7 @@ Add to cart and start integrating today. Join thousands of developers who've acc
   /**
    * Helper method to count words in text
    */
-  getWordCount(text) {
+  private getWordCount(text: string): number {
     return text.replace(/<[^>]*>/g, ' ')
       .split(/\s+/)
       .filter(w => w.length > 0).length;
@@ -473,11 +553,11 @@ Add to cart and start integrating today. Join thousands of developers who've acc
   /**
    * Helper method to calculate days between dates
    */
-  daysBetween(dateString) {
+  private daysBetween(dateString: string | Date | null | undefined): number | null {
     if (!dateString) return null;
     const date = new Date(dateString);
-    if (isNaN(date)) return null;
-    return Math.floor((Date.now() - date) / 86400000);
+    if (isNaN(date.getTime())) return null;
+    return Math.floor((Date.now() - date.getTime()) / 86400000);
   }
 }
 

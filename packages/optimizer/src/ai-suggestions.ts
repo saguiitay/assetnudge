@@ -6,7 +6,7 @@
 import OpenAI from 'openai';
 import { Logger } from './utils/logger';
 import { AssetValidator } from './utils/validation';
-import HeuristicSuggestions from './heuristic-suggestions.mjs';
+import HeuristicSuggestions from './heuristic-suggestions';
 import { 
   buildSystemPrompt, 
   buildDetailedUserPrompt, 
@@ -14,7 +14,7 @@ import {
   buildFocusedUserPrompt, 
   buildBaseAssetContext 
 } from './prompts/index';
-import type { Asset } from './types';
+import type { Asset, Vocabulary } from './types';
 
 const logger = new Logger('ai');
 
@@ -41,6 +41,21 @@ interface AIConfig {
     };
     bullets: {
       minimum: number;
+    };
+    images: {
+      minimum: number;
+    };
+    videos: {
+      minimum: number;
+    };
+    longDesc: {
+      minWords: number;
+    };
+    reviews: {
+      minimum: number;
+    };
+    freshness: {
+      maxDays: number;
     };
   };
 }
@@ -396,7 +411,7 @@ export class AISuggestionEngine {
 
         if (this.config.ai.fallbackToHeuristic) {
           this.logger.info('Falling back to heuristic suggestions');
-          return await this.generateHeuristicFallback(asset, categoryVocab);
+          return await this.generateHeuristicFallback(asset, null);
         }
 
         throw error;
@@ -885,7 +900,7 @@ export class AISuggestionEngine {
   /**
    * Generate heuristic fallback suggestions when AI is unavailable
    */
-  private async generateHeuristicFallback(asset: Asset, vocab: VocabularyPatterns): Promise<AISuggestions> {
+  private async generateHeuristicFallback(asset: Asset, vocab: Vocabulary | null): Promise<AISuggestions> {
     this.logger.debug('Generating heuristic fallback suggestions');
 
     // Use heuristic suggestions as fallback

@@ -14,7 +14,7 @@ import VocabularyBuilder from './vocabulary';
 import AssetGrader from './grader';
 import SimilarityEngine from './similarity';
 import AISuggestionEngine from './ai-suggestions';
-import HeuristicSuggestions from './heuristic-suggestions.js';
+import HeuristicSuggestions from './heuristic-suggestions';
 
 // External dependencies
 import { scrapeAssetWithGraphQL } from './scrappers/graphql-scraper';
