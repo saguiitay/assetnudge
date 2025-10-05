@@ -221,7 +221,7 @@ npm run start build-all -- --corpus "data/corpus1.json,data/corpus2.json,data/co
     ├── vocabulary.ts          # Vocabulary building
     ├── types.ts               # TypeScript type definitions
     ├── exemplars.mjs          # Exemplar identification
-    ├── pattern-extraction.mjs # Pattern extraction from exemplars
+    ├── pattern-extraction.ts  # Pattern extraction from exemplars
     ├── exemplar-coaching.mjs  # Neighbor-based recommendations
     ├── ai-suggestions.mjs     # OpenAI integration
     ├── heuristic-suggestions.mjs # Fallback suggestions

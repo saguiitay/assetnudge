@@ -10,33 +10,195 @@ import { isStopWord, filterStopWords } from './utils/utils';
 const logger = new Logger('patterns');
 
 /**
- * Extract vocabulary patterns from exemplars
- * @param {Array} exemplars - Array of exemplar assets
- * @param {Object} config - Configuration object containing textProcessing settings
- * @returns {Object} Vocabulary patterns
+ * Asset interface representing the structure of an asset
  */
-export function extractVocabularyPatterns(exemplars, config = {}) {
+interface Asset {
+  title?: string;
+  long_description?: string;
+  short_description?: string;
+  tags?: string[];
+  images_count?: number;
+  videos_count?: number;
+  price?: number | null;
+  qualityScore: number;
+}
+
+/**
+ * Configuration interface for text processing
+ */
+interface TextProcessingConfig {
+  ignoreStopWords?: boolean;
+}
+
+/**
+ * Configuration interface containing textProcessing settings
+ */
+interface Config {
+  textProcessing?: TextProcessingConfig;
+}
+
+/**
+ * Frequency item interface
+ */
+interface FrequencyItem {
+  item: string;
+  frequency: number;
+}
+
+/**
+ * Length statistics interface
+ */
+interface LengthStats {
+  min: number;
+  max: number;
+  avg: number;
+  median: number;
+}
+
+/**
+ * Bullet points statistics interface
+ */
+interface BulletPointStats {
+  avg: number;
+  median: number;
+  present: number;
+}
+
+/**
+ * Common structures statistics interface
+ */
+interface CommonStructures {
+  hasFeaturesList: number;
+  hasRequirements: number;
+  hasExamples: number;
+  hasLinks: number;
+  hasCTA: number;
+}
+
+/**
+ * IQR (Interquartile Range) interface
+ */
+interface IQR {
+  q1: number;
+  q3: number;
+}
+
+/**
+ * Price patterns interface
+ */
+interface PricePatterns {
+  min: number;
+  max: number;
+  avg: number;
+  median: number;
+  iqr: IQR;
+}
+
+/**
+ * Media count statistics interface
+ */
+interface MediaCountStats {
+  min: number;
+  max: number;
+  avg: number;
+  median: number;
+}
+
+/**
+ * Vocabulary patterns interface
+ */
+interface VocabularyPatterns {
+  titleWords: FrequencyItem[];
+  titleBigrams: FrequencyItem[];
+  descriptionWords: FrequencyItem[];
+  keyPhrases: unknown[];
+}
+
+/**
+ * Tag patterns interface
+ */
+interface TagPatterns {
+  commonTags: FrequencyItem[];
+  tagCooccurrence: FrequencyItem[];
+  averageTagCount: number;
+}
+
+/**
+ * Structure patterns interface
+ */
+interface StructurePatterns {
+  titleLength: LengthStats;
+  shortDescriptionLength: LengthStats;
+  longDescriptionLength: LengthStats;
+  bulletPoints: BulletPointStats;
+  hasShortLead: number;
+  commonStructures: CommonStructures;
+}
+
+/**
+ * Media patterns interface
+ */
+interface MediaPatterns {
+  images: MediaCountStats;
+  videos: MediaCountStats;
+  hasVideo: number;
+  imageVideoRatio: number;
+}
+
+/**
+ * Pattern metadata interface
+ */
+interface PatternMetadata {
+  exemplarCount: number;
+  averageQualityScore: number;
+  topExemplarScore: number;
+  extractedAt: string;
+}
+
+/**
+ * Complete category patterns interface
+ */
+interface CategoryPatterns {
+  vocabulary: VocabularyPatterns;
+  tags: TagPatterns;
+  structure: StructurePatterns;
+  media: MediaPatterns;
+  price: PricePatterns;
+  metadata: PatternMetadata;
+}
+
+/**
+ * Extract vocabulary patterns from exemplars
+ * @param exemplars - Array of exemplar assets
+ * @param config - Configuration object containing textProcessing settings
+ * @returns Vocabulary patterns
+ */
+export function extractVocabularyPatterns(exemplars: Asset[], config: Config = {}): VocabularyPatterns {
     const ignoreStopWords = config.textProcessing?.ignoreStopWords ?? true;
     
-    const patterns = {
-        titleWords: {},      // Word frequency in titles
-        titleBigrams: {},    // Common word pairs in titles
-        descriptionWords: {},// Important words in descriptions (first 200 words)
+    const patterns: VocabularyPatterns = {
+        titleWords: [],      // Word frequency in titles
+        titleBigrams: [],    // Common word pairs in titles
+        descriptionWords: [],// Important words in descriptions (first 200 words)
         keyPhrases: []       // Common phrases across exemplars
     };
+    
+    const titleWordsMap: Record<string, number> = {};
+    const titleBigramsMap: Record<string, number> = {};
+    const descriptionWordsMap: Record<string, number> = {};
     
     exemplars.forEach(asset => {
         // Process title
         if (asset.title) {
             const titleWords = extractWords(asset.title, ignoreStopWords);
             titleWords.forEach(word => {
-                patterns.titleWords[word] = (patterns.titleWords[word] || 0) + 1;
+                titleWordsMap[word] = (titleWordsMap[word] || 0) + 1;
             });
             
             // Extract bigrams from title
             const bigrams = extractBigrams(titleWords);
             bigrams.forEach(bigram => {
-                patterns.titleBigrams[bigram] = (patterns.titleBigrams[bigram] || 0) + 1;
+                titleBigramsMap[bigram] = (titleBigramsMap[bigram] || 0) + 1;
             });
         }
         
@@ -46,32 +208,34 @@ export function extractVocabularyPatterns(exemplars, config = {}) {
         const descWords = extractWords(cleanDescription, ignoreStopWords).slice(0, 200);
         
         descWords.forEach(word => {
-            patterns.descriptionWords[word] = (patterns.descriptionWords[word] || 0) + 1;
+            descriptionWordsMap[word] = (descriptionWordsMap[word] || 0) + 1;
         });
     });
     
     // Convert to ranked lists and filter by frequency
     const minFrequency = Math.max(1, Math.floor(exemplars.length * 0.2)); // Appear in at least 20% of exemplars
     
-    patterns.titleWords = filterAndRank(patterns.titleWords, minFrequency);
-    patterns.titleBigrams = filterAndRank(patterns.titleBigrams, Math.max(1, Math.floor(exemplars.length * 0.15)));
-    patterns.descriptionWords = filterAndRank(patterns.descriptionWords, minFrequency);
+    patterns.titleWords = filterAndRank(titleWordsMap, minFrequency);
+    patterns.titleBigrams = filterAndRank(titleBigramsMap, Math.max(1, Math.floor(exemplars.length * 0.15)));
+    patterns.descriptionWords = filterAndRank(descriptionWordsMap, minFrequency);
     
     return patterns;
 }
 
 /**
  * Extract tag patterns from exemplars
- * @param {Array} exemplars - Array of exemplar assets
- * @returns {Object} Tag patterns
+ * @param exemplars - Array of exemplar assets
+ * @returns Tag patterns
  */
-export function extractTagPatterns(exemplars) {
-    const patterns = {
-        commonTags: {},      // Tag frequency
-        tagCooccurrence: {}, // Tags that often appear together
+export function extractTagPatterns(exemplars: Asset[]): TagPatterns {
+    const patterns: TagPatterns = {
+        commonTags: [],      // Tag frequency
+        tagCooccurrence: [], // Tags that often appear together
         averageTagCount: 0
     };
     
+    const commonTagsMap: Record<string, number> = {};
+    const tagCooccurrenceMap: Record<string, number> = {};
     let totalTags = 0;
     
     exemplars.forEach(asset => {
@@ -81,16 +245,18 @@ export function extractTagPatterns(exemplars) {
         // Count individual tags
         tags.forEach(tag => {
             const normalizedTag = tag.toLowerCase().trim();
-            patterns.commonTags[normalizedTag] = (patterns.commonTags[normalizedTag] || 0) + 1;
+            commonTagsMap[normalizedTag] = (commonTagsMap[normalizedTag] || 0) + 1;
         });
         
         // Count tag co-occurrences
         for (let i = 0; i < tags.length; i++) {
             for (let j = i + 1; j < tags.length; j++) {
-                const tag1 = tags[i].toLowerCase().trim();
-                const tag2 = tags[j].toLowerCase().trim();
-                const pair = [tag1, tag2].sort().join('|');
-                patterns.tagCooccurrence[pair] = (patterns.tagCooccurrence[pair] || 0) + 1;
+                const tag1 = tags[i]?.toLowerCase().trim();
+                const tag2 = tags[j]?.toLowerCase().trim();
+                if (tag1 && tag2) {
+                    const pair = [tag1, tag2].sort().join('|');
+                    tagCooccurrenceMap[pair] = (tagCooccurrenceMap[pair] || 0) + 1;
+                }
             }
         }
     });
@@ -99,19 +265,19 @@ export function extractTagPatterns(exemplars) {
     
     // Filter and rank
     const minTagFreq = Math.max(1, Math.floor(exemplars.length * 0.15));
-    patterns.commonTags = filterAndRank(patterns.commonTags, minTagFreq);
-    patterns.tagCooccurrence = filterAndRank(patterns.tagCooccurrence, Math.max(1, Math.floor(exemplars.length * 0.1)));
+    patterns.commonTags = filterAndRank(commonTagsMap, minTagFreq);
+    patterns.tagCooccurrence = filterAndRank(tagCooccurrenceMap, Math.max(1, Math.floor(exemplars.length * 0.1)));
     
     return patterns;
 }
 
 /**
  * Extract structural patterns from exemplars
- * @param {Array} exemplars - Array of exemplar assets
- * @returns {Object} Structure patterns
+ * @param exemplars - Array of exemplar assets
+ * @returns Structure patterns
  */
-export function extractStructurePatterns(exemplars) {
-    const patterns = {
+export function extractStructurePatterns(exemplars: Asset[]): StructurePatterns {
+    const patterns: StructurePatterns = {
         titleLength: { min: Infinity, max: 0, avg: 0, median: 0 },
         shortDescriptionLength: { min: Infinity, max: 0, avg: 0, median: 0 },
         longDescriptionLength: { min: Infinity, max: 0, avg: 0, median: 0 },
@@ -127,10 +293,10 @@ export function extractStructurePatterns(exemplars) {
     };
     
     const lengths = {
-        title: [],
-        shortDesc: [],
-        longDesc: [],
-        bullets: []
+        title: [] as number[],
+        shortDesc: [] as number[],
+        longDesc: [] as number[],
+        bullets: [] as number[]
     };
     
     exemplars.forEach(asset => {
@@ -216,19 +382,19 @@ export function extractStructurePatterns(exemplars) {
 
 /**
  * Extract media patterns from exemplars
- * @param {Array} exemplars - Array of exemplar assets
- * @returns {Object} Media patterns
+ * @param exemplars - Array of exemplar assets
+ * @returns Media patterns
  */
-export function extractMediaPatterns(exemplars) {
-    const patterns = {
+export function extractMediaPatterns(exemplars: Asset[]): MediaPatterns {
+    const patterns: MediaPatterns = {
         images: { min: Infinity, max: 0, avg: 0, median: 0 },
         videos: { min: Infinity, max: 0, avg: 0, median: 0 },
         hasVideo: 0, // Percentage with videos
         imageVideoRatio: 0
     };
     
-    const imageCounts = [];
-    const videoCounts = [];
+    const imageCounts: number[] = [];
+    const videoCounts: number[] = [];
     let totalImages = 0;
     let totalVideos = 0;
     
@@ -261,13 +427,13 @@ export function extractMediaPatterns(exemplars) {
 
 /**
  * Extract price patterns from exemplars
- * @param {Array} exemplars - Array of exemplar assets
- * @returns {Object} Price patterns
+ * @param exemplars - Array of exemplar assets
+ * @returns Price patterns
  */
-export function extractPricePatterns(exemplars) {
+export function extractPricePatterns(exemplars: Asset[]): PricePatterns {
     const prices = exemplars
         .map(asset => asset.price)
-        .filter(price => price !== null && price !== undefined && price > 0);
+        .filter((price): price is number => price !== null && price !== undefined && price > 0);
     
     if (prices.length === 0) {
         return { min: 0, max: 0, avg: 0, median: 0, iqr: { q1: 0, q3: 0 } };
@@ -275,7 +441,7 @@ export function extractPricePatterns(exemplars) {
     
     prices.sort((a, b) => a - b);
     
-    const patterns = {
+    const patterns: PricePatterns = {
         min: Math.min(...prices),
         max: Math.max(...prices),
         avg: prices.reduce((a, b) => a + b, 0) / prices.length,
@@ -288,11 +454,11 @@ export function extractPricePatterns(exemplars) {
 
 /**
  * Extract all patterns from exemplars for a category
- * @param {Array} exemplars - Array of exemplar assets for a category
- * @param {Object} config - Configuration object containing textProcessing settings
- * @returns {Object} Complete pattern analysis
+ * @param exemplars - Array of exemplar assets for a category
+ * @param config - Configuration object containing textProcessing settings
+ * @returns Complete pattern analysis
  */
-export function extractCategoryPatterns(exemplars, config = {}) {
+export function extractCategoryPatterns(exemplars: Asset[], config: Config = {}): CategoryPatterns {
     logger.info(`Extracting patterns from ${exemplars.length} exemplars`);
     
     return {
@@ -312,7 +478,7 @@ export function extractCategoryPatterns(exemplars, config = {}) {
 
 // Helper functions
 
-function extractWords(text, ignoreStopWords = true) {
+function extractWords(text: string, ignoreStopWords: boolean = true): string[] {
     if (!text) return [];
     
     const words = text
@@ -324,8 +490,8 @@ function extractWords(text, ignoreStopWords = true) {
     return filterStopWords(words, ignoreStopWords);
 }
 
-function extractBigrams(words) {
-    const bigrams = [];
+function extractBigrams(words: string[]): string[] {
+    const bigrams: string[] = [];
     for (let i = 0; i < words.length - 1; i++) {
         bigrams.push(`${words[i]} ${words[i + 1]}`);
     }
@@ -334,7 +500,7 @@ function extractBigrams(words) {
 
 // Remove the old isStopWord function since we're using the centralized one from utils.ts
 
-function filterAndRank(frequencyMap, minFrequency) {
+function filterAndRank(frequencyMap: Record<string, number>, minFrequency: number): FrequencyItem[] {
     return Object.entries(frequencyMap)
         .filter(([_, freq]) => freq >= minFrequency)
         .sort(([_, a], [__, b]) => b - a)
@@ -342,27 +508,33 @@ function filterAndRank(frequencyMap, minFrequency) {
         .map(([item, freq]) => ({ item, frequency: freq }));
 }
 
-function calculateMedian(numbers) {
+function calculateMedian(numbers: number[]): number {
     if (numbers.length === 0) return 0;
     
     const sorted = [...numbers].sort((a, b) => a - b);
     const mid = Math.floor(sorted.length / 2);
     
     if (sorted.length % 2 === 0) {
-        return (sorted[mid - 1] + sorted[mid]) / 2;
+        const left = sorted[mid - 1];
+        const right = sorted[mid];
+        if (left !== undefined && right !== undefined) {
+            return (left + right) / 2;
+        }
+        return 0;
     } else {
-        return sorted[mid];
+        const value = sorted[mid];
+        return value !== undefined ? value : 0;
     }
 }
 
-function calculateIQR(sortedNumbers) {
+function calculateIQR(sortedNumbers: number[]): IQR {
     if (sortedNumbers.length === 0) return { q1: 0, q3: 0 };
     
     const q1Index = Math.floor(sortedNumbers.length * 0.25);
     const q3Index = Math.floor(sortedNumbers.length * 0.75);
     
     return {
-        q1: sortedNumbers[q1Index],
-        q3: sortedNumbers[q3Index]
+        q1: sortedNumbers[q1Index] ?? 0,
+        q3: sortedNumbers[q3Index] ?? 0
     };
 }

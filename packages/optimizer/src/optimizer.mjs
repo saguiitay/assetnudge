@@ -26,7 +26,7 @@ import { DynamicAssetGrader } from './dynamic-asset-grader';
 
 // Exemplar and pattern modules
 import { identifyExemplars, saveExemplars, getExemplarStats } from './exemplars.mjs';
-import { extractCategoryPatterns } from './pattern-extraction.mjs';
+import { extractCategoryPatterns } from './pattern-extraction';
 import { generateCategoryPlaybook, generateExemplarRecommendations } from './exemplar-coaching.mjs';
 
 /**
