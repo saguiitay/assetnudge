@@ -58,6 +58,19 @@ type GlobalSidebarProperties = {
   readonly children: ReactNode;
 };
 
+type SubNavItem = {
+  title: string;
+  url: string;
+}
+
+type NavItem = {
+      title: string;
+      url: string;
+      icon: any;
+      isActive: boolean;
+      items: SubNavItem[];
+    };
+
 const data = {
   user: {
     name: 'shadcn',
@@ -101,7 +114,7 @@ const data = {
     //     },
     //   ],
     // },
-  ],
+  ] as NavItem[],
   navSecondary: [
     {
       title: 'Support',
@@ -166,7 +179,7 @@ export const GlobalSidebar = ({ children }: GlobalSidebarProperties) => {
                         </CollapsibleTrigger>
                         <CollapsibleContent>
                           <SidebarMenuSub>
-                            {item.items?.map((subItem) => (
+                            {item.items?.filter(s => s != null && s.title != null && s.url != null).map((subItem) => (
                               <SidebarMenuSubItem key={subItem.title}>
                                 <SidebarMenuSubButton asChild>
                                   <Link href={subItem.url}>

@@ -27,20 +27,20 @@ const dictionaries: Record<string, () => Promise<Dictionary>> =
   );
 
 export const getDictionary = async (locale: string): Promise<Dictionary> => {
-  const normalizedLocale = locale.split('-')[0];
+  const normalizedLocale = locale.split('-')[0] ?? 'en';
 
   if (!locales.includes(normalizedLocale as any)) {
     console.warn(`Locale "${locale}" is not supported, defaulting to "en"`);
-    return dictionaries['en']();
+    return dictionaries['en']!();
   }
 
   try {
-    return await dictionaries[normalizedLocale]();
+    return await dictionaries[normalizedLocale]!();
   } catch (error) {
     console.error(
       `Error loading dictionary for locale "${normalizedLocale}", falling back to "en"`,
       error
     );
-    return dictionaries['en']();
+    return dictionaries['en']!();
   }
 };
