@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { Logger } from './utils/logger';
+import { calculateDetailedRating } from './utils/rating-analysis.js';
 
 /**
  * Exemplar Management System
@@ -11,18 +12,53 @@ import { Logger } from './utils/logger';
 const logger = new Logger('exemplars');
 
 /**
- * Calculate composite quality score for an asset
+ * Calculate composite quality score for an asset with enhanced rating analysis
  * @param {Object} asset - Asset data
  * @returns {number} Quality score
  */
 export function calculateQualityScore(asset) {
     let score = 0;
     
-    // Review strength: rating × log(1 + reviews_count)
-    const rating = asset.rating || 0;
+    // Enhanced rating analysis
+    const ratingData = calculateDetailedRating(asset.rating || []);
     const reviewsCount = asset.reviews_count || 0;
-    const reviewStrength = rating * Math.log(1 + reviewsCount);
+    
+    // Review strength: average rating × log(1 + reviews) × quality multiplier
+    const baseReviewStrength = ratingData.averageRating * Math.log(1 + reviewsCount);
+    const qualityMultiplier = 1 + (ratingData.ratingQuality / 100);
+    const reviewStrength = baseReviewStrength * qualityMultiplier;
     score += reviewStrength * 10; // Weight factor
+    
+    // Rating quality bonuses
+    if (ratingData.totalRatings >= 50 && ratingData.averageRating >= 4.5) {
+        score += 15; // High-volume excellent ratings bonus
+    }
+    
+    if (ratingData.consistency.excellentPercentage > 70) {
+        score += 10; // Consistently excellent ratings bonus
+    }
+    
+    if (ratingData.ratingQuality > 80) {
+        score += 12; // High overall rating quality bonus
+    }
+    
+    // Rating quality penalties
+    if (ratingData.consistency.isControversial) {
+        score -= 8; // Controversial rating pattern penalty
+    }
+    
+    if (ratingData.consistency.negativePercentage > 20) {
+        score -= 5; // High negative sentiment penalty
+    }
+    
+    // Volume thresholds with quality requirements
+    if (ratingData.totalRatings >= 100 && ratingData.averageRating >= 4.0) {
+        score += 8; // Proven quality with high volume
+    }
+    
+    if (ratingData.totalRatings >= 20 && ratingData.ratingQuality < 30) {
+        score -= 10; // Poor quality despite sufficient volume
+    }
     
     // Freshness bonus (recent update ≤ 180 days)
     const freshness = calculateFreshnessScore(asset.last_update);
@@ -35,6 +71,16 @@ export function calculateQualityScore(asset) {
     // Listing completeness
     const completeness = calculateCompletenessScore(asset);
     score += completeness * 8;
+    
+    // Log detailed scoring for debugging
+    logger.debug('Quality score calculated', {
+        title: asset.title?.substring(0, 50),
+        baseScore: score.toFixed(1),
+        averageRating: ratingData.averageRating.toFixed(2),
+        ratingQuality: ratingData.ratingQuality.toFixed(1),
+        totalRatings: ratingData.totalRatings,
+        reviewStrength: reviewStrength.toFixed(1)
+    });
     
     return score;
 }
@@ -144,12 +190,16 @@ export function identifyExemplars(assets, topN = null, topPercent = null) {
             assetsByCategory[category] = [];
         }
         
-        // Calculate quality score and add to asset
+        // Calculate quality score with enhanced rating analysis and add to asset
         const qualityScore = calculateQualityScore(asset);
+        const ratingData = calculateDetailedRating(asset.rating || []);
+        
         assetsByCategory[category].push({
             ...asset,
             qualityScore,
-            category: category // Normalize category
+            category: category, // Normalize category
+            // Add rating analysis for later use
+            _ratingAnalysis: ratingData
         });
     });
     
@@ -178,12 +228,18 @@ export function identifyExemplars(assets, topN = null, topPercent = null) {
         const percentage = ((exemplars[category].length / categoryAssets.length) * 100).toFixed(1);
         logger.info(`Category "${category}": ${categoryAssets.length} total assets, selected ${exemplars[category].length} exemplars (${percentage}%)`);
         
-        // Log some stats about the exemplars
+        // Log enhanced stats about the exemplars
         if (exemplars[category].length > 0) {
             const scores = exemplars[category].map(a => a.qualityScore);
             const avgScore = scores.reduce((a, b) => a + b, 0) / scores.length;
             const topScore = Math.max(...scores);
+            const avgRating = exemplars[category].reduce((sum, a) => 
+                sum + (a._ratingAnalysis?.averageRating || 0), 0) / exemplars[category].length;
+            const avgRatingQuality = exemplars[category].reduce((sum, a) => 
+                sum + (a._ratingAnalysis?.ratingQuality || 0), 0) / exemplars[category].length;
+            
             logger.debug(`  Score range: ${topScore.toFixed(2)} (top) to ${Math.min(...scores).toFixed(2)} (bottom), avg: ${avgScore.toFixed(2)}`);
+            logger.debug(`  Rating quality: avg rating ${avgRating.toFixed(2)}, avg quality score ${avgRatingQuality.toFixed(1)}`);
         }
     });
     
@@ -241,14 +297,22 @@ export function getExemplarStats(exemplars) {
         averageExemplarsPerCategory: 0,
         categoriesWithMostExemplars: [],
         averageQualityScore: 0,
+        averageRatingQuality: 0,
         scoreDistribution: {
             high: 0,    // > 50
             medium: 0,  // 20-50
             low: 0      // < 20
+        },
+        ratingQualityDistribution: {
+            excellent: 0,  // > 80
+            good: 0,       // 60-80
+            fair: 0,       // 40-60
+            poor: 0        // < 40
         }
     };
     
     let totalScore = 0;
+    let totalRatingQuality = 0;
     let totalAssets = 0;
     
     Object.entries(exemplars).forEach(([category, assets]) => {
@@ -258,20 +322,32 @@ export function getExemplarStats(exemplars) {
         assets.forEach(asset => {
             totalScore += asset.qualityScore;
             
+            const ratingQuality = asset._ratingAnalysis?.ratingQuality || 0;
+            totalRatingQuality += ratingQuality;
+            
+            // Quality score distribution
             if (asset.qualityScore > 50) stats.scoreDistribution.high++;
             else if (asset.qualityScore > 20) stats.scoreDistribution.medium++;
             else stats.scoreDistribution.low++;
+            
+            // Rating quality distribution
+            if (ratingQuality > 80) stats.ratingQualityDistribution.excellent++;
+            else if (ratingQuality > 60) stats.ratingQualityDistribution.good++;
+            else if (ratingQuality > 40) stats.ratingQualityDistribution.fair++;
+            else stats.ratingQualityDistribution.poor++;
         });
         
         stats.categoriesWithMostExemplars.push({
             category,
             count: assets.length,
-            avgScore: assets.reduce((sum, a) => sum + a.qualityScore, 0) / assets.length
+            avgScore: assets.reduce((sum, a) => sum + a.qualityScore, 0) / assets.length,
+            avgRatingQuality: assets.reduce((sum, a) => sum + (a._ratingAnalysis?.ratingQuality || 0), 0) / assets.length
         });
     });
     
     stats.averageExemplarsPerCategory = stats.totalExemplars / stats.totalCategories;
     stats.averageQualityScore = totalScore / totalAssets;
+    stats.averageRatingQuality = totalRatingQuality / totalAssets;
     
     // Sort categories by exemplar count
     stats.categoriesWithMostExemplars.sort((a, b) => b.count - a.count);

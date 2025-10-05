@@ -3,10 +3,11 @@
  * Provides heuristic scoring and evaluation for Unity Asset Store listings
  */
 
-import { daysBetween, clamp, zscore, jaccard, tokenize } from './utils/utils';
-import { Logger } from './utils/logger';
-import { AssetValidator, Asset } from './utils/validation';
-import { CategoryVocabulary, GraderConfig, GradeResult, PreparedContent, ScoreResult, ThresholdConfig, Vocabulary, WeightConfig } from './types';
+import { daysBetween, clamp, zscore, jaccard, tokenize } from './utils/utils.js';
+import { Logger } from './utils/logger.js';
+import { AssetValidator, Asset } from './utils/validation.js';
+import { CategoryVocabulary, GraderConfig, GradeResult, PreparedContent, ScoreResult, ThresholdConfig, Vocabulary, WeightConfig } from './types.js';
+import { calculateDetailedRating, DetailedRatingResult } from './utils/rating-analysis.js';
 // Note: VocabularyBuilder is imported from the .mjs file for now
 
 const logger = new Logger('grader');
@@ -242,27 +243,110 @@ export class AssetGrader {
   /**
    * Score trust signals (ratings, reviews, freshness)
    */
+  /**
+   * Score trust signals with enhanced rating analysis
+   * Evaluates rating quality, review volume, and content freshness
+   */
   scoreTrust(asset: Asset): ScoreResult {
     const score: ScoreResult = { score: 0, reasons: [] };
     const w = this.weights.trust;
 
-    // Rating
-    const ratingOK = (asset.rating || 0) >= this.thresholds.rating.minimum;
-    if (ratingOK) {
-      score.score += w.rating;
+    // Enhanced Rating Analysis
+    // Handle both AssetRating[] and legacy number formats
+    let ratingData: DetailedRatingResult;
+    if (Array.isArray(asset.rating)) {
+      ratingData = calculateDetailedRating(asset.rating);
+    } else if (typeof asset.rating === 'number') {
+      // Legacy format - create synthetic rating data
+      ratingData = {
+        averageRating: asset.rating,
+        totalRatings: asset.reviews_count || 0,
+        ratingQuality: asset.rating >= 4 ? 70 : asset.rating >= 3 ? 50 : 30,
+        distribution: [],
+        consistency: {
+          positivePercentage: asset.rating >= 4 ? 80 : 50,
+          excellentPercentage: asset.rating >= 4.5 ? 70 : 30,
+          negativePercentage: asset.rating < 3 ? 30 : 10,
+          isControversial: false,
+          polarizationScore: 0
+        }
+      };
     } else {
-      score.reasons.push(`Rating below ${this.thresholds.rating.minimum} - currently ${asset.rating || 0}`);
+      // No rating data available
+      ratingData = calculateDetailedRating([]);
+    }
+    
+    // Rating scoring with quality considerations
+    const minRating = this.thresholds.rating.minimum;
+    if (ratingData.averageRating >= minRating) {
+      let ratingScore = w.rating;
+      
+      // Quality bonuses
+      if (ratingData.ratingQuality > 80) {
+        ratingScore += Math.round(w.rating * 0.5); // 50% bonus for excellent quality
+        score.reasons.push(`Excellent rating quality (${ratingData.ratingQuality.toFixed(1)}/100) +${Math.round(w.rating * 0.5)} bonus`);
+      } else if (ratingData.ratingQuality > 60) {
+        ratingScore += Math.round(w.rating * 0.2); // 20% bonus for good quality
+        score.reasons.push(`Good rating quality (${ratingData.ratingQuality.toFixed(1)}/100) +${Math.round(w.rating * 0.2)} bonus`);
+      }
+      
+      // Consistency bonuses
+      if (ratingData.consistency.excellentPercentage > 70) {
+        ratingScore += 1;
+        score.reasons.push(`${ratingData.consistency.excellentPercentage.toFixed(1)}% excellent ratings +1 bonus`);
+      }
+      
+      // Volume + quality combo bonus
+      if (ratingData.totalRatings >= 50 && ratingData.averageRating >= 4.5) {
+        ratingScore += 2;
+        score.reasons.push(`High-volume excellent ratings (${ratingData.totalRatings} ratings, ${ratingData.averageRating.toFixed(2)} avg) +2 bonus`);
+      }
+      
+      score.score += ratingScore;
+    } else {
+      // Quality penalties
+      let penalty = 0;
+      if (ratingData.consistency.isControversial) {
+        penalty += 2;
+        score.reasons.push(`Controversial rating pattern (polarization: ${ratingData.consistency.polarizationScore.toFixed(1)}) -2 penalty`);
+      }
+      
+      if (ratingData.consistency.negativePercentage > 20) {
+        penalty += 1;
+        score.reasons.push(`High negative sentiment (${ratingData.consistency.negativePercentage.toFixed(1)}% negative) -1 penalty`);
+      }
+      
+      score.reasons.push(`Rating below ${minRating} - currently ${ratingData.averageRating.toFixed(2)} (${ratingData.totalRatings} ratings)${penalty > 0 ? ` with -${penalty} quality penalties` : ''}`);
     }
 
-    // Reviews
-    const reviewsOK = (asset.reviews_count || 0) >= this.thresholds.reviews.minimum;
-    if (reviewsOK) {
-      score.score += w.reviews;
+    // Reviews with enhanced volume assessment
+    const minReviews = this.thresholds.reviews.minimum;
+    const reviewsCount = asset.reviews_count || 0;
+    
+    if (reviewsCount >= minReviews) {
+      let reviewScore = w.reviews;
+      
+      // Volume bonuses
+      if (reviewsCount >= 100) {
+        reviewScore += 2; // Significant review volume
+        score.reasons.push(`High review volume (${reviewsCount} reviews) +2 bonus`);
+      } else if (reviewsCount >= 50) {
+        reviewScore += 1; // Good review volume
+        score.reasons.push(`Good review volume (${reviewsCount} reviews) +1 bonus`);
+      }
+      
+      // Rating-review alignment bonus
+      if (ratingData.totalRatings >= reviewsCount * 0.8) {
+        reviewScore += 1; // Ratings align with reviews (engagement)
+        score.reasons.push(`High rating engagement (${ratingData.totalRatings} ratings vs ${reviewsCount} reviews) +1 bonus`);
+      }
+      
+      score.score += reviewScore;
     } else {
-      score.reasons.push(`Fewer than ${this.thresholds.reviews.minimum} reviews - currently ${asset.reviews_count || 0}`);
+      score.reasons.push(`Fewer than ${minReviews} reviews - currently ${reviewsCount}`);
     }
 
-    // Freshness
+    // Freshness (unchanged)
     const days = daysBetween(asset.last_update);
     const freshOK = days != null && days <= this.thresholds.freshness.maxDays;
     if (freshOK) {
@@ -272,6 +356,17 @@ export class AssetGrader {
         `Update older than ${this.thresholds.freshness.maxDays} days${days != null ? ` - ${days} days ago` : ''}`
       );
     }
+
+    // Log detailed trust scoring for debugging
+    this.logger.debug('Trust score calculated', {
+      title: asset.title?.substring(0, 50),
+      trustScore: score.score,
+      averageRating: ratingData.averageRating.toFixed(2),
+      ratingQuality: ratingData.ratingQuality.toFixed(1),
+      totalRatings: ratingData.totalRatings,
+      reviewsCount: reviewsCount,
+      isControversial: ratingData.consistency.isControversial
+    });
 
     return score;
   }
