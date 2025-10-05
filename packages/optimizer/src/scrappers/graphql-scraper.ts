@@ -129,7 +129,7 @@ interface AssetVideo {
   thumbnailUrl: string;
 }
 
-interface Asset {
+export interface Asset {
   id: string;
   url: string;
   title: string;
