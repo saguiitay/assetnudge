@@ -33,8 +33,11 @@ npm run status
 
 ### One-Command Setup
 ```bash
-# Build complete exemplar ecosystem from corpus
+# Build complete exemplar ecosystem from single corpus
 npm run start build-all -- --corpus data/packages.json --out-dir data/ --top-n 15
+
+# Build from multiple corpus files (for large datasets)
+npm run start build-all -- --corpus "data/corpus1.json,data/corpus2.json,data/corpus3.json" --out-dir data/ --top-n 15
 
 # Optimize an asset
 npm run optimize -- --input asset.json --exemplars data/exemplars.json --vocab data/exemplar_vocab.json
@@ -101,6 +104,9 @@ npm run status
 
 # Build complete exemplar ecosystem (recommended)
 npm run start build-all -- --corpus data/packages.json --out-dir data/ --top-n 15
+
+# Build from multiple corpus files (for large datasets)
+npm run start build-all -- --corpus "data/part1.json,data/part2.json,data/part3.json" --out-dir data/ --top-n 15
 
 # Scrape asset data
 npm run scrape -- --url "https://assetstore.unity.com/packages/..." --out asset.json
@@ -171,12 +177,20 @@ The optimizer uses a comprehensive 100-point scoring system:
 
 ### 1. Build Exemplar Database
 ```bash
+# Single corpus file
 npm run start build-exemplars -- --corpus data/packages.json --out data/exemplars.json --top-n 15
+
+# Multiple corpus files (for large datasets)
+npm run start build-exemplars -- --corpus "data/corpus1.json,data/corpus2.json,data/corpus3.json" --out data/exemplars.json --top-n 15
 ```
 
 ### 2. Build Quality-Focused Vocabulary
 ```bash
+# Single corpus file
 npm run start build-exemplar-vocab -- --exemplars data/exemplars.json --out data/exemplar_vocab.json
+
+# Or build vocabulary directly from multiple corpus files
+npm run start build-vocab -- --corpus "data/part1.json,data/part2.json" --out data/vocab.json
 ```
 
 ### 3. Generate Category Playbooks
@@ -186,7 +200,11 @@ npm run start generate-playbooks -- --exemplars data/exemplars.json --out data/p
 
 ### 4. One-Command Setup (Recommended)
 ```bash
+# Single corpus file
 npm run start build-all -- --corpus data/packages.json --out-dir data/ --top-n 15
+
+# Multiple corpus files (for large datasets split across files)
+npm run start build-all -- --corpus "data/corpus1.json,data/corpus2.json,data/corpus3.json" --out-dir data/ --top-n 15
 ```
 
 ## 📁 Project Structure
@@ -268,6 +286,32 @@ interface Asset {
   };
 }
 ```
+
+### Corpus Format
+The corpus can be provided as a single file or multiple files (comma-separated):
+
+```bash
+# Single file
+--corpus data/packages.json
+
+# Multiple files (for large datasets)
+--corpus "data/part1.json,data/part2.json,data/part3.json"
+```
+
+Each corpus file should contain an array of asset objects:
+```json
+[
+  { /* asset object 1 */ },
+  { /* asset object 2 */ },
+  // ... more assets
+]
+```
+
+**Benefits of Multiple Files:**
+- **Memory Management**: Process large datasets without memory issues
+- **Organization**: Split by category, date, or source
+- **Incremental Updates**: Add new data without rebuilding entire corpus
+- **Parallel Processing**: Future support for parallel processing of file chunks
 
 ### Exemplar Database Format
 ```typescript

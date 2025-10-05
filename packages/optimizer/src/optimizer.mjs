@@ -71,7 +71,7 @@ export class UnityAssetOptimizer {
   }
 
   /**
-   * Build vocabulary from corpus data
+   * Build vocabulary from corpus file path
    */
   async buildVocabulary(corpusPath, outputPath) {
     return this.logger.time('buildVocabulary', async () => {
@@ -79,6 +79,25 @@ export class UnityAssetOptimizer {
       
       // Validate input file
       const corpus = await FileValidator.validateJSONFile(corpusPath);
+      
+      return this.buildVocabularyFromCorpus(corpus, outputPath);
+    });
+  }
+
+  /**
+   * Build vocabulary from corpus array
+   */
+  async buildVocabularyFromCorpus(corpus, outputPath) {
+    return this.logger.time('buildVocabularyFromCorpus', async () => {
+      this.logger.info('Building vocabulary from corpus array', { 
+        corpusSize: corpus.length,
+        outputPath 
+      });
+      
+      // Validate corpus is an array
+      if (!Array.isArray(corpus)) {
+        throw new Error('Corpus must be an array of assets');
+      }
       
       // Build vocabulary
       const vocabulary = await this.vocabularyBuilder.buildVocabAndMedians(corpus);
@@ -88,6 +107,7 @@ export class UnityAssetOptimizer {
       
       this.logger.success('Vocabulary built successfully', {
         categories: Object.keys(vocabulary).length,
+        corpusSize: corpus.length,
         outputPath
       });
       
@@ -96,7 +116,7 @@ export class UnityAssetOptimizer {
   }
 
   /**
-   * Build exemplars database from corpus
+   * Build exemplars database from corpus file path
    */
   async buildExemplars(corpusPath, outputPath, topN = null, topPercent = null) {
     return this.logger.time('buildExemplars', async () => {
@@ -114,6 +134,31 @@ export class UnityAssetOptimizer {
       // Validate input file
       const corpus = await FileValidator.validateJSONFile(corpusPath);
       
+      return this.buildExemplarsFromCorpus(corpus, outputPath, finalTopN, finalTopPercent);
+    });
+  }
+
+  /**
+   * Build exemplars database from corpus array
+   */
+  async buildExemplarsFromCorpus(corpus, outputPath, topN = null, topPercent = null) {
+    return this.logger.time('buildExemplarsFromCorpus', async () => {
+      // Default to topN = 20 if neither is specified
+      const finalTopN = topN !== null ? topN : (topPercent !== null ? null : 20);
+      const finalTopPercent = topPercent;
+      
+      this.logger.info('Building exemplars from corpus array', { 
+        corpusSize: corpus.length,
+        outputPath, 
+        topN: finalTopN, 
+        topPercent: finalTopPercent 
+      });
+      
+      // Validate corpus is an array
+      if (!Array.isArray(corpus)) {
+        throw new Error('Corpus must be an array of assets');
+      }
+
       // Identify exemplars by category
       const exemplarsByCategory = identifyExemplars(corpus, finalTopN, finalTopPercent);
       

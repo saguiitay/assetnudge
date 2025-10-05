@@ -60,6 +60,37 @@ const ensure = (condition, message) => {
 };
 
 /**
+ * Load and merge multiple corpus files
+ * @param {string} corpusPaths - Comma-separated list of corpus file paths
+ * @returns {Promise<Array>} Merged corpus array
+ */
+async function loadMultipleCorpusFiles(corpusPaths) {
+  const paths = corpusPaths.split(',').map(p => p.trim());
+  const optimizer = new UnityAssetOptimizer([]);
+  
+  let mergedCorpus = [];
+  
+  for (const path of paths) {
+    try {
+      console.log(`Loading corpus file: ${path}`);
+      const corpus = await optimizer.readJSON(path);
+      
+      if (!Array.isArray(corpus)) {
+        throw new Error(`Corpus file ${path} must contain an array of assets`);
+      }
+      
+      mergedCorpus = mergedCorpus.concat(corpus);
+      console.log(`Loaded ${corpus.length} assets from ${path}`);
+    } catch (error) {
+      throw new Error(`Failed to load corpus file ${path}: ${error.message}`);
+    }
+  }
+  
+  console.log(`Total corpus size: ${mergedCorpus.length} assets from ${paths.length} files`);
+  return mergedCorpus;
+}
+
+/**
  * Display help information
  */
 function showHelp() {
@@ -72,12 +103,13 @@ Commands:
                  graphql: Official GraphQL API (fastest, most reliable)
                  fallback: Try graphql first, then other methods
                
-  build-vocab  --corpus <corpus.json> --out <vocab.json>
-               Build category vocabulary from corpus data
+  build-vocab  --corpus <corpus1.json,corpus2.json,...> --out <vocab.json>
+               Build category vocabulary from corpus data (supports multiple files)
                
-  build-exemplars --corpus <corpus.json> --out <exemplars.json> [--top-n 20] [--top-percent 10]
+  build-exemplars --corpus <corpus1.json,corpus2.json,...> --out <exemplars.json> [--top-n 20] [--top-percent 10]
                Identify high-quality exemplar assets and extract patterns
                Use either --top-n (fixed number) or --top-percent (percentage of corpus)
+               Supports multiple corpus files separated by commas
                
   build-exemplar-vocab --exemplars <exemplars.json> --out <vocab.json>
                Build vocabulary from exemplar patterns only
@@ -85,9 +117,10 @@ Commands:
   generate-playbooks --exemplars <exemplars.json> --out <playbooks.json>
                Generate category playbooks from exemplar patterns
                
-  build-all    --corpus <corpus.json> [--out-dir <directory>] [--top-n 20] [--top-percent 10]
+  build-all    --corpus <corpus1.json,corpus2.json,...> [--out-dir <directory>] [--top-n 20] [--top-percent 10]
                🚀 ONE-STOP COMMAND: Build exemplars, vocab, and playbooks from corpus
                Use either --top-n (fixed number) or --top-percent (percentage of corpus)
+               Supports multiple corpus files separated by commas
                
   grade        --input <asset.json> [--vocab <vocab.json>]
                Grade an asset using heuristic scoring
@@ -121,10 +154,13 @@ Examples:
   node main.mjs build-all --corpus data/packages.json --out-dir data/ --top-n 15
   node main.mjs optimize --input asset.json --exemplars data/exemplars.json --vocab data/exemplar_vocab.json
   
+  # Multiple corpus files (for large datasets)
+  node main.mjs build-all --corpus "data/corpus1.json,data/corpus2.json,data/corpus3.json" --out-dir data/ --top-n 15
+  
   # Traditional approach (individual commands for granular control)
   node main.mjs scrape --url "https://assetstore.unity.com/packages/..." --out asset.json
   node main.mjs build-exemplars --corpus data/corpus.json --out data/exemplars.json --top-n 25
-  node main.mjs build-exemplars --corpus data/corpus.json --out data/exemplars.json --top-percent 15
+  node main.mjs build-exemplars --corpus "data/part1.json,data/part2.json" --out data/exemplars.json --top-percent 15
   node main.mjs optimize --input asset.json --ai true
   
   # Scraping with different methods
@@ -188,21 +224,26 @@ async function cmdScrape() {
  * BUILD-VOCAB COMMAND: Create vocabulary from corpus
  */
 async function cmdBuildVocab() {
-  const corpusPath = getFlag('corpus');
+  const corpusPaths = getFlag('corpus');
   const outPath = getFlag('out', 'vocab.json');
   
-  ensure(corpusPath, '--corpus path is required');
+  ensure(corpusPaths, '--corpus path(s) required (comma-separated for multiple files)');
   ensure(outPath, '--out path is required');
   
   const optimizer = new UnityAssetOptimizer(args);
   await optimizer.validateSetup();
   
-  const vocabulary = await optimizer.buildVocabulary(corpusPath, outPath);
+  // Load corpus files
+  const corpus = await loadMultipleCorpusFiles(corpusPaths);
+  
+  const vocabulary = await optimizer.buildVocabularyFromCorpus(corpus, outPath);
   
   console.log(JSON.stringify({
     success: true,
     vocabulary: {
       categories: Object.keys(vocabulary).length,
+      total_assets_processed: corpus.length,
+      corpus_files: corpusPaths.split(',').length,
       output_file: outPath,
       category_summary: Object.entries(vocabulary).map(([cat, stats]) => ({
         category: cat,
@@ -218,12 +259,12 @@ async function cmdBuildVocab() {
  * BUILD-EXEMPLARS COMMAND: Identify exemplar assets and extract patterns
  */
 async function cmdBuildExemplars() {
-  const corpusPath = getFlag('corpus');
+  const corpusPaths = getFlag('corpus');
   const outPath = getFlag('out', 'exemplars.json');
   const topN = getFlag('top-n');
   const topPercent = getFlag('top-percent');
   
-  ensure(corpusPath, '--corpus path is required');
+  ensure(corpusPaths, '--corpus path(s) required (comma-separated for multiple files)');
   ensure(outPath, '--out path is required');
   ensure(!(topN && topPercent), 'Cannot specify both --top-n and --top-percent');
   
@@ -241,11 +282,18 @@ async function cmdBuildExemplars() {
   const optimizer = new UnityAssetOptimizer(args);
   await optimizer.validateSetup();
   
-  const result = await optimizer.buildExemplars(corpusPath, outPath, finalTopN, finalTopPercent);
+  // Load corpus files
+  const corpus = await loadMultipleCorpusFiles(corpusPaths);
+  
+  const result = await optimizer.buildExemplarsFromCorpus(corpus, outPath, finalTopN, finalTopPercent);
   
   console.log(JSON.stringify({
     success: true,
-    exemplars: result,
+    exemplars: {
+      ...result,
+      total_assets_processed: corpus.length,
+      corpus_files: corpusPaths.split(',').length
+    },
     output_file: outPath
   }, null, 2));
 }
@@ -299,12 +347,12 @@ async function cmdGeneratePlaybooks() {
  * Creates exemplars, exemplar vocabulary, and playbooks from a single corpus
  */
 async function cmdBuildAll() {
-  const corpusPath = getFlag('corpus');
+  const corpusPaths = getFlag('corpus');
   const outDir = getFlag('out-dir', 'data/');
   const topN = getFlag('top-n');
   const topPercent = getFlag('top-percent');
   
-  ensure(corpusPath, '--corpus path is required');
+  ensure(corpusPaths, '--corpus path(s) required (comma-separated for multiple files)');
   ensure(!(topN && topPercent), 'Cannot specify both --top-n and --top-percent');
   
   // Default to top 20 if neither is specified
@@ -332,9 +380,13 @@ async function cmdBuildAll() {
   console.log('🚀 Building complete exemplar ecosystem...\n');
   
   try {
+    // Load corpus files
+    console.log('📁 Loading corpus files...');
+    const corpus = await loadMultipleCorpusFiles(corpusPaths);
+    
     // Step 1: Build exemplars
-    console.log('📊 Step 1/3: Identifying exemplar assets...');
-    const exemplarStats = await optimizer.buildExemplars(corpusPath, exemplarsPath, finalTopN, finalTopPercent);
+    console.log('\n📊 Step 1/3: Identifying exemplar assets...');
+    const exemplarStats = await optimizer.buildExemplarsFromCorpus(corpus, exemplarsPath, finalTopN, finalTopPercent);
     console.log(`✅ Exemplars built: ${exemplarStats.totalExemplars} assets across ${exemplarStats.totalCategories} categories\n`);
     
     // Step 2: Build exemplar vocabulary
@@ -351,7 +403,8 @@ async function cmdBuildAll() {
     const result = {
       success: true,
       summary: {
-        corpus_processed: corpusPath,
+        corpus_files_processed: corpusPaths.split(',').length,
+        total_assets_processed: corpus.length,
         exemplars_per_category: finalTopN || `${finalTopPercent}%`,
         total_exemplars: exemplarStats.totalExemplars,
         total_categories: exemplarStats.totalCategories,
@@ -375,7 +428,7 @@ async function cmdBuildAll() {
   } catch (error) {
     console.error(`❌ Build failed at step: ${error.message}`);
     console.log('\n💡 Try individual commands for debugging:');
-    console.log(`  node main.mjs build-exemplars --corpus ${corpusPath} --out ${exemplarsPath} --debug true`);
+    console.log(`  node main.mjs build-exemplars --corpus "${corpusPaths}" --out ${exemplarsPath} --debug true`);
     throw error;
   }
 }
