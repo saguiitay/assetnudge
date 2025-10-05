@@ -276,3 +276,19 @@ export interface GradeResult {
   reasons: string[];
   breakdown: GradeBreakdown;
 }
+
+/**
+ * Best seller asset data for identification
+ */
+export interface BestSellerAsset {
+  /** Asset ID for matching */
+  id?: string;
+  /** Asset Store URL for matching */
+  url?: string;
+  /** Asset title for matching */
+  title?: string;
+  /** Asset category */
+  category?: string;
+  /** Additional metadata */
+  [key: string]: any;
+}

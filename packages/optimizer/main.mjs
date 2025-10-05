@@ -34,6 +34,7 @@
  *   node main.mjs status
  */
 
+import fs from 'fs/promises';
 import UnityAssetOptimizer from './src/optimizer.mjs';
 import { SimpleLogger } from './src/utils/logger.ts';
 
@@ -102,8 +103,9 @@ Commands:
                  graphql: Official GraphQL API (fastest, most reliable)
                  fallback: Try graphql first, then other methods
                
-  build-exemplars --corpus <corpus1.json,corpus2.json,...> --out <exemplars.json> [--top-n 20] [--top-percent 10]
+  build-exemplars --corpus <corpus1.json,corpus2.json,...> --out <exemplars.json> [--top-n 20] [--top-percent 10] [--best-sellers <best_sellers.json>]
                Identify high-quality exemplar assets and extract patterns
+               --best-sellers: JSON file containing list of Unity best seller assets (always included as exemplars)
                Use either --top-n (fixed number) or --top-percent (percentage of corpus)
                Supports multiple corpus files separated by commas
                
@@ -150,6 +152,9 @@ Examples:
   node main.mjs build-all --corpus data/packages.json --out-dir data/ --top-n 15
   node main.mjs optimize --input asset.json --exemplars data/exemplars.json --vocab data/exemplar_vocab.json
   
+  # Build exemplars with best sellers list
+  node main.mjs build-exemplars --corpus data/corpus.json --out data/exemplars.json --top-n 25 --best-sellers data/unity_best_sellers.json
+  
   # Multiple corpus files (for large datasets)
   node main.mjs build-all --corpus "data/corpus1.json,data/corpus2.json,data/corpus3.json" --out-dir data/ --top-n 15
   
@@ -157,6 +162,12 @@ Examples:
   node main.mjs scrape --url "https://assetstore.unity.com/packages/..." --out asset.json
   node main.mjs build-exemplars --corpus data/corpus.json --out data/exemplars.json --top-n 25
   node main.mjs build-exemplars --corpus "data/part1.json,data/part2.json" --out data/exemplars.json --top-percent 15
+  
+  # Best sellers format example (data/unity_best_sellers.json):
+  # [
+  #   {"title": "Best Asset 1", "url": "https://assetstore.unity.com/packages/...", "id": "12345"},
+  #   {"title": "Best Asset 2", "url": "https://assetstore.unity.com/packages/...", "id": "67890"}
+  # ]
   node main.mjs optimize --input asset.json --ai true
   
   # Scraping with different methods
@@ -212,6 +223,7 @@ async function cmdBuildExemplars() {
   const outPath = getFlag('out', 'exemplars.json');
   const topN = getFlag('top-n');
   const topPercent = getFlag('top-percent');
+  const bestSellersPath = getFlag('best-sellers'); // New parameter
   
   ensure(corpusPaths, '--corpus path(s) required (comma-separated for multiple files)');
   ensure(outPath, '--out path is required');
@@ -234,13 +246,27 @@ async function cmdBuildExemplars() {
   // Load corpus files
   const corpus = await loadMultipleCorpusFiles(corpusPaths);
   
-  const result = await optimizer.buildExemplarsFromCorpus(corpus, outPath, finalTopN, finalTopPercent);
+  // Load best sellers if provided
+  let bestSellers = [];
+  if (bestSellersPath) {
+    try {
+      const bestSellersData = await fs.readFile(bestSellersPath, 'utf8');
+      bestSellers = JSON.parse(bestSellersData);
+      console.log(`📌 Loaded ${bestSellers.length} best sellers from ${bestSellersPath}`);
+    } catch (error) {
+      console.error(`❌ Failed to load best sellers from ${bestSellersPath}:`, error.message);
+      process.exit(1);
+    }
+  }
+  
+  const result = await optimizer.buildExemplarsFromCorpus(corpus, outPath, finalTopN, finalTopPercent, bestSellers);
   
   console.log(JSON.stringify({
     success: true,
     exemplars: {
       ...result,
       total_assets_processed: corpus.length,
+      best_sellers_provided: bestSellers.length,
       corpus_files: corpusPaths.split(',').length
     },
     output_file: outPath

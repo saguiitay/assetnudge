@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { Logger } from './utils/logger';
-import { calculateDetailedRating } from './utils/rating-analysis.js';
+import { calculateDetailedRating } from './utils/rating-analysis';
 
 /**
  * Exemplar Management System
@@ -14,9 +14,10 @@ const logger = new Logger('exemplars');
 /**
  * Calculate composite quality score for an asset with enhanced rating analysis
  * @param {Object} asset - Asset data
+ * @param {boolean} isBestSeller - Whether this asset is marked as a best seller
  * @returns {number} Quality score
  */
-export function calculateQualityScore(asset) {
+export function calculateQualityScore(asset, isBestSeller = false) {
     let score = 0;
     
     // Enhanced rating analysis
@@ -28,6 +29,12 @@ export function calculateQualityScore(asset) {
     const qualityMultiplier = 1 + (ratingData.ratingQuality / 100);
     const reviewStrength = baseReviewStrength * qualityMultiplier;
     score += reviewStrength * 10; // Weight factor
+    
+    // MAJOR BONUS for best sellers
+    if (isBestSeller) {
+        score += 100; // Significant boost to ensure best sellers are always top-ranked
+        logger.debug(`Best seller bonus applied to "${asset.title?.substring(0, 50)}": +100 points`);
+    }
     
     // Rating quality bonuses
     if (ratingData.totalRatings >= 50 && ratingData.averageRating >= 4.5) {
@@ -141,6 +148,51 @@ function calculateCompletenessScore(asset) {
 }
 
 /**
+ * Normalize URL for matching
+ * @param {string} url - Asset Store URL
+ * @returns {string} Normalized URL
+ */
+function normalizeUrl(url) {
+    if (!url) return '';
+    return url.toLowerCase().replace(/[?#].*$/, '').replace(/\/$/, '');
+}
+
+/**
+ * Normalize title for matching
+ * @param {string} title - Asset title
+ * @returns {string} Normalized title
+ */
+function normalizeTitle(title) {
+    if (!title) return '';
+    return title.toLowerCase().trim().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, ' ');
+}
+
+/**
+ * Check if an asset is a best seller
+ * @param {Object} asset - Asset data
+ * @param {Set} bestSellerLookup - Set of best seller identifiers
+ * @returns {boolean} True if asset is a best seller
+ */
+function isBestSellerAsset(asset, bestSellerLookup) {
+    // Check by URL
+    if (asset.url && bestSellerLookup.has(normalizeUrl(asset.url))) {
+        return true;
+    }
+    
+    // Check by ID
+    if (asset.id && bestSellerLookup.has(asset.id.toString())) {
+        return true;
+    }
+    
+    // Check by title
+    if (asset.title && bestSellerLookup.has(normalizeTitle(asset.title))) {
+        return true;
+    }
+    
+    return false;
+}
+
+/**
  * Extract category from asset data
  * @param {Object} asset - Asset data
  * @returns {string} Normalized category
@@ -168,18 +220,28 @@ function extractCategory(asset) {
 }
 
 /**
- * Identify exemplar assets from a corpus
+ * Identify exemplar assets from a corpus with optional best sellers
  * @param {Array} assets - Array of asset objects
  * @param {number} topN - Number of exemplars per category (default: 20)
+ * @param {number} topPercent - Percentage of exemplars per category
+ * @param {Array} bestSellers - Array of best seller assets to always include
  * @returns {Object} Exemplars grouped by category
  */
-export function identifyExemplars(assets, topN = null, topPercent = null) {
+export function identifyExemplars(assets, topN = null, topPercent = null, bestSellers = []) {
     // Default to topN = 20 if neither is specified
     const finalTopN = topN !== null ? topN : (topPercent !== null ? null : 20);
     const finalTopPercent = topPercent;
     
     const selectionMethod = finalTopPercent !== null ? `top ${finalTopPercent}%` : `top ${finalTopN}`;
-    logger.info(`Identifying exemplars from ${assets.length} assets using ${selectionMethod}`);
+    logger.info(`Identifying exemplars from ${assets.length} assets using ${selectionMethod}, with ${bestSellers.length} best sellers`);
+    
+    // Create a lookup for best sellers by URL, ID, and title
+    const bestSellerLookup = new Set();
+    bestSellers.forEach(bs => {
+        if (bs.url) bestSellerLookup.add(normalizeUrl(bs.url));
+        if (bs.id) bestSellerLookup.add(bs.id.toString());
+        if (bs.title) bestSellerLookup.add(normalizeTitle(bs.title));
+    });
     
     // Group assets by category
     const assetsByCategory = {};
@@ -190,8 +252,11 @@ export function identifyExemplars(assets, topN = null, topPercent = null) {
             assetsByCategory[category] = [];
         }
         
+        // Check if this asset is a best seller
+        const isBestSeller = isBestSellerAsset(asset, bestSellerLookup);
+        
         // Calculate quality score with enhanced rating analysis and add to asset
-        const qualityScore = calculateQualityScore(asset);
+        const qualityScore = calculateQualityScore(asset, isBestSeller);
         const ratingData = calculateDetailedRating(asset.rating || []);
         
         assetsByCategory[category].push({
@@ -199,7 +264,9 @@ export function identifyExemplars(assets, topN = null, topPercent = null) {
             qualityScore,
             category: category, // Normalize category
             // Add rating analysis for later use
-            _ratingAnalysis: ratingData
+            _ratingAnalysis: ratingData,
+            // Mark best seller status
+            isBestSeller: isBestSeller
         });
     });
     
@@ -209,24 +276,40 @@ export function identifyExemplars(assets, topN = null, topPercent = null) {
     Object.keys(assetsByCategory).forEach(category => {
         const categoryAssets = assetsByCategory[category];
         
-        // Sort by quality score (descending)
-        categoryAssets.sort((a, b) => b.qualityScore - a.qualityScore);
+        // Separate best sellers from regular assets
+        const bestSellerAssets = categoryAssets.filter(asset => asset.isBestSeller);
+        const regularAssets = categoryAssets.filter(asset => !asset.isBestSeller);
         
-        // Calculate how many to take
+        // Sort both groups by quality score (descending)
+        bestSellerAssets.sort((a, b) => b.qualityScore - a.qualityScore);
+        regularAssets.sort((a, b) => b.qualityScore - a.qualityScore);
+        
+        // Calculate how many regular assets to take
         let countToTake;
         if (finalTopPercent !== null) {
-            // Use percentage
-            countToTake = Math.max(1, Math.ceil(categoryAssets.length * (finalTopPercent / 100)));
+            countToTake = Math.ceil(categoryAssets.length * (finalTopPercent / 100));
         } else {
-            // Use fixed number
             countToTake = Math.min(finalTopN, categoryAssets.length);
         }
         
-        // Take top exemplars
-        exemplars[category] = categoryAssets.slice(0, countToTake);
+        // Always include ALL best sellers, then fill remaining slots with regular assets
+        const bestSellerCount = bestSellerAssets.length;
+        const regularCount = Math.max(0, countToTake - bestSellerCount);
         
-        const percentage = ((exemplars[category].length / categoryAssets.length) * 100).toFixed(1);
-        logger.info(`Category "${category}": ${categoryAssets.length} total assets, selected ${exemplars[category].length} exemplars (${percentage}%)`);
+        exemplars[category] = [
+            ...bestSellerAssets, // All best sellers are automatically included
+            ...regularAssets.slice(0, regularCount) // Top regular assets to fill remaining slots
+        ];
+        
+        // If we have more best sellers than total slots, just take all best sellers
+        if (bestSellerCount > countToTake) {
+            exemplars[category] = bestSellerAssets;
+        }
+        
+        const percentage = categoryAssets.length > 0 ? 
+            ((exemplars[category].length / categoryAssets.length) * 100).toFixed(1) : '0.0';
+        
+        logger.info(`Category "${category}": ${categoryAssets.length} total assets, selected ${exemplars[category].length} exemplars (${percentage}%) - ${bestSellerCount} best sellers, ${exemplars[category].length - bestSellerCount} regular`);
         
         // Log enhanced stats about the exemplars
         if (exemplars[category].length > 0) {
@@ -237,9 +320,11 @@ export function identifyExemplars(assets, topN = null, topPercent = null) {
                 sum + (a._ratingAnalysis?.averageRating || 0), 0) / exemplars[category].length;
             const avgRatingQuality = exemplars[category].reduce((sum, a) => 
                 sum + (a._ratingAnalysis?.ratingQuality || 0), 0) / exemplars[category].length;
+            const bestSellerCount = exemplars[category].filter(a => a.isBestSeller).length;
             
             logger.debug(`  Score range: ${topScore.toFixed(2)} (top) to ${Math.min(...scores).toFixed(2)} (bottom), avg: ${avgScore.toFixed(2)}`);
             logger.debug(`  Rating quality: avg rating ${avgRating.toFixed(2)}, avg quality score ${avgRatingQuality.toFixed(1)}`);
+            logger.debug(`  Best sellers: ${bestSellerCount}/${exemplars[category].length} (${((bestSellerCount / exemplars[category].length) * 100).toFixed(1)}%)`);
         }
     });
     
@@ -294,6 +379,7 @@ export function getExemplarStats(exemplars) {
     const stats = {
         totalCategories: Object.keys(exemplars).length,
         totalExemplars: 0,
+        totalBestSellers: 0,
         averageExemplarsPerCategory: 0,
         categoriesWithMostExemplars: [],
         averageQualityScore: 0,
@@ -308,7 +394,8 @@ export function getExemplarStats(exemplars) {
             good: 0,       // 60-80
             fair: 0,       // 40-60
             poor: 0        // < 40
-        }
+        },
+        bestSellerDistribution: {}
     };
     
     let totalScore = 0;
@@ -318,6 +405,10 @@ export function getExemplarStats(exemplars) {
     Object.entries(exemplars).forEach(([category, assets]) => {
         stats.totalExemplars += assets.length;
         totalAssets += assets.length;
+        
+        const bestSellersInCategory = assets.filter(a => a.isBestSeller).length;
+        stats.totalBestSellers += bestSellersInCategory;
+        stats.bestSellerDistribution[category] = bestSellersInCategory;
         
         assets.forEach(asset => {
             totalScore += asset.qualityScore;
@@ -340,6 +431,7 @@ export function getExemplarStats(exemplars) {
         stats.categoriesWithMostExemplars.push({
             category,
             count: assets.length,
+            bestSellers: bestSellersInCategory,
             avgScore: assets.reduce((sum, a) => sum + a.qualityScore, 0) / assets.length,
             avgRatingQuality: assets.reduce((sum, a) => sum + (a._ratingAnalysis?.ratingQuality || 0), 0) / assets.length
         });

@@ -73,7 +73,7 @@ export class UnityAssetOptimizer {
   /**
    * Build exemplars database from corpus file path
    */
-  async buildExemplars(corpusPath, outputPath, topN = null, topPercent = null) {
+  async buildExemplars(corpusPath, outputPath, topN = null, topPercent = null, bestSellersPath = null) {
     return this.logger.time('buildExemplars', async () => {
       // Default to topN = 20 if neither is specified
       const finalTopN = topN !== null ? topN : (topPercent !== null ? null : 20);
@@ -83,20 +83,36 @@ export class UnityAssetOptimizer {
         corpusPath, 
         outputPath, 
         topN: finalTopN, 
-        topPercent: finalTopPercent 
+        topPercent: finalTopPercent,
+        hasBestSellers: !!bestSellersPath
       });
       
       // Validate input file
       const corpus = await FileValidator.validateJSONFile(corpusPath);
       
-      return this.buildExemplarsFromCorpus(corpus, outputPath, finalTopN, finalTopPercent);
+      // Load best sellers list if provided
+      let bestSellers = [];
+      if (bestSellersPath) {
+        try {
+          bestSellers = await FileValidator.validateJSONFile(bestSellersPath);
+          this.logger.info('Best sellers list loaded', { 
+            count: bestSellers.length,
+            source: bestSellersPath
+          });
+        } catch (error) {
+          this.logger.error('Failed to load best sellers', error, { path: bestSellersPath });
+          throw new Error(`Failed to load best sellers from ${bestSellersPath}: ${error.message}`);
+        }
+      }
+      
+      return this.buildExemplarsFromCorpus(corpus, outputPath, finalTopN, finalTopPercent, bestSellers);
     });
   }
 
   /**
    * Build exemplars database from corpus array
    */
-  async buildExemplarsFromCorpus(corpus, outputPath, topN = null, topPercent = null) {
+  async buildExemplarsFromCorpus(corpus, outputPath, topN = null, topPercent = null, bestSellers = []) {
     return this.logger.time('buildExemplarsFromCorpus', async () => {
       // Default to topN = 20 if neither is specified
       const finalTopN = topN !== null ? topN : (topPercent !== null ? null : 20);
@@ -106,7 +122,8 @@ export class UnityAssetOptimizer {
         corpusSize: corpus.length,
         outputPath, 
         topN: finalTopN, 
-        topPercent: finalTopPercent 
+        topPercent: finalTopPercent,
+        bestSellersCount: bestSellers.length
       });
       
       // Validate corpus is an array
@@ -114,8 +131,13 @@ export class UnityAssetOptimizer {
         throw new Error('Corpus must be an array of assets');
       }
 
-      // Identify exemplars by category
-      const exemplarsByCategory = identifyExemplars(corpus, finalTopN, finalTopPercent);
+      // Validate best sellers is an array if provided
+      if (bestSellers && !Array.isArray(bestSellers)) {
+        throw new Error('Best sellers must be an array of assets');
+      }
+
+      // Identify exemplars by category with best sellers
+      const exemplarsByCategory = identifyExemplars(corpus, finalTopN, finalTopPercent, bestSellers);
       
       // Extract patterns for each category
       const categoryPatterns = {};
@@ -135,6 +157,7 @@ export class UnityAssetOptimizer {
         patterns: categoryPatterns,
         metadata: {
           corpusSize: corpus.length,
+          bestSellersProvided: bestSellers.length,
           topN: finalTopN,
           topPercent: finalTopPercent,
           selectionCriteria: finalTopPercent !== null ? `top ${finalTopPercent}%` : `top ${finalTopN}`,
@@ -149,6 +172,7 @@ export class UnityAssetOptimizer {
       this.logger.success('Exemplars built successfully', {
         categories: Object.keys(exemplarsByCategory).length,
         totalExemplars: exemplarsData.metadata.stats.totalExemplars,
+        bestSellersIncluded: exemplarsData.metadata.stats.totalBestSellers || 0,
         selectionCriteria: exemplarsData.metadata.selectionCriteria,
         outputPath
       });
