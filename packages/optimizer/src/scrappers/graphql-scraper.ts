@@ -19,35 +19,177 @@
  * - Recommendations and related products
  */
 
+// Types for GraphQL response structures
+interface MainImage {
+  big?: string;
+  facebook?: string;
+  small?: string;
+  icon?: string;
+  icon75?: string;
+}
+
+interface Image {
+  type: string;
+  imageUrl: string;
+  thumbnailUrl: string;
+}
+
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  longName: string;
+}
+
+interface PopularTag {
+  id: string;
+  pTagId: string;
+  name: string;
+}
+
+interface Rating {
+  average: number;
+  count: number;
+}
+
+interface CurrentVersion {
+  id: string;
+  name: string;
+  publishedDate: string;
+}
+
+interface Discount {
+  save: number;
+  percentage: number;
+  type: string;
+  saleType: string;
+}
+
+interface OriginalPrice {
+  itemId: string;
+  originalPrice: number;
+  finalPrice: number;
+  isFree: boolean;
+  discount?: Discount;
+  currency: string;
+  entitlementType: string;
+}
+
+interface Product {
+  id: string;
+  productId?: string;
+  itemId?: string;
+  slug?: string;
+  name: string;
+  description?: string;
+  aiDescription?: string;
+  elevatorPitch?: string;
+  keyFeatures?: string;
+  compatibilityInfo?: string;
+  rating?: Rating;
+  currentVersion?: CurrentVersion;
+  reviewCount?: number;
+  downloadSize?: string | number;
+  assetCount?: number;
+  mainImage?: MainImage;
+  originalPrice?: OriginalPrice;
+  images?: Image[];
+  category?: Category;
+  firstPublishedDate?: string;
+  publishNotes?: string;
+  supportedUnityVersions?: string[];
+  state?: string;
+  overlay?: string;
+  overlayText?: string;
+  popularTags?: PopularTag[];
+  plusProSale?: boolean;
+  licenseText?: string;
+  packageType?: string;
+  publisher?: { name: string };
+}
+
+interface GraphQLRating {
+  count: string;
+  value: string;
+}
+
+interface RatingBreakdown {
+  count: string;
+  value: string;
+}
+
+interface AssetImage {
+  imageUrl: string;
+  thumbnailUrl: string;
+}
+
+interface AssetVideo {
+  type: string;
+  imageUrl: string;
+  thumbnailUrl: string;
+}
+
+interface Asset {
+  id: string;
+  url: string;
+  title: string;
+  short_description: string;
+  long_description: string;
+  tags: string[];
+  category: string;
+  price: number;
+  images_count: number;
+  videos_count: number;
+  rating: RatingBreakdown[];
+  reviews_count: number;
+  last_update: string | null;
+  publisher: string;
+  size: string | null;
+  version: string | null;
+  favorites: number;
+  mainImage: MainImage | null;
+  images: AssetImage[];
+  videos: AssetVideo[];
+}
+
+interface GraphQLQuery {
+  query: string;
+  variables: Record<string, any>;
+  operationName: string;
+}
+
+interface CookieData {
+  cookieHeader: string;
+  csrfToken: string;
+}
+
 /**
  * Extract asset ID from URL
- * @param {string} url - The Unity Asset Store URL
- * @returns {string|null} The asset ID or null if not found
+ * @param url - The Unity Asset Store URL
+ * @returns The asset ID or null if not found
  */
-function extractIdFromUrl(url) {
+function extractIdFromUrl(url: string): string | null {
   const match = url.match(/\/packages\/[^\/]+\/[^\/]+\/(\d+)/) || url.match(/-(\d+)$/);
-  return match ? match[1] : null;
+  return match ? (match[1] || null) : null;
 }
 
 /**
  * Extract category from URL
- * @param {string} url - The Unity Asset Store URL
- * @returns {string} The category name
+ * @param url - The Unity Asset Store URL
+ * @returns The category name
  */
-function extractCategoryFromUrl(url) {
-  const match = url.match(/\/packages\/([^\/]+)\//);
-  if (match) {
+function extractCategoryFromUrl(url: string): string {
+  const match = url.match(/\/packages\/([^\/]+)\//); 
+  if (match && match[1]) {
     return match[1].replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
   }
   return 'Unknown';
-}
-
-/**
+}/**
  * Clean HTML content to plain text
- * @param {string} html - HTML content to clean
- * @returns {string} Plain text content
+ * @param html - HTML content to clean
+ * @returns Plain text content
  */
-function cleanHtmlText(html) {
+function cleanHtmlText(html: string): string {
   if (!html) return '';
   
   return html
@@ -60,7 +202,7 @@ function cleanHtmlText(html) {
     .replace(/&#39;/g, "'")
     .replace(/&#x27;/g, "'")
     .replace(/&#x2F;/g, '/')
-    .replace(/&#(\d+);/g, (match, dec) => String.fromCharCode(dec))
+    .replace(/&#(\d+);/g, (match, dec) => String.fromCharCode(parseInt(dec)))
     .replace(/&#x([a-fA-F0-9]+);/g, (match, hex) => String.fromCharCode(parseInt(hex, 16)))
     // Convert HTML tags to meaningful text
     .replace(/<br\s*\/?>/gi, '\n')
@@ -89,13 +231,13 @@ function cleanHtmlText(html) {
 
 /**
  * Format file size from bytes to readable format
- * @param {string|number} sizeInBytes - Size in bytes
- * @returns {string|null} Formatted size string
+ * @param sizeInBytes - Size in bytes
+ * @returns Formatted size string
  */
-function formatFileSize(sizeInBytes) {
+function formatFileSize(sizeInBytes: string | number): string | null {
   if (!sizeInBytes) return null;
   
-  const bytes = parseInt(sizeInBytes);
+  const bytes = parseInt(String(sizeInBytes));
   if (isNaN(bytes)) return null;
   
   if (bytes < 1024) return `${bytes} B`;
@@ -106,22 +248,22 @@ function formatFileSize(sizeInBytes) {
 
 /**
  * Extract version from supported Unity versions array
- * @param {Array} versions - Array of supported versions
- * @returns {string|null} Latest version or null
+ * @param versions - Array of supported versions
+ * @returns Latest version or null
  */
-function extractVersionFromSupportedVersions(versions) {
+function extractVersionFromSupportedVersions(versions: string[]): string | null {
   if (!versions || versions.length === 0) return null;
   // Return the latest version
-  return versions[versions.length - 1];
+  return versions[versions.length - 1] || null;
 }
 
 /**
  * Count total images including main image and screenshots
- * @param {Array} images - Images array from GraphQL response
- * @param {Object} mainImage - Main image object from GraphQL response
- * @returns {number} Total number of images
+ * @param images - Images array from GraphQL response
+ * @param mainImage - Main image object from GraphQL response
+ * @returns Total number of images
  */
-function countAllImages(images, mainImage) {
+function countAllImages(images: Image[] | undefined, mainImage: MainImage | undefined): number {
   let count = 0;
   
   // Count screenshots
@@ -139,40 +281,40 @@ function countAllImages(images, mainImage) {
 
 /**
  * Count video entries in images array
- * @param {Array} images - Images array from GraphQL response
- * @returns {number} Number of videos
+ * @param images - Images array from GraphQL response
+ * @returns Number of videos
  */
-function countVideos(images) {
+function countVideos(images: Image[] | undefined): number {
   if (!images) return 0;
   return images.filter(img => img.type === 'video' || img.type === 'youtube').length;
 }
 
 /**
  * Count screenshot entries in images array
- * @param {Array} images - Images array from GraphQL response
- * @returns {number} Number of screenshots
+ * @param images - Images array from GraphQL response
+ * @returns Number of screenshots
  */
-function countScreenshots(images) {
+function countScreenshots(images: Image[] | undefined): number {
   if (!images) return 0;
   return images.filter(img => img.type === 'screenshot').length;
 }
 
 /**
  * Extract tags from popularTags array
- * @param {Array} popularTags - Popular tags from GraphQL response
- * @returns {Array} Array of tag names
+ * @param popularTags - Popular tags from GraphQL response
+ * @returns Array of tag names
  */
-function extractTags(popularTags) {
+function extractTags(popularTags: PopularTag[] | undefined): string[] {
   if (!popularTags) return [];
   return popularTags.map(tag => tag.name).filter(name => name && name.length > 0);
 }
 
 /**
  * Format date to a more readable format like "Jan 8, 2024"
- * @param {string} isoDate - ISO date string
- * @returns {string} Formatted date string
+ * @param isoDate - ISO date string
+ * @returns Formatted date string
  */
-function formatDate(isoDate) {
+function formatDate(isoDate: string | undefined): string | null {
   if (!isoDate) return null;
   
   try {
@@ -189,10 +331,10 @@ function formatDate(isoDate) {
 
 /**
  * Extract main category from full category path
- * @param {Object} categoryObj - Category object from GraphQL
- * @returns {string} Main category name
+ * @param categoryObj - Category object from GraphQL
+ * @returns Main category name
  */
-function extractMainCategory(categoryObj) {
+function extractMainCategory(categoryObj: Category | undefined): string {
   if (!categoryObj) return 'Unknown';
   
   // If it's Tools/Game Toolkits, return just "Tools"
@@ -204,10 +346,10 @@ function extractMainCategory(categoryObj) {
 
 /**
  * Convert rating breakdown to the expected format (array of objects)
- * @param {Array} ratingArray - Rating array from GraphQL response
- * @returns {Array} Rating array in expected format
+ * @param ratingArray - Rating array from GraphQL response
+ * @returns Rating array in expected format
  */
-function convertRatingToArray(ratingArray) {
+function convertRatingToArray(ratingArray: GraphQLRating[] | undefined): RatingBreakdown[] {
   if (!ratingArray) {
     // Return default rating array with zero counts
     return [
@@ -220,7 +362,7 @@ function convertRatingToArray(ratingArray) {
   }
 
   // Convert GraphQL rating array to expected format
-  const result = [];
+  const result: RatingBreakdown[] = [];
   for (let i = 1; i <= 5; i++) {
     const ratingEntry = ratingArray.find(r => parseInt(r.value) === i);
     result.push({
@@ -234,10 +376,10 @@ function convertRatingToArray(ratingArray) {
 
 /**
  * Extract images array in the expected format
- * @param {Array} images - Images array from GraphQL response
- * @returns {Array} Images array with only screenshots
+ * @param images - Images array from GraphQL response
+ * @returns Images array with only screenshots
  */
-function extractImagesArray(images) {
+function extractImagesArray(images: Image[] | undefined): AssetImage[] {
   if (!images) return [];
   
   // Filter only screenshots and format them
@@ -251,10 +393,10 @@ function extractImagesArray(images) {
 
 /**
  * Extract videos array from images
- * @param {Array} images - Images array from GraphQL response
- * @returns {Array} Videos array with YouTube and video type entries
+ * @param images - Images array from GraphQL response
+ * @returns Videos array with YouTube and video type entries
  */
-function extractVideosArray(images) {
+function extractVideosArray(images: Image[] | undefined): AssetVideo[] {
   if (!images) return [];
   
   // Filter only videos (youtube and video types) and format them
@@ -269,9 +411,9 @@ function extractVideosArray(images) {
 
 /**
  * Generate a random CSRF token (mimics what the website does)
- * @returns {string} Random CSRF token
+ * @returns Random CSRF token
  */
-function generateCSRFToken() {
+function generateCSRFToken(): string {
   return Array.from({ length: 32 }, () => 
     Math.floor(Math.random() * 16).toString(16)
   ).join('');
@@ -279,9 +421,9 @@ function generateCSRFToken() {
 
 /**
  * Get essential cookies for Unity Asset Store API
- * @returns {string} Cookie header string
+ * @returns Cookie header string and CSRF token
  */
-function getEssentialCookies() {
+function getEssentialCookies(): CookieData {
   const csrfToken = generateCSRFToken();
   
   // Essential cookies based on the provided list
@@ -302,10 +444,10 @@ function getEssentialCookies() {
 
 /**
  * Main scraping function using GraphQL API
- * @param {string} url - The Unity Asset Store URL to scrape
- * @returns {Promise<Object>} Asset data object
+ * @param url - The Unity Asset Store URL to scrape
+ * @returns Asset data object
  */
-export async function scrapeAssetWithGraphQL(url) {
+export async function scrapeAssetWithGraphQL(url: string): Promise<Asset> {
   try {
     // Extract asset ID from URL
     const assetId = extractIdFromUrl(url);
@@ -319,7 +461,7 @@ export async function scrapeAssetWithGraphQL(url) {
     const { cookieHeader, csrfToken } = getEssentialCookies();
 
     // Prepare GraphQL queries
-    const queries = [
+    const queries: GraphQLQuery[] = [
       {
         query: `query ProductReview($id: ID!, $rows: Int, $page: Int, $sort_by: String, $reviewId: String, $rating: String) {
           product(id: $id) {
@@ -545,10 +687,10 @@ export async function scrapeAssetWithGraphQL(url) {
       throw new Error('Product data not found in GraphQL response');
     }
 
-    const product = productResponse.data.product;
+    const product: Product = productResponse.data.product;
     
     // Extract rating array from the second query response
-    let ratingArray = [
+    let ratingArray: RatingBreakdown[] = [
       { "count": "0", "value": "1" },
       { "count": "0", "value": "2" },
       { "count": "0", "value": "3" },
@@ -561,7 +703,7 @@ export async function scrapeAssetWithGraphQL(url) {
     }
 
     // Transform the GraphQL data to our asset format
-    const asset = {
+    const asset: Asset = {
       id: product.id || assetId,
       url: url,
       title: product.name || 'Unknown Title',
@@ -569,15 +711,15 @@ export async function scrapeAssetWithGraphQL(url) {
       long_description: product.description || '', // Keep HTML format as in the expected output
       tags: extractTags(product.popularTags),
       category: extractMainCategory(product.category),
-      price: parseFloat(product.originalPrice?.finalPrice || 0),
+      price: parseFloat(String(product.originalPrice?.finalPrice || 0)),
       images_count: countAllImages(product.images, product.mainImage),
       videos_count: countVideos(product.images),
       rating: ratingArray, // Use rating array format
       reviews_count: product.rating?.count || product.reviewCount || 0,
       last_update: formatDate(product.currentVersion?.publishedDate || product.firstPublishedDate),
       publisher: product.publisher?.name || 'Unknown Publisher',
-      size: formatFileSize(product.downloadSize),
-      version: product.currentVersion?.name || extractVersionFromSupportedVersions(product.supportedUnityVersions),
+      size: formatFileSize(product.downloadSize || ''),
+      version: product.currentVersion?.name || extractVersionFromSupportedVersions(product.supportedUnityVersions || []),
       favorites: 1, // Default to 1 as shown in expected output (GraphQL doesn't provide this field)
       mainImage: product.mainImage || null,
       images: extractImagesArray(product.images),
@@ -588,6 +730,6 @@ export async function scrapeAssetWithGraphQL(url) {
     return asset;
 
   } catch (error) {
-    throw new Error(`Failed to scrape ${url} with GraphQL: ${error.message}`);
+    throw new Error(`Failed to scrape ${url} with GraphQL: ${(error as Error).message}`);
   }
 }

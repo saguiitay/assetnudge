@@ -226,7 +226,7 @@ npm run start build-all -- --corpus "data/corpus1.json,data/corpus2.json,data/co
     ├── ai-suggestions.mjs     # OpenAI integration
     ├── heuristic-suggestions.mjs # Fallback suggestions
     ├── scrappers/             # Web scraping modules
-    │   └── graphql-scraper.mjs
+    │   └── graphql-scraper.ts
     └── utils/                 # Utility modules
         ├── logger.ts          # Structured logging
         ├── utils.ts           # Helper functions

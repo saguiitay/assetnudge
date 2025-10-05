@@ -5,7 +5,7 @@
 
 import UnityAssetOptimizer from './optimizer.mjs';
 import Config from './config';
-import { scrapeAssetWithGraphQL } from './scrappers/graphql-scraper.mjs';
+import { scrapeAssetWithGraphQL } from './scrappers/graphql-scraper';
 import { Asset as ValidatorAsset, Vocabulary as ValidatorVocabulary, FileValidator } from './utils/validation';
 import { GradeResult, Vocabulary as TypesVocabulary } from './types';
 

@@ -17,7 +17,7 @@ import AISuggestionEngine from './ai-suggestions.mjs';
 import HeuristicSuggestions from './heuristic-suggestions.mjs';
 
 // External dependencies
-import { scrapeAssetWithGraphQL } from './scrappers/graphql-scraper.mjs';
+import { scrapeAssetWithGraphQL } from './scrappers/graphql-scraper';
 
 // Rating analysis and dynamic grading
 import { calculateDetailedRating } from './utils/rating-analysis';
