@@ -138,26 +138,117 @@ export const AI_CONFIG: AIConfig = {
 
 // Official Unity Asset Store categories and subcategories
 export const OFFICIAL_CATEGORIES: CategoryMap = {
-  '3D': [
-    'Animations',
-    'Characters', 
-    'Environments',
-    'GUI',
-    'Props',
-    'Vegetation',
-    'Vehicles'
-  ],
   '2D': [
     'Characters',
-    'Environments', 
+    'Environments',
     'Fonts',
     'GUI',
-    'Textures & Materials'
+    'GUI/Icons',
+    'Textures & Materials',
+    'Textures & Materials/Abstract',
+    'Textures & Materials/Brick',
+    'Textures & Materials/Building',
+    'Textures & Materials/Concrete',
+    'Textures & Materials/Fabric',
+    'Textures & Materials/Floors',
+    'Textures & Materials/Food',
+    'Textures & Materials/Glass',
+    'Textures & Materials/Metals',
+    'Textures & Materials/Nature',
+    'Textures & Materials/Roads',
+    'Textures & Materials/Roofing',
+    'Textures & Materials/Sky',
+    'Textures & Materials/Stone',
+    'Textures & Materials/Tiles',
+    'Textures & Materials/Water',
+    'Textures & Materials/Wood'
+  ],
+  '3D': [
+    'Animations',
+    'Characters',
+    'Characters/Animals',
+    'Characters/Animals/Birds',
+    'Characters/Animals/Fish',
+    'Characters/Animals/Insects',
+    'Characters/Animals/Mammals',
+    'Characters/Animals/Reptiles',
+    'Characters/Creatures',
+    'Characters/Humanoids',
+    'Characters/Humanoids/Fantasy',
+    'Characters/Humanoids/Humans',
+    'Characters/Humanoids/Sci-Fi',
+    'Characters/Humanoids/Robots',
+    'Environments',
+    'Environments/Dungeons',
+    'Environments/Fantasy',
+    'Environments/Historic',
+    'Environments/Industrial',
+    'Environments/Landscapes',
+    'Environments/Roadways',
+    'Environments/Sci-Fi',
+    'Environments/Urban',
+    'Environments/GUI',
+    'Props',
+    'Props/Clothing',
+    'Props/Accessories',
+    'Props/Armor',
+    'Props/Electronics',
+    'Props/Exterior',
+    'Props/Food',
+    'Props/Furniture',
+    'Props/Guns',
+    'Props/Industrial',
+    'Props/Interior',
+    'Props/Tools',
+    'Props/Weapons',
+    'Vegetation',
+    'Vegetation/Flowers',
+    'Vegetation/Plants',
+    'Vegetation/Trees',
+    'Vehicles',
+    'Vehicles/Air',
+    'Vehicles/Land',
+    'Vehicles/Sea',
+    'Vehicles/Space'
+  ],
+  'Add-Ons': [
+    'Machine Learning',
+    'Services',
+    'Services/Billing'
   ],
   'Audio': [
     'Ambient',
+    'Fantasy',
+    'Nature',
+    'Noise',
+    'Sci-Fi',
+    'Urban',
     'Music',
-    'Sound FX'
+    'Music/Electronic',
+    'Music/Orchestral',
+    'Music/Pop',
+    'Music/Rock',
+    'Music/World',
+    'Sound FX',
+    'Sound FX/Animals',
+    'Sound FX/Creatures',
+    'Sound FX/Foley',
+    'Sound FX/Transportation',
+    'Sound FX/Voices',
+    'Sound FX/Weapons'
+  ],
+  'Decentralization': [
+    'Infrastructure'
+  ],
+  'Essentials': [
+    'Asset Packs',
+    'Certification',
+    'Tutorial Projects'
+  ],
+  'Templates': [
+    'Packs',
+    'Systems',
+    'Tutorials'
   ],
   'Tools': [
     'AI-ML Integration',
@@ -165,9 +256,9 @@ export const OFFICIAL_CATEGORIES: CategoryMap = {
     'Audio',
     'Behavior AI',
     'Camera',
+    'GUI',
     'Game Toolkits',
     'Generative AI',
-    'GUI',
     'Input Management',
     'Integration',
     'Level Design',
@@ -179,21 +270,20 @@ export const OFFICIAL_CATEGORIES: CategoryMap = {
     'Physics',
     'Sprite Management',
     'Terrain',
-    'Utilities'
+    'Utilities',
+    'Version Control',
+    'Video',
+    'Visual Scripting'
   ],
   'VFX': [
     'Particles',
-    'Shaders'
-  ],
-  'Templates': [
-    'Packs',
-    'Systems',
-    'Tutorials'
-  ],
-  'AI': [
-    'Generative AI',
-    'AI-ML Integration',
-    'Behavior AI'
+    'Environment',
+    'Fire & Explosions',
+    'Spells',
+    'Shaders',
+    'Shaders/DirectX 11',
+    'Shaders/Fullscreen & Camera Effects',
+    'Shaders/Substances'
   ]
 };
 
@@ -330,6 +420,9 @@ export class Config {
   getValidCategories(): string[] {
     const categories: string[] = [];
     for (const [mainCategory, subCategories] of Object.entries(this.categories)) {
+      // Include main category itself
+      categories.push(mainCategory);
+      // Include all subcategories in full path format
       for (const subCategory of subCategories) {
         categories.push(`${mainCategory}/${subCategory}`);
       }
@@ -341,11 +434,12 @@ export class Config {
    * Validate if a category is in the official list
    */
   isValidCategory(category: string): boolean {
-    return this.getValidCategories().includes(category);
+    const validCategories = this.getValidCategories();
+    return validCategories.includes(category);
   }
 
   /**
-   * Get main category from full category path
+   * Get main category from full category path or return as-is if already main category
    */
   getMainCategory(fullCategory: string): string {
     return fullCategory.split('/')[0] || '';
@@ -356,6 +450,21 @@ export class Config {
    */
   getSubCategory(fullCategory: string): string | undefined {
     return fullCategory.split('/')[1];
+  }
+
+  /**
+   * Get all subcategories for a main category
+   */
+  getSubCategories(mainCategory: string): string[] {
+    return this.categories[mainCategory] || [];
+  }
+
+  /**
+   * Get all subcategories for a main category in full path format
+   */
+  getFullSubCategories(mainCategory: string): string[] {
+    const subCategories = this.getSubCategories(mainCategory);
+    return subCategories.map(sub => `${mainCategory}/${sub}`);
   }
 
   /**
