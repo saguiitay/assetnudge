@@ -36,7 +36,7 @@
  */
 
 import UnityAssetOptimizer from './src/optimizer.mjs';
-import { SimpleLogger } from './src/logger';
+import { SimpleLogger } from './src/utils/logger.ts';
 
 // CLI helpers
 const args = process.argv.slice(2);
