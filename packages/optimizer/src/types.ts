@@ -292,3 +292,158 @@ export interface BestSellerAsset {
   /** Additional metadata */
   [key: string]: any;
 }
+
+/**
+ * Dynamic grading rules system interfaces
+ */
+
+/**
+ * Rule confidence metadata
+ */
+export interface RuleConfidence {
+  /** Confidence level based on sample size and data quality */
+  level: 'high' | 'medium' | 'low';
+  /** Number of exemplars used to generate this rule */
+  sampleSize: number;
+  /** Data quality score (0-100) */
+  dataQuality: number;
+  /** Standard deviation of the metric across exemplars */
+  standardDeviation?: number;
+  /** Explanation of confidence level */
+  explanation: string;
+}
+
+/**
+ * Category-specific benchmarks derived from exemplars
+ */
+export interface CategoryBenchmarks {
+  /** Rating benchmarks */
+  rating: {
+    minimum: number;
+    target: number;
+    excellent: number;
+  };
+  /** Review count benchmarks */
+  reviews: {
+    minimum: number;
+    target: number;
+    excellent: number;
+  };
+  /** Media presence benchmarks */
+  media: {
+    minImages: number;
+    targetImages: number;
+    minVideos: number;
+    targetVideos: number;
+  };
+  /** Content length benchmarks */
+  content: {
+    titleLength: { min: number; max: number; target: number };
+    shortDescLength: { min: number; max: number; target: number };
+    longDescLength: { min: number; max: number; target: number };
+    minTags: number;
+    targetTags: number;
+  };
+  /** Pricing benchmarks */
+  pricing: {
+    median: number;
+    p25: number;
+    p75: number;
+    premium: number;
+  };
+  /** Freshness benchmarks */
+  freshness: {
+    maxDaysOld: number;
+    targetDaysOld: number;
+  };
+}
+
+/**
+ * Weight importance derived from exemplar analysis
+ */
+export interface WeightImportance {
+  /** Overall importance percentages (should sum to 100) */
+  content: number;
+  media: number;
+  trust: number;
+  findability: number;
+  performance: number;
+  /** Detailed content sub-weights */
+  contentBreakdown: {
+    title: number;
+    shortDesc: number;
+    longDesc: number;
+    tags: number;
+    structure: number;
+  };
+  /** Detailed media sub-weights */
+  mediaBreakdown: {
+    images: number;
+    videos: number;
+    quality: number;
+  };
+}
+
+/**
+ * Category-specific dynamic grading rules
+ */
+export interface CategoryRules {
+  /** Category name */
+  category: string;
+  /** Dynamic weights based on exemplar analysis */
+  weights: WeightConfig;
+  /** Dynamic thresholds based on exemplar benchmarks */
+  thresholds: ThresholdConfig;
+  /** Category-specific benchmarks */
+  benchmarks: CategoryBenchmarks;
+  /** Weight importance analysis */
+  weightImportance: WeightImportance;
+  /** Rule confidence metadata */
+  confidence: RuleConfidence;
+  /** Common failure patterns in this category */
+  commonFailures: string[];
+  /** Success patterns in this category */
+  successPatterns: string[];
+  /** Generation metadata */
+  metadata: {
+    generatedAt: string;
+    exemplarCount: number;
+    avgQualityScore: number;
+    avgRatingQuality: number;
+    bestSellerCount: number;
+  };
+}
+
+/**
+ * Complete dynamic grading rules system
+ */
+export interface DynamicGradingRules {
+  /** Rules by category */
+  [category: string]: CategoryRules;
+}
+
+/**
+ * Dynamic grading rules file format
+ */
+export interface DynamicGradingRulesFile {
+  /** The dynamic rules by category */
+  rules: DynamicGradingRules;
+  /** Global metadata */
+  metadata: {
+    generatedAt: string;
+    sourceExemplars: string;
+    totalCategories: number;
+    totalExemplars: number;
+    bestSellersCount: number;
+    confidenceDistribution: {
+      high: number;
+      medium: number;
+      low: number;
+    };
+  };
+  /** Static fallback rules for categories with insufficient data */
+  fallbackRules: {
+    weights: WeightConfig;
+    thresholds: ThresholdConfig;
+  };
+}

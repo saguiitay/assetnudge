@@ -19,6 +19,11 @@ import HeuristicSuggestions from './heuristic-suggestions.mjs';
 // External dependencies
 import { scrapeAssetWithGraphQL } from './scrappers/graphql-scraper.mjs';
 
+// Rating analysis and dynamic grading
+import { calculateDetailedRating } from './utils/rating-analysis';
+import { extractGradingRules } from './dynamic-grading-rules';
+import { DynamicAssetGrader } from './dynamic-asset-grader';
+
 // Exemplar and pattern modules
 import { identifyExemplars, saveExemplars, getExemplarStats } from './exemplars.mjs';
 import { extractCategoryPatterns } from './pattern-extraction.mjs';
@@ -182,6 +187,47 @@ export class UnityAssetOptimizer {
   }
 
   /**
+   * Build dynamic grading rules from exemplars
+   */
+  async buildGradingRules(exemplarsPath, outputPath) {
+    return this.logger.time('buildGradingRules', async () => {
+      this.logger.info('Building dynamic grading rules', { exemplarsPath, outputPath });
+      
+      // Load exemplars data
+      const exemplarsData = await FileValidator.validateJSONFile(exemplarsPath);
+      
+      // Import dynamic rules module
+      const { extractGradingRules } = await import('./dynamic-grading-rules');
+      
+      // Generate dynamic rules from exemplars
+      const fallbackConfig = {
+        weights: this.config.weights,
+        thresholds: this.config.thresholds
+      };
+      
+      const gradingRules = extractGradingRules(exemplarsData, fallbackConfig);
+      
+      // Save grading rules
+      await this.writeJSON(outputPath, gradingRules);
+      
+      this.logger.success('Dynamic grading rules built successfully', {
+        categories: Object.keys(gradingRules.rules).length,
+        highConfidence: gradingRules.metadata.confidenceDistribution.high,
+        mediumConfidence: gradingRules.metadata.confidenceDistribution.medium,
+        lowConfidence: gradingRules.metadata.confidenceDistribution.low,
+        outputPath
+      });
+      
+      return {
+        categories: Object.keys(gradingRules.rules).length,
+        confidenceDistribution: gradingRules.metadata.confidenceDistribution,
+        totalExemplars: gradingRules.metadata.totalExemplars,
+        bestSellersCount: gradingRules.metadata.bestSellersCount
+      };
+    });
+  }
+
+  /**
    * Build exemplar-based vocabulary
    */
   async buildExemplarVocabulary(exemplarsPath, outputPath) {
@@ -260,11 +306,16 @@ export class UnityAssetOptimizer {
   }
 
   /**
-   * Grade an asset
+   * Grade an asset using static or dynamic rules
    */
-  async gradeAsset(assetPath, vocabPath = null) {
+  async gradeAsset(assetPath, vocabPath = null, rulesPath = null) {
     return this.logger.time('gradeAsset', async () => {
-      this.logger.info('Grading asset', { assetPath, vocabPath });
+      this.logger.info('Grading asset', { 
+        assetPath, 
+        vocabPath, 
+        rulesPath,
+        usingDynamicRules: !!rulesPath 
+      });
       
       // Load asset data
       const asset = await FileValidator.validateJSONFile(assetPath);
@@ -275,16 +326,57 @@ export class UnityAssetOptimizer {
         vocabulary = await FileValidator.validateJSONFile(vocabPath);
       }
       
-      // Grade the asset
-      const grade = await this.grader.gradeAsset(asset, vocabulary);
+      // Grade the asset using dynamic or static rules
+      let grade;
+      let gradingMethod = 'static';
+      
+      if (rulesPath) {
+        try {
+          // Load dynamic rules
+          const gradingRules = await FileValidator.validateJSONFile(rulesPath);
+          
+          // Import DynamicAssetGrader
+          const { DynamicAssetGrader } = await import('./dynamic-asset-grader');
+          
+          // Create dynamic grader
+          const dynamicGrader = new DynamicAssetGrader(this.config, gradingRules);
+          
+          // Grade with dynamic rules
+          grade = await dynamicGrader.gradeAsset(asset, vocabulary);
+          gradingMethod = 'dynamic';
+          
+          this.logger.info('Used dynamic grading rules', {
+            categories: Object.keys(gradingRules.rules).length,
+            assetCategory: asset.category
+          });
+          
+        } catch (error) {
+          this.logger.warn('Failed to load dynamic rules, falling back to static grading', error);
+          grade = await this.grader.gradeAsset(asset, vocabulary);
+          gradingMethod = 'static-fallback';
+        }
+      } else {
+        // Use static grading
+        grade = await this.grader.gradeAsset(asset, vocabulary);
+      }
       
       this.logger.success('Asset graded', {
         title: asset.title,
         score: grade.score,
-        letter: grade.letter
+        letter: grade.letter,
+        method: gradingMethod
       });
       
-      return { grade };
+      return { 
+        grade,
+        metadata: {
+          gradingMethod,
+          assetCategory: asset.category,
+          vocabProvided: !!vocabPath,
+          rulesProvided: !!rulesPath,
+          gradedAt: new Date().toISOString()
+        }
+      };
     });
   }
 

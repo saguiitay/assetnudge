@@ -36,7 +36,7 @@
 
 import fs from 'fs/promises';
 import UnityAssetOptimizer from './src/optimizer.mjs';
-import { SimpleLogger } from './src/utils/logger.ts';
+import { SimpleLogger } from './utils/logger';
 
 // CLI helpers
 const args = process.argv.slice(2);
@@ -109,6 +109,10 @@ Commands:
                Use either --top-n (fixed number) or --top-percent (percentage of corpus)
                Supports multiple corpus files separated by commas
                
+  build-grading-rules --exemplars <exemplars.json> --out <grading-rules.json>
+               Generate dynamic grading rules from exemplar patterns
+               Creates category-specific weights and thresholds based on successful assets
+               
   build-exemplar-vocab --exemplars <exemplars.json> --out <vocab.json>
                Build vocabulary from exemplar patterns only
                
@@ -120,8 +124,9 @@ Commands:
                Use either --top-n (fixed number) or --top-percent (percentage of corpus)
                Supports multiple corpus files separated by commas
                
-  grade        --input <asset.json> [--vocab <vocab.json>]
+  grade        --input <asset.json> [--vocab <vocab.json>] [--rules <grading-rules.json>]
                Grade an asset using heuristic scoring
+               --rules: Use dynamic grading rules (optional, falls back to static rules)
                
   optimize     [--input <asset.json> | --url <URL>] [options]
                Comprehensive optimization analysis
@@ -154,6 +159,12 @@ Examples:
   
   # Build exemplars with best sellers list
   node main.mjs build-exemplars --corpus data/corpus.json --out data/exemplars.json --top-n 25 --best-sellers data/unity_best_sellers.json
+  
+  # Generate dynamic grading rules from exemplars
+  node main.mjs build-grading-rules --exemplars data/exemplars.json --out data/grading-rules.json
+  
+  # Grade with dynamic rules
+  node main.mjs grade --input asset.json --vocab vocab.json --rules grading-rules.json
   
   # Multiple corpus files (for large datasets)
   node main.mjs build-all --corpus "data/corpus1.json,data/corpus2.json,data/corpus3.json" --out-dir data/ --top-n 15
@@ -269,6 +280,28 @@ async function cmdBuildExemplars() {
       best_sellers_provided: bestSellers.length,
       corpus_files: corpusPaths.split(',').length
     },
+    output_file: outPath
+  }, null, 2));
+}
+
+/**
+ * BUILD-GRADING-RULES COMMAND: Generate dynamic grading rules from exemplars
+ */
+async function cmdBuildGradingRules() {
+  const exemplarsPath = getFlag('exemplars');
+  const outPath = getFlag('out', 'grading-rules.json');
+  
+  ensure(exemplarsPath, '--exemplars path is required');
+  ensure(outPath, '--out path is required');
+  
+  const optimizer = new UnityAssetOptimizer(args);
+  await optimizer.validateSetup();
+  
+  const result = await optimizer.buildGradingRules(exemplarsPath, outPath);
+  
+  console.log(JSON.stringify({
+    success: true,
+    grading_rules: result,
     output_file: outPath
   }, null, 2));
 }
@@ -412,15 +445,16 @@ async function cmdBuildAll() {
  * GRADE COMMAND: Score an asset
  */
 async function cmdGrade() {
-  const input = getFlag('input');
+  const inputPath = getFlag('input');
   const vocabPath = getFlag('vocab');
+  const rulesPath = getFlag('rules'); // New parameter for dynamic rules
   
-  ensure(input, '--input asset json is required');
+  ensure(inputPath, '--input path is required');
   
   const optimizer = new UnityAssetOptimizer(args);
   await optimizer.validateSetup();
   
-  const result = await optimizer.gradeAsset(input, vocabPath);
+  const result = await optimizer.gradeAsset(inputPath, vocabPath, rulesPath);
   
   console.log(JSON.stringify(result, null, 2));
 }
@@ -526,6 +560,12 @@ async function main() {
         break;
       case 'build-exemplars':
         await cmdBuildExemplars();
+        break;
+      case 'build-grading-rules':
+        await cmdBuildGradingRules();
+        break;
+      case 'build-grading-rules':
+        await cmdBuildGradingRules();
         break;
       case 'build-exemplar-vocab':
         await cmdBuildExemplarVocab();
