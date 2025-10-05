@@ -27,7 +27,6 @@
  *   export OPENAI_API_KEY=... (or pass --apiKey) [optional]
  *
  * Usage examples:
- *   node main.mjs build-vocab --corpus data/corpus.json --out data/vocab.json
  *   node main.mjs grade --input data/asset.json --vocab data/vocab.json
  *   node main.mjs scrape --url https://assetstore.unity.com/packages/... --out data/asset.json
  *   node main.mjs optimize --input data/asset.json --vocab data/vocab.json --neighbors data/corpus.json --ai true
@@ -103,9 +102,6 @@ Commands:
                  graphql: Official GraphQL API (fastest, most reliable)
                  fallback: Try graphql first, then other methods
                
-  build-vocab  --corpus <corpus1.json,corpus2.json,...> --out <vocab.json>
-               Build category vocabulary from corpus data (supports multiple files)
-               
   build-exemplars --corpus <corpus1.json,corpus2.json,...> --out <exemplars.json> [--top-n 20] [--top-percent 10]
                Identify high-quality exemplar assets and extract patterns
                Use either --top-n (fixed number) or --top-percent (percentage of corpus)
@@ -171,7 +167,6 @@ Examples:
   node main.mjs optimize --url "https://assetstore.unity.com/packages/..." --ai true --model gpt-4o-mini
   
   # Disable stop word filtering (include words like "the", "a", "and")
-  node main.mjs build-vocab --corpus data/corpus.json --out vocab.json --ignore-stop-words false
   node main.mjs optimize --input asset.json --vocab vocab.json --ignore-stop-words false
 
 Notes:
@@ -205,41 +200,6 @@ async function cmdScrape() {
       tags: (asset.tags || []).slice(0, 3),
       scraping_method: asset.scraping_method || method,
       output_file: outPath
-    }
-  }, null, 2));
-}
-
-/**
- * BUILD-VOCAB COMMAND: Create vocabulary from corpus
- */
-async function cmdBuildVocab() {
-  const corpusPaths = getFlag('corpus');
-  const outPath = getFlag('out', 'vocab.json');
-  
-  ensure(corpusPaths, '--corpus path(s) required (comma-separated for multiple files)');
-  ensure(outPath, '--out path is required');
-  
-  const optimizer = new UnityAssetOptimizer(args);
-  await optimizer.validateSetup();
-  
-  // Load corpus files
-  const corpus = await loadMultipleCorpusFiles(corpusPaths);
-  
-  const vocabulary = await optimizer.buildVocabularyFromCorpus(corpus, outPath);
-  
-  console.log(JSON.stringify({
-    success: true,
-    vocabulary: {
-      categories: Object.keys(vocabulary).length,
-      total_assets_processed: corpus.length,
-      corpus_files: corpusPaths.split(',').length,
-      output_file: outPath,
-      category_summary: Object.entries(vocabulary).map(([cat, stats]) => ({
-        category: cat,
-        sample_size: stats.sample_size,
-        avg_title_length: Math.round(stats.title_length.mean || 0),
-        avg_description_words: Math.round(stats.word_count_long.mean || 0)
-      }))
     }
   }, null, 2));
 }
@@ -537,9 +497,6 @@ async function main() {
     switch (cmd) {
       case 'scrape':
         await cmdScrape();
-        break;
-      case 'build-vocab':
-        await cmdBuildVocab();
         break;
       case 'build-exemplars':
         await cmdBuildExemplars();

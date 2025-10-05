@@ -112,7 +112,7 @@ npm run start build-all -- --corpus "data/part1.json,data/part2.json,data/part3.
 npm run scrape -- --url "https://assetstore.unity.com/packages/..." --out asset.json
 
 # Grade an asset
-npm run grade -- --input asset.json --vocab data/vocab.json
+npm run grade -- --input asset.json --vocab data/exemplar_vocab.json
 
 # Optimize with exemplar coaching
 npm run optimize -- --input asset.json --exemplars data/exemplars.json --vocab data/exemplar_vocab.json --ai true
@@ -131,13 +131,13 @@ await optimizer.validateSetup();
 const { success, asset } = await scrapeAsset('https://assetstore.unity.com/packages/...');
 
 // Grade an asset
-const { grade } = await gradeAsset(assetData, 'data/vocab.json');
+const { grade } = await gradeAsset(assetData, 'data/exemplar_vocab.json');
 
 // Full optimization
 const result = await optimizeAsset({
   input: 'asset.json',
   exemplars: 'data/exemplars.json',
-  vocab: 'data/vocab.json',
+  vocab: 'data/exemplar_vocab.json',
   useAI: true
 });
 ```
@@ -186,11 +186,8 @@ npm run start build-exemplars -- --corpus "data/corpus1.json,data/corpus2.json,d
 
 ### 2. Build Quality-Focused Vocabulary
 ```bash
-# Single corpus file
+# Build exemplar-based vocabulary (recommended)
 npm run start build-exemplar-vocab -- --exemplars data/exemplars.json --out data/exemplar_vocab.json
-
-# Or build vocabulary directly from multiple corpus files
-npm run start build-vocab -- --corpus "data/part1.json,data/part2.json" --out data/vocab.json
 ```
 
 ### 3. Generate Category Playbooks
@@ -377,7 +374,7 @@ await optimizer.validateSetup();
 const result = await optimizer.optimizeAsset({
   input: 'asset.json',
   exemplarsPath: 'exemplars.json',
-  vocabPath: 'vocab.json',
+  vocabPath: 'exemplar_vocab.json',
   useAI: true
 });
 ```

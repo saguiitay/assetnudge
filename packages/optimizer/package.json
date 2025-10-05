@@ -27,7 +27,6 @@
     "scrape": "node main.mjs scrape",
     "grade": "node main.mjs grade",
     "optimize": "node main.mjs optimize",
-    "build-vocab": "node main.mjs build-vocab",
     "status": "node main.mjs status",
     "build": "tsc",
     "type-check": "tsc --noEmit"

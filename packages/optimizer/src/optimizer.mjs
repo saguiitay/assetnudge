@@ -71,51 +71,6 @@ export class UnityAssetOptimizer {
   }
 
   /**
-   * Build vocabulary from corpus file path
-   */
-  async buildVocabulary(corpusPath, outputPath) {
-    return this.logger.time('buildVocabulary', async () => {
-      this.logger.info('Building vocabulary', { corpusPath, outputPath });
-      
-      // Validate input file
-      const corpus = await FileValidator.validateJSONFile(corpusPath);
-      
-      return this.buildVocabularyFromCorpus(corpus, outputPath);
-    });
-  }
-
-  /**
-   * Build vocabulary from corpus array
-   */
-  async buildVocabularyFromCorpus(corpus, outputPath) {
-    return this.logger.time('buildVocabularyFromCorpus', async () => {
-      this.logger.info('Building vocabulary from corpus array', { 
-        corpusSize: corpus.length,
-        outputPath 
-      });
-      
-      // Validate corpus is an array
-      if (!Array.isArray(corpus)) {
-        throw new Error('Corpus must be an array of assets');
-      }
-      
-      // Build vocabulary
-      const vocabulary = await this.vocabularyBuilder.buildVocabAndMedians(corpus);
-      
-      // Save vocabulary
-      await this.writeJSON(outputPath, vocabulary);
-      
-      this.logger.success('Vocabulary built successfully', {
-        categories: Object.keys(vocabulary).length,
-        corpusSize: corpus.length,
-        outputPath
-      });
-      
-      return vocabulary;
-    });
-  }
-
-  /**
    * Build exemplars database from corpus file path
    */
   async buildExemplars(corpusPath, outputPath, topN = null, topPercent = null) {
