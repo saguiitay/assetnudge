@@ -14,7 +14,7 @@ import VocabularyBuilder from './vocabulary';
 import AssetGrader from './grader';
 import SimilarityEngine from './similarity';
 import AISuggestionEngine from './ai-suggestions';
-import HeuristicSuggestions from './heuristic-suggestions.mjs';
+import HeuristicSuggestions from './heuristic-suggestions.js';
 
 // External dependencies
 import { scrapeAssetWithGraphQL } from './scrappers/graphql-scraper';
@@ -25,9 +25,9 @@ import { extractGradingRules } from './dynamic-grading-rules';
 import { DynamicAssetGrader } from './dynamic-asset-grader';
 
 // Exemplar and pattern modules
-import { identifyExemplars, saveExemplars, getExemplarStats } from './exemplars.mjs';
+import { identifyExemplars, saveExemplars, getExemplarStats } from './exemplars';
 import { extractCategoryPatterns } from './pattern-extraction';
-import { generateCategoryPlaybook, generateExemplarRecommendations } from './exemplar-coaching.mjs';
+import { generateCategoryPlaybook, generateExemplarRecommendations } from './exemplar-coaching';
 
 /**
  * Main optimizer class that orchestrates all functionality

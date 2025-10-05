@@ -1,7 +1,8 @@
 import fs from 'fs';
 import path from 'path';
-import { Logger } from './utils/logger';
-import { calculateDetailedRating } from './utils/rating-analysis';
+import { Logger } from './utils/logger.js';
+import { calculateDetailedRating, DetailedRatingResult } from './utils/rating-analysis.js';
+import { Asset, BestSellerAsset } from './types.js';
 
 /**
  * Exemplar Management System
@@ -12,12 +13,67 @@ import { calculateDetailedRating } from './utils/rating-analysis';
 const logger = new Logger('exemplars');
 
 /**
- * Calculate composite quality score for an asset with enhanced rating analysis
- * @param {Object} asset - Asset data
- * @param {boolean} isBestSeller - Whether this asset is marked as a best seller
- * @returns {number} Quality score
+ * Asset with exemplar-specific properties
  */
-export function calculateQualityScore(asset, isBestSeller = false) {
+export interface ExemplarAsset extends Asset {
+  /** Calculated quality score for exemplar ranking */
+  qualityScore: number;
+  /** Rating analysis for detailed scoring */
+  _ratingAnalysis: DetailedRatingResult;
+  /** Whether this asset is marked as a best seller */
+  isBestSeller: boolean;
+}
+
+/**
+ * Exemplars grouped by category
+ */
+export interface ExemplarsByCategory {
+  [category: string]: ExemplarAsset[];
+}
+
+/**
+ * Statistics about exemplars
+ */
+export interface ExemplarStats {
+  totalCategories: number;
+  totalExemplars: number;
+  totalBestSellers: number;
+  averageExemplarsPerCategory: number;
+  categoriesWithMostExemplars: CategoryStats[];
+  averageQualityScore: number;
+  averageRatingQuality: number;
+  scoreDistribution: {
+    high: number;    // > 50
+    medium: number;  // 20-50
+    low: number;     // < 20
+  };
+  ratingQualityDistribution: {
+    excellent: number;  // > 80
+    good: number;       // 60-80
+    fair: number;       // 40-60
+    poor: number;       // < 40
+  };
+  bestSellerDistribution: { [category: string]: number };
+}
+
+/**
+ * Statistics for a specific category
+ */
+export interface CategoryStats {
+  category: string;
+  count: number;
+  bestSellers: number;
+  avgScore: number;
+  avgRatingQuality: number;
+}
+
+/**
+ * Calculate composite quality score for an asset with enhanced rating analysis
+ * @param asset - Asset data
+ * @param isBestSeller - Whether this asset is marked as a best seller
+ * @returns Quality score
+ */
+export function calculateQualityScore(asset: Asset, isBestSeller: boolean = false): number {
     let score = 0;
     
     // Enhanced rating analysis
@@ -94,16 +150,16 @@ export function calculateQualityScore(asset, isBestSeller = false) {
 
 /**
  * Calculate freshness score based on last update
- * @param {string} lastUpdate - Last update date string
- * @returns {number} Freshness score (0-10)
+ * @param lastUpdate - Last update date string
+ * @returns Freshness score (0-10)
  */
-function calculateFreshnessScore(lastUpdate) {
+function calculateFreshnessScore(lastUpdate: string): number {
     if (!lastUpdate) return 0;
     
     try {
         const updateDate = new Date(lastUpdate);
         const now = new Date();
-        const daysDiff = Math.floor((now - updateDate) / (1000 * 60 * 60 * 24));
+        const daysDiff = Math.floor((now.getTime() - updateDate.getTime()) / (1000 * 60 * 60 * 24));
         
         if (daysDiff <= 180) return 10; // Very fresh
         if (daysDiff <= 365) return 7;  // Fresh
@@ -117,10 +173,10 @@ function calculateFreshnessScore(lastUpdate) {
 
 /**
  * Calculate completeness score based on listing quality
- * @param {Object} asset - Asset data
- * @returns {number} Completeness score (0-10)
+ * @param asset - Asset data
+ * @returns Completeness score (0-10)
  */
-function calculateCompletenessScore(asset) {
+function calculateCompletenessScore(asset: Asset): number {
     let score = 0;
     
     // Images presence and count
@@ -149,31 +205,31 @@ function calculateCompletenessScore(asset) {
 
 /**
  * Normalize URL for matching
- * @param {string} url - Asset Store URL
- * @returns {string} Normalized URL
+ * @param url - Asset Store URL
+ * @returns Normalized URL
  */
-function normalizeUrl(url) {
+function normalizeUrl(url: string): string {
     if (!url) return '';
     return url.toLowerCase().replace(/[?#].*$/, '').replace(/\/$/, '');
 }
 
 /**
  * Normalize title for matching
- * @param {string} title - Asset title
- * @returns {string} Normalized title
+ * @param title - Asset title
+ * @returns Normalized title
  */
-function normalizeTitle(title) {
+function normalizeTitle(title: string): string {
     if (!title) return '';
     return title.toLowerCase().trim().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, ' ');
 }
 
 /**
  * Check if an asset is a best seller
- * @param {Object} asset - Asset data
- * @param {Set} bestSellerLookup - Set of best seller identifiers
- * @returns {boolean} True if asset is a best seller
+ * @param asset - Asset data
+ * @param bestSellerLookup - Set of best seller identifiers
+ * @returns True if asset is a best seller
  */
-function isBestSellerAsset(asset, bestSellerLookup) {
+function isBestSellerAsset(asset: Asset, bestSellerLookup: Set<string>): boolean {
     // Check by URL
     if (asset.url && bestSellerLookup.has(normalizeUrl(asset.url))) {
         return true;
@@ -194,10 +250,10 @@ function isBestSellerAsset(asset, bestSellerLookup) {
 
 /**
  * Extract category from asset data
- * @param {Object} asset - Asset data
- * @returns {string} Normalized category
+ * @param asset - Asset data
+ * @returns Normalized category
  */
-function extractCategory(asset) {
+function extractCategory(asset: Asset): string {
     // Use category field, or fall back to extracting from URL or tags
     if (asset.category && asset.category.trim()) {
         return asset.category.trim();
@@ -205,14 +261,14 @@ function extractCategory(asset) {
     
     // Try to extract from URL path
     const urlMatch = asset.url?.match(/\/packages\/([^\/]+)/);
-    if (urlMatch) {
+    if (urlMatch && urlMatch[1]) {
         return urlMatch[1].split('-').map(word => 
             word.charAt(0).toUpperCase() + word.slice(1)
         ).join(' ');
     }
     
     // Fall back to first tag if available
-    if (asset.tags && asset.tags.length > 0) {
+    if (asset.tags && asset.tags.length > 0 && asset.tags[0]) {
         return asset.tags[0];
     }
     
@@ -221,13 +277,18 @@ function extractCategory(asset) {
 
 /**
  * Identify exemplar assets from a corpus with optional best sellers
- * @param {Array} assets - Array of asset objects
- * @param {number} topN - Number of exemplars per category (default: 20)
- * @param {number} topPercent - Percentage of exemplars per category
- * @param {Array} bestSellers - Array of best seller assets to always include
- * @returns {Object} Exemplars grouped by category
+ * @param assets - Array of asset objects
+ * @param topN - Number of exemplars per category (default: 20)
+ * @param topPercent - Percentage of exemplars per category
+ * @param bestSellers - Array of best seller assets to always include
+ * @returns Exemplars grouped by category
  */
-export function identifyExemplars(assets, topN = null, topPercent = null, bestSellers = []) {
+export function identifyExemplars(
+    assets: Asset[], 
+    topN: number | null = null, 
+    topPercent: number | null = null, 
+    bestSellers: BestSellerAsset[] = []
+): ExemplarsByCategory {
     // Default to topN = 20 if neither is specified
     const finalTopN = topN !== null ? topN : (topPercent !== null ? null : 20);
     const finalTopPercent = topPercent;
@@ -236,7 +297,7 @@ export function identifyExemplars(assets, topN = null, topPercent = null, bestSe
     logger.info(`Identifying exemplars from ${assets.length} assets using ${selectionMethod}, with ${bestSellers.length} best sellers`);
     
     // Create a lookup for best sellers by URL, ID, and title
-    const bestSellerLookup = new Set();
+    const bestSellerLookup = new Set<string>();
     bestSellers.forEach(bs => {
         if (bs.url) bestSellerLookup.add(normalizeUrl(bs.url));
         if (bs.id) bestSellerLookup.add(bs.id.toString());
@@ -244,7 +305,7 @@ export function identifyExemplars(assets, topN = null, topPercent = null, bestSe
     });
     
     // Group assets by category
-    const assetsByCategory = {};
+    const assetsByCategory: { [category: string]: ExemplarAsset[] } = {};
     
     assets.forEach(asset => {
         const category = extractCategory(asset);
@@ -271,10 +332,10 @@ export function identifyExemplars(assets, topN = null, topPercent = null, bestSe
     });
     
     // Select exemplars per category
-    const exemplars = {};
+    const exemplars: ExemplarsByCategory = {};
     
     Object.keys(assetsByCategory).forEach(category => {
-        const categoryAssets = assetsByCategory[category];
+        const categoryAssets = assetsByCategory[category]!; // We know this exists from the keys
         
         // Separate best sellers from regular assets
         const bestSellerAssets = categoryAssets.filter(asset => asset.isBestSeller);
@@ -285,11 +346,11 @@ export function identifyExemplars(assets, topN = null, topPercent = null, bestSe
         regularAssets.sort((a, b) => b.qualityScore - a.qualityScore);
         
         // Calculate how many regular assets to take
-        let countToTake;
+        let countToTake: number;
         if (finalTopPercent !== null) {
             countToTake = Math.ceil(categoryAssets.length * (finalTopPercent / 100));
         } else {
-            countToTake = Math.min(finalTopN, categoryAssets.length);
+            countToTake = Math.min(finalTopN!, categoryAssets.length);
         }
         
         // Always include ALL best sellers, then fill remaining slots with regular assets
@@ -333,10 +394,10 @@ export function identifyExemplars(assets, topN = null, topPercent = null, bestSe
 
 /**
  * Load exemplars from a saved file
- * @param {string} filePath - Path to exemplars file
- * @returns {Object|null} Exemplars object or null if file doesn't exist
+ * @param filePath - Path to exemplars file
+ * @returns Exemplars object or null if file doesn't exist
  */
-export function loadExemplars(filePath) {
+export function loadExemplars(filePath: string): ExemplarsByCategory | null {
     try {
         if (fs.existsSync(filePath)) {
             const data = fs.readFileSync(filePath, 'utf8');
@@ -344,17 +405,17 @@ export function loadExemplars(filePath) {
         }
         return null;
     } catch (error) {
-        logger.error(`Error loading exemplars from ${filePath}:`, error);
+        logger.error(`Error loading exemplars from ${filePath}:`, error as Error);
         return null;
     }
 }
 
 /**
  * Save exemplars to a file
- * @param {Object} exemplars - Exemplars object
- * @param {string} filePath - Path to save exemplars
+ * @param exemplars - Exemplars object
+ * @param filePath - Path to save exemplars
  */
-export function saveExemplars(exemplars, filePath) {
+export function saveExemplars(exemplars: ExemplarsByCategory, filePath: string): void {
     try {
         // Ensure directory exists
         const dir = path.dirname(filePath);
@@ -365,18 +426,18 @@ export function saveExemplars(exemplars, filePath) {
         fs.writeFileSync(filePath, JSON.stringify(exemplars, null, 2));
         logger.info(`Exemplars saved to ${filePath}`);
     } catch (error) {
-        logger.error(`Error saving exemplars to ${filePath}:`, error);
+        logger.error(`Error saving exemplars to ${filePath}:`, error as Error);
         throw error;
     }
 }
 
 /**
  * Get exemplar statistics
- * @param {Object} exemplars - Exemplars object
- * @returns {Object} Statistics about exemplars
+ * @param exemplars - Exemplars object
+ * @returns Statistics about exemplars
  */
-export function getExemplarStats(exemplars) {
-    const stats = {
+export function getExemplarStats(exemplars: ExemplarsByCategory): ExemplarStats {
+    const stats: ExemplarStats = {
         totalCategories: Object.keys(exemplars).length,
         totalExemplars: 0,
         totalBestSellers: 0,
