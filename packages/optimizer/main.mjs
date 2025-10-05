@@ -188,24 +188,13 @@ Notes:
 async function cmdScrape() {
   const url = getFlag('url');
   const outPath = getFlag('out', 'scraped_asset.json');
-  const method = getFlag('method', 'fallback'); // Default to fallback for reliability
   
   ensure(url, '--url is required (Unity Asset Store URL)');
-  ensure(['graphql', 'fallback'].includes(method), '--method must be one of: graphql, fallback');
   
   const optimizer = new UnityAssetOptimizer(args);
   await optimizer.validateSetup();
   
-  let asset;
-  switch (method) {
-    case 'graphql':
-      asset = await optimizer.scrapeAssetWithGraphQL(url, outPath);
-      break;
-    case 'fallback':
-    default:
-      asset = await optimizer.scrapeAssetWithFallback(url, outPath);
-      break;
-  }
+  let asset = await optimizer.scrapeAssetWithGraphQL(url, outPath);
   
   console.log(JSON.stringify({
     success: true,

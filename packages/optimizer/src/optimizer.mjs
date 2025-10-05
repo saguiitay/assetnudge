@@ -338,51 +338,6 @@ export class UnityAssetOptimizer {
   }
 
   /**
-   * Scrape asset data with fallback strategy (GraphQL first)
-   */
-  async scrapeAssetWithFallback(url, outputPath) {
-    return this.logger.time('scrapeAssetWithFallback', async () => {
-      this.logger.info('Scraping asset with fallback strategy', { url });
-      
-      // Validate URL
-      URLValidator.validateAssetStoreURL(url);
-      
-      let asset;
-      let method = 'unknown';
-      
-      try {
-        // Try GraphQL first for most reliable data
-        this.logger.info('Attempting GraphQL API scraping...');
-        asset = await scrapeAssetWithGraphQL(url);
-        method = 'graphql';
-        this.logger.info('GraphQL API scraping successful');
-      } catch (graphqlError) {
-        this.logger.error('All scraping methods failed', {
-          graphqlError: graphqlError.message,
-        });
-        throw new Error(`Scraping failed: GraphQL (${graphqlError.message})`);
-      }
-      
-      // Add metadata about scraping method
-      asset.scraping_method = method;
-      
-      // Save scraped data
-      if (outputPath) {
-        await this.writeJSON(outputPath, asset);
-      }
-      
-      this.logger.success('Asset scraped successfully with fallback strategy', {
-        title: asset.title,
-        category: asset.category,
-        method,
-        outputPath
-      });
-      
-      return asset;
-    });
-  }
-
-  /**
    * Comprehensive optimization analysis
    */
   async optimizeAsset(options) {
@@ -402,7 +357,7 @@ export class UnityAssetOptimizer {
       let asset;
       if (url) {
         URLValidator.validateAssetStoreURL(url);
-        asset = await this.scrapeAssetWithFallback(url);
+        asset = await this.scrapeAssetWithGraphQL(url);
         this.logger.info('Asset scraped from URL', { title: asset.title, method: asset.scraping_method });
       } else if (input) {
         asset = await FileValidator.validateJSONFile(input);

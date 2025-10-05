@@ -29,7 +29,7 @@ export async function scrapeAsset(url: string, config: { debug?: boolean; apiKey
   await optimizer.validateSetup();
   
   try {
-    const asset = await optimizer.scrapeAssetWithFallback(url);
+    const asset = await optimizer.scrapeAssetWithGraphQL(url);
     return {
       success: true,
       asset: asset
