@@ -1,7 +1,7 @@
 /**
  * System prompt for comprehensive Unity Asset Store optimization
  */
-export const buildSystemPrompt = (validCategories) => {
+export const buildSystemPrompt = (validCategories: string[]): string => {
   return `You are an expert Unity Asset Store optimization consultant with deep knowledge of successful listing patterns. You analyze exemplars (high-performing assets) to provide targeted improvement suggestions.
 
 Key Principles:

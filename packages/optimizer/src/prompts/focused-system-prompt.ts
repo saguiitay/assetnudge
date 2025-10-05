@@ -1,10 +1,10 @@
 /**
  * Focused system prompts for specific suggestion types
  */
-export const buildFocusedSystemPrompt = (type, validCategories) => {
+export const buildFocusedSystemPrompt = (type: string, validCategories: string[]): string => {
   const basePrompt = `You are an expert Unity Asset Store optimization consultant specializing in ${type} optimization. You analyze exemplars (high-performing assets) to provide targeted ${type} improvements.`;
   
-  const typeSpecific = {
+  const typeSpecific: Record<string, string> = {
     tags: `Focus on tag discovery and ranking. Balance high-signal category terms with specific use-cases. Reference successful exemplar tag patterns.`,
     title: `Focus on title optimization for clarity and conversion. Use exemplar vocabulary patterns while maintaining uniqueness. Keep 60-75 characters when possible.`,
     description: `Focus on conversion-focused descriptions. Use exemplar structures: short description (140-160 chars) + detailed long description with benefits, features, and compatibility.`,

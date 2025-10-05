@@ -1,10 +1,61 @@
+import type { Asset } from '../types';
+
+/**
+ * Vocabulary word with frequency data
+ */
+interface VocabularyWord {
+  word: string;
+  frequency: number;
+}
+
+/**
+ * Exemplar asset interface for prompts
+ */
+interface ExemplarAsset {
+  title: string;
+  qualityScore: number;
+  tags?: string[];
+  price?: number;
+  rating?: number;
+  reviews_count?: number;
+}
+
+/**
+ * Vocabulary patterns interface
+ */
+interface VocabularyPatterns {
+  title_words?: VocabularyWord[];
+  title_bigrams?: VocabularyWord[];
+  description_words?: VocabularyWord[];
+  common_tags?: VocabularyWord[];
+  title_length?: { median?: number };
+  images_count?: { median?: number };
+  price?: { q1?: number; q3?: number; median?: number };
+  quality_score?: { mean?: number };
+}
+
+/**
+ * Playbook recommendations interface
+ */
+interface PlaybookRecommendations {
+  recommendations?: Record<string, any>;
+  topExemplars?: ExemplarAsset[];
+}
+
 /**
  * Focused user prompts for specific suggestion types
  */
-export const buildFocusedUserPrompt = (type, asset, exemplars, vocab, playbook, validCategories) => {
+export const buildFocusedUserPrompt = (
+  type: string,
+  asset: Asset,
+  exemplars: ExemplarAsset[],
+  vocab: VocabularyPatterns,
+  playbook: PlaybookRecommendations,
+  validCategories: string[]
+): string => {
   const baseContext = buildBaseAssetContext(asset, exemplars, vocab, playbook);
   
-  const typeSpecific = {
+  const typeSpecific: Record<string, string> = {
     tags: `TASK: Suggest 10-15 optimized tags ranked by discoverability. Use exemplar tag patterns and explain why each tag works in this category.`,
     title: `TASK: Suggest 3 alternative titles using exemplar vocabulary patterns. Explain intent and vocabulary coverage for each.`,
     description: `TASK: Create short description (140-160 chars) and long description using exemplar structures. Include benefits, features, compatibility.`,
@@ -18,7 +69,12 @@ export const buildFocusedUserPrompt = (type, asset, exemplars, vocab, playbook, 
 /**
  * Build base asset context for focused prompts
  */
-export const buildBaseAssetContext = (asset, exemplars, vocab, playbook) => {
+export const buildBaseAssetContext = (
+  asset: Asset,
+  exemplars: ExemplarAsset[],
+  vocab: VocabularyPatterns,
+  playbook: PlaybookRecommendations
+): string => {
   const topExemplars = exemplars.slice(0, 3);
   
   return `ASSET: "${asset.title}"

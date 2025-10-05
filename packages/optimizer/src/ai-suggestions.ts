@@ -13,15 +13,270 @@ import {
   buildFocusedSystemPrompt, 
   buildFocusedUserPrompt, 
   buildBaseAssetContext 
-} from './prompts/index.js';
+} from './prompts/index';
+import type { Asset } from './types';
 
 const logger = new Logger('ai');
+
+/**
+ * Configuration interface for AI suggestions
+ */
+interface AIConfig {
+  hasAI(): boolean;
+  getOpenAIConfig(): OpenAIConfig;
+  getValidCategories(): string[];
+  isValidCategory(category: string): boolean;
+  ai: {
+    defaultModel: string;
+    fallbackToHeuristic: boolean;
+  };
+  thresholds: {
+    title: {
+      minLength: number;
+      maxLength: number;
+    };
+    tags: {
+      minimum: number;
+      maximum: number;
+    };
+    bullets: {
+      minimum: number;
+    };
+  };
+}
+
+/**
+ * OpenAI configuration interface
+ */
+interface OpenAIConfig {
+  apiKey: string;
+  model: string;
+  timeout: number;
+}
+
+/**
+ * Vocabulary word with frequency data
+ */
+interface VocabularyWord {
+  word: string;
+  frequency: number;
+}
+
+/**
+ * Exemplar asset interface
+ */
+interface ExemplarAsset {
+  title: string;
+  qualityScore: number;
+  tags?: string[];
+  price?: number;
+  rating?: number;
+  reviews_count?: number;
+}
+
+/**
+ * Exemplars data structure
+ */
+interface ExemplarsData {
+  exemplars?: {
+    [category: string]: ExemplarAsset[];
+  };
+}
+
+/**
+ * Vocabulary patterns interface
+ */
+interface VocabularyPatterns {
+  title_words?: VocabularyWord[];
+  title_bigrams?: VocabularyWord[];
+  description_words?: VocabularyWord[];
+  common_tags?: VocabularyWord[];
+  title_length?: { median?: number };
+  images_count?: { median?: number };
+  price?: { q1?: number; q3?: number; median?: number };
+  quality_score?: { mean?: number };
+}
+
+/**
+ * Exemplar vocabulary data structure
+ */
+interface ExemplarVocabData {
+  [category: string]: VocabularyPatterns;
+}
+
+/**
+ * Playbook recommendations interface
+ */
+interface PlaybookRecommendations {
+  recommendations?: Record<string, any>;
+  topExemplars?: ExemplarAsset[];
+}
+
+/**
+ * Playbooks data structure
+ */
+interface PlaybooksData {
+  playbooks?: {
+    [category: string]: PlaybookRecommendations;
+  };
+}
+
+/**
+ * Tag suggestion interface
+ */
+interface TagSuggestion {
+  tag: string;
+  reason: string;
+  exemplar_reference?: string;
+  discoverability_score?: number;
+}
+
+/**
+ * Title suggestion interface
+ */
+interface TitleSuggestion {
+  text: string;
+  intent: string;
+  vocabulary_coverage?: string[];
+  exemplar_pattern?: string;
+  character_count?: number;
+}
+
+/**
+ * Description suggestion interface
+ */
+interface DescriptionSuggestion {
+  short: string;
+  long_markdown: string;
+  exemplar_structures_used?: string[];
+}
+
+/**
+ * Recommendation interface
+ */
+interface Recommendation {
+  item: string;
+  effort: string;
+  impact: string;
+  exemplar_benchmark?: string;
+  current_vs_benchmark?: string;
+  priority?: number;
+}
+
+/**
+ * Category suggestion interface
+ */
+interface CategorySuggestion {
+  category: string;
+  confidence: number;
+  exemplar_similarity?: string;
+  vocabulary_matches?: string[];
+  reasoning?: string;
+}
+
+/**
+ * Similar exemplar interface
+ */
+interface SimilarExemplar {
+  title: string;
+  similarity_score: number;
+  shared_vocabulary?: string[];
+  quality_score?: number;
+  inspiration_takeaway: string;
+  key_differentiator?: string;
+}
+
+/**
+ * Comprehensive AI suggestions response interface
+ */
+interface AISuggestions {
+  suggested_tags: TagSuggestion[];
+  suggested_title: TitleSuggestion[];
+  suggested_description: DescriptionSuggestion;
+  recommendations: Recommendation[];
+  suggested_category: CategorySuggestion;
+  similar_exemplars?: SimilarExemplar[];
+  rationale?: string;
+}
+
+/**
+ * Focused AI suggestions response interfaces
+ */
+interface FocusedTagsSuggestion {
+  suggested_tags: TagSuggestion[];
+  rationale?: string;
+}
+
+interface FocusedTitleSuggestion {
+  suggested_titles: TitleSuggestion[];
+  rationale?: string;
+}
+
+interface FocusedDescriptionSuggestion {
+  short_description: string;
+  long_description: string;
+  exemplar_structures_used?: string[];
+  rationale?: string;
+}
+
+interface FocusedCategorySuggestion {
+  suggested_category: CategorySuggestion;
+  rationale?: string;
+}
+
+interface FocusedRecommendationsSuggestion {
+  recommendations: Recommendation[];
+  rationale?: string;
+}
+
+/**
+ * Union type for all focused suggestion types
+ */
+type FocusedSuggestion = 
+  | FocusedTagsSuggestion 
+  | FocusedTitleSuggestion 
+  | FocusedDescriptionSuggestion 
+  | FocusedCategorySuggestion 
+  | FocusedRecommendationsSuggestion;
+
+/**
+ * AI suggestion generation parameters
+ */
+interface SuggestionParams {
+  asset: Asset;
+  exemplars: ExemplarsData;
+  exemplarVocab: ExemplarVocabData;
+  playbooks: PlaybooksData;
+}
+
+/**
+ * Connection test result interface
+ */
+interface ConnectionTestResult {
+  success: boolean;
+  error?: string;
+  model?: string;
+  responseId?: string;
+}
+
+/**
+ * Usage statistics interface
+ */
+interface UsageStats {
+  available: boolean;
+  model: string;
+  fallbackEnabled: boolean;
+}
 
 /**
  * AI-powered suggestion engine using OpenAI
  */
 export class AISuggestionEngine {
-  constructor(config) {
+  private config: AIConfig;
+  private client: OpenAI | null;
+  private logger: Logger;
+
+  constructor(config: AIConfig) {
     this.config = config;
     this.client = null;
     this.logger = logger.child('suggestions');
@@ -34,7 +289,7 @@ export class AISuggestionEngine {
   /**
    * Initialize OpenAI client
    */
-  initializeOpenAI() {
+  private initializeOpenAI(): void {
     try {
       const openaiConfig = this.config.getOpenAIConfig();
       this.client = new OpenAI({ 
@@ -47,7 +302,7 @@ export class AISuggestionEngine {
         timeout: openaiConfig.timeout
       });
     } catch (error) {
-      this.logger.error('Failed to initialize OpenAI client', error);
+      this.logger.error('Failed to initialize OpenAI client', error as Error);
       this.client = null;
     }
   }
@@ -55,7 +310,7 @@ export class AISuggestionEngine {
   /**
    * Check if AI features are available
    */
-  isAvailable() {
+  isAvailable(): boolean {
     return this.client !== null;
   }
 
@@ -63,14 +318,12 @@ export class AISuggestionEngine {
    * Generate comprehensive AI-powered optimization suggestions
    * Uses OpenAI's structured output with exemplar-based prompts
    * 
-   * @param {Object} params - Configuration object
-   * @param {Object} params.asset - Current asset data
-   * @param {Object} params.exemplars - Category exemplars data
-   * @param {Object} params.exemplarVocab - Exemplar vocabulary and patterns
-   * @param {Object} params.playbooks - Category playbook recommendations
-   * @returns {Object} AI-generated suggestions for tags, title, description, etc.
+   * @param params - Configuration object containing asset, exemplars, vocab, and playbooks
+   * @returns AI-generated suggestions for tags, title, description, etc.
    */
-  async generateSuggestions({ asset, exemplars, exemplarVocab, playbooks }) {
+  async generateSuggestions(params: SuggestionParams): Promise<AISuggestions> {
+    const { asset, exemplars, exemplarVocab, playbooks } = params;
+    
     if (!this.isAvailable()) {
       throw new Error('AI suggestions not available - OpenAI client not initialized');
     }
@@ -105,7 +358,7 @@ export class AISuggestionEngine {
           } catch (validationError) {
             this.logger.warn('Invalid category suggestion from AI, sanitizing', {
               original: suggestions.suggested_category,
-              error: validationError.message
+              error: (validationError as Error).message
             });
             
             // Try to sanitize the category using our mapping
@@ -136,7 +389,7 @@ export class AISuggestionEngine {
         return suggestions;
 
       } catch (error) {
-        this.logger.error('AI suggestion generation failed', error, {
+        this.logger.error('AI suggestion generation failed', error as Error, {
           title: asset.title,
           category
         });
@@ -154,7 +407,12 @@ export class AISuggestionEngine {
   /**
    * Call OpenAI API with exemplar-based structured prompts
    */
-  async callOpenAI(asset, exemplars, vocab, playbook) {
+  private async callOpenAI(
+    asset: Asset,
+    exemplars: ExemplarAsset[],
+    vocab: VocabularyPatterns,
+    playbook: PlaybookRecommendations
+  ): Promise<AISuggestions> {
     const system = this.buildSystemPrompt();
     const userPrompt = this.buildDetailedUserPrompt(asset, exemplars, vocab, playbook);
     const schema = this.buildResponseSchema();
@@ -162,7 +420,7 @@ export class AISuggestionEngine {
     const openaiConfig = this.config.getOpenAIConfig();
     
     // Using the newer Chat Completions API with structured outputs
-    const response = await this.client.chat.completions.create({
+    const response = await this.client!.chat.completions.create({
       model: openaiConfig.model,
       messages: [
         { role: 'system', content: system },
@@ -184,7 +442,7 @@ export class AISuggestionEngine {
     try {
       return JSON.parse(responseText);
     } catch (parseError) {
-      this.logger.error('Failed to parse OpenAI response as JSON', parseError, {
+      this.logger.error('Failed to parse OpenAI response as JSON', parseError as Error, {
         responseText: responseText.slice(0, 200)
       });
       throw new Error('Invalid JSON response from OpenAI');
@@ -194,7 +452,7 @@ export class AISuggestionEngine {
   /**
    * Build comprehensive system prompt for exemplar-based optimization
    */
-  buildSystemPrompt() {
+  private buildSystemPrompt(): string {
     const validCategories = this.config.getValidCategories();
     return buildSystemPrompt(validCategories);
   }
@@ -202,7 +460,12 @@ export class AISuggestionEngine {
   /**
    * Build detailed user prompt with exemplar-based sections
    */
-  buildDetailedUserPrompt(asset, exemplars, vocab, playbook) {
+  private buildDetailedUserPrompt(
+    asset: Asset,
+    exemplars: ExemplarAsset[],
+    vocab: VocabularyPatterns,
+    playbook: PlaybookRecommendations
+  ): string {
     const validCategories = this.config.getValidCategories();
     return buildDetailedUserPrompt(asset, exemplars, vocab, playbook, validCategories);
   }
@@ -210,7 +473,12 @@ export class AISuggestionEngine {
   /**
    * Build exemplar-based payload for OpenAI request
    */
-  buildExemplarPayload(asset, exemplars, vocab, playbook) {
+  buildExemplarPayload(
+    asset: Asset,
+    exemplars: ExemplarAsset[],
+    vocab: VocabularyPatterns,
+    playbook: PlaybookRecommendations
+  ): Record<string, any> {
     const topExemplars = exemplars.slice(0, 5).map(ex => ({
       title: ex.title,
       qualityScore: ex.qualityScore,
@@ -267,7 +535,7 @@ export class AISuggestionEngine {
   /**
    * Build JSON schema for exemplar-based structured response
    */
-  buildResponseSchema() {
+  private buildResponseSchema(): Record<string, any> {
     return {
       type: 'object',
       properties: {
@@ -352,15 +620,16 @@ export class AISuggestionEngine {
 
   /**
    * Generate focused suggestions for a specific property type
-   * @param {string} type - Suggestion type: 'tags', 'title', 'description', 'category', 'recommendations'
-   * @param {Object} params - Configuration object
-   * @param {Object} params.asset - Current asset data
-   * @param {Object} params.exemplars - Category exemplars data
-   * @param {Object} params.exemplarVocab - Exemplar vocabulary and patterns
-   * @param {Object} params.playbooks - Category playbook recommendations
-   * @returns {Object} AI-generated focused suggestion for the specified property
+   * @param type - Suggestion type: 'tags', 'title', 'description', 'category', 'recommendations'
+   * @param params - Configuration object containing asset, exemplars, vocab, and playbooks
+   * @returns AI-generated focused suggestion for the specified property
    */
-  async generateFocusedSuggestions(type, { asset, exemplars, exemplarVocab, playbooks }) {
+  async generateFocusedSuggestions(
+    type: string,
+    params: SuggestionParams
+  ): Promise<FocusedSuggestion> {
+    const { asset, exemplars, exemplarVocab, playbooks } = params;
+    
     if (!this.isAvailable()) {
       throw new Error('AI suggestions not available - OpenAI client not initialized');
     }
@@ -391,7 +660,7 @@ export class AISuggestionEngine {
         const suggestion = await this.callFocusedOpenAI(type, asset, categoryExemplars, categoryVocab, categoryPlaybook);
         
         // Validate category suggestions if this is a category-focused call
-        if (type === 'category' && suggestion.suggested_category) {
+        if (type === 'category' && 'suggested_category' in suggestion && suggestion.suggested_category) {
           try {
             if (!this.config.isValidCategory(suggestion.suggested_category.category)) {
               throw new Error(`Invalid category: ${suggestion.suggested_category.category}`);
@@ -399,7 +668,7 @@ export class AISuggestionEngine {
           } catch (validationError) {
             this.logger.warn('Invalid focused category suggestion from AI, sanitizing', {
               original: suggestion.suggested_category,
-              error: validationError.message
+              error: (validationError as Error).message
             });
             
             const sanitized = this.sanitizeCategory(suggestion.suggested_category.category);
@@ -421,13 +690,13 @@ export class AISuggestionEngine {
           title: asset.title,
           category,
           type,
-          suggestedCategory: type === 'category' ? suggestion.suggested_category?.category : undefined
+          suggestedCategory: type === 'category' && 'suggested_category' in suggestion ? suggestion.suggested_category?.category : undefined
         });
 
         return suggestion;
 
       } catch (error) {
-        this.logger.error(`Focused ${type} suggestion generation failed`, error, {
+        this.logger.error(`Focused ${type} suggestion generation failed`, error as Error, {
           title: asset.title,
           category,
           type
@@ -441,14 +710,20 @@ export class AISuggestionEngine {
   /**
    * Call OpenAI API for focused, single-property suggestions
    */
-  async callFocusedOpenAI(type, asset, exemplars, vocab, playbook) {
+  private async callFocusedOpenAI(
+    type: string,
+    asset: Asset,
+    exemplars: ExemplarAsset[],
+    vocab: VocabularyPatterns,
+    playbook: PlaybookRecommendations
+  ): Promise<FocusedSuggestion> {
     const systemPrompt = this.buildFocusedSystemPrompt(type);
     const userPrompt = this.buildFocusedUserPrompt(type, asset, exemplars, vocab, playbook);
     const schema = this.buildFocusedResponseSchema(type);
 
     const openaiConfig = this.config.getOpenAIConfig();
     
-    const response = await this.client.chat.completions.create({
+    const response = await this.client!.chat.completions.create({
       model: openaiConfig.model,
       messages: [
         { role: 'system', content: systemPrompt },
@@ -470,7 +745,7 @@ export class AISuggestionEngine {
     try {
       return JSON.parse(responseText);
     } catch (parseError) {
-      this.logger.error(`Failed to parse focused ${type} response`, parseError, {
+      this.logger.error(`Failed to parse focused ${type} response`, parseError as Error, {
         responseText: responseText.slice(0, 200)
       });
       throw new Error(`Invalid JSON response for ${type} suggestion`);
@@ -480,7 +755,7 @@ export class AISuggestionEngine {
   /**
    * Build focused system prompts for specific suggestion types
    */
-  buildFocusedSystemPrompt(type) {
+  private buildFocusedSystemPrompt(type: string): string {
     const validCategories = this.config.getValidCategories();
     return buildFocusedSystemPrompt(type, validCategories);
   }
@@ -488,18 +763,22 @@ export class AISuggestionEngine {
   /**
    * Build focused user prompts for specific suggestion types  
    */
-  buildFocusedUserPrompt(type, asset, exemplars, vocab, playbook) {
+  private buildFocusedUserPrompt(
+    type: string,
+    asset: Asset,
+    exemplars: ExemplarAsset[],
+    vocab: VocabularyPatterns,
+    playbook: PlaybookRecommendations
+  ): string {
     const validCategories = this.config.getValidCategories();
     return buildFocusedUserPrompt(type, asset, exemplars, vocab, playbook, validCategories);
   }
 
-
-
   /**
    * Build focused response schemas for specific suggestion types
    */
-  buildFocusedResponseSchema(type) {
-    const schemas = {
+  private buildFocusedResponseSchema(type: string): Record<string, any> {
+    const schemas: Record<string, Record<string, any>> = {
       tags: {
         type: 'object',
         properties: {
@@ -596,24 +875,54 @@ export class AISuggestionEngine {
       }
     };
 
-    return schemas[type];
+    const schema = schemas[type];
+    if (!schema) {
+      throw new Error(`No schema defined for suggestion type: ${type}`);
+    }
+    return schema;
   }
 
   /**
    * Generate heuristic fallback suggestions when AI is unavailable
    */
-  async generateHeuristicFallback(asset, vocab) {
+  private async generateHeuristicFallback(asset: Asset, vocab: VocabularyPatterns): Promise<AISuggestions> {
     this.logger.debug('Generating heuristic fallback suggestions');
 
     // Use heuristic suggestions as fallback
     const heuristicEngine = new HeuristicSuggestions(this.config);
     
+    const heuristicTags = heuristicEngine.suggestTags(asset, vocab);
+    const heuristicTitles = heuristicEngine.suggestTitle(asset, vocab);
+    const heuristicDescription = heuristicEngine.suggestDescription(asset, vocab);
+    const heuristicRecommendations = heuristicEngine.generateRecommendations(asset, vocab);
+    const heuristicCategory = heuristicEngine.suggestCategory(asset, vocab);
+    
     return {
-      suggested_tags: heuristicEngine.suggestTags(asset, vocab),
-      suggested_title: heuristicEngine.suggestTitle(asset, vocab),
-      suggested_description: heuristicEngine.suggestDescription(asset, vocab),
-      recommendations: heuristicEngine.generateRecommendations(asset, vocab),
-      suggested_category: heuristicEngine.suggestCategory(asset, vocab),
+      suggested_tags: Array.isArray(heuristicTags) ? heuristicTags.map(tag => ({
+        tag: typeof tag === 'string' ? tag : (tag as any).tag || '',
+        reason: typeof tag === 'object' && tag && 'reason' in tag ? String((tag as any).reason) : 'Heuristic suggestion'
+      })) : [],
+      suggested_title: Array.isArray(heuristicTitles) ? heuristicTitles.map(title => ({
+        text: typeof title === 'string' ? title : (title as any).text || '',
+        intent: typeof title === 'object' && title && 'intent' in title ? String((title as any).intent) : 'Improvement suggestion'
+      })) : [],
+      suggested_description: {
+        short: typeof heuristicDescription === 'object' && heuristicDescription && 'short' in heuristicDescription ? 
+               String((heuristicDescription as any).short) : '',
+        long_markdown: typeof heuristicDescription === 'object' && heuristicDescription && 'long' in heuristicDescription ? 
+                       String((heuristicDescription as any).long) : ''
+      },
+      recommendations: Array.isArray(heuristicRecommendations) ? heuristicRecommendations.map(rec => ({
+        item: typeof rec === 'string' ? rec : (rec as any).item || '',
+        effort: typeof rec === 'object' && rec && 'effort' in rec ? String((rec as any).effort) : 'Medium',
+        impact: typeof rec === 'object' && rec && 'impact' in rec ? String((rec as any).impact) : 'Medium'
+      })) : [],
+      suggested_category: {
+        category: Array.isArray(heuristicCategory) && heuristicCategory.length > 0 && heuristicCategory[0] ? 
+                  (heuristicCategory[0] as any).category || 'Templates/Systems' : 'Templates/Systems',
+        confidence: Array.isArray(heuristicCategory) && heuristicCategory.length > 0 && heuristicCategory[0] ? 
+                    Number((heuristicCategory[0] as any).confidence) || 0.5 : 0.5
+      },
       rationale: 'Generated using heuristic methods (AI unavailable)'
     };
   }
@@ -621,13 +930,13 @@ export class AISuggestionEngine {
   /**
    * Test OpenAI connection and model availability
    */
-  async testConnection() {
+  async testConnection(): Promise<ConnectionTestResult> {
     if (!this.isAvailable()) {
       return { success: false, error: 'OpenAI client not initialized' };
     }
 
     try {
-      const response = await this.client.chat.completions.create({
+      const response = await this.client!.chat.completions.create({
         model: this.config.ai.defaultModel,
         messages: [{ role: 'user', content: 'Hello, this is a connection test.' }],
         max_tokens: 10
@@ -642,7 +951,7 @@ export class AISuggestionEngine {
     } catch (error) {
       return {
         success: false,
-        error: error.message,
+        error: (error as Error).message,
         model: this.config.ai.defaultModel
       };
     }
@@ -651,7 +960,7 @@ export class AISuggestionEngine {
   /**
    * Get AI usage statistics
    */
-  getUsageStats() {
+  getUsageStats(): UsageStats {
     // This would typically track API calls, tokens used, etc.
     // For now, return basic info
     return {
@@ -664,7 +973,7 @@ export class AISuggestionEngine {
   /**
    * Sanitize and map legacy category names to official categories
    */
-  sanitizeCategory(category) {
+  private sanitizeCategory(category: string): string | null {
     if (!category || typeof category !== 'string') {
       return null;
     }
@@ -677,7 +986,7 @@ export class AISuggestionEngine {
     }
 
     // Map legacy category names to official ones
-    const legacyMapping = {
+    const legacyMapping: Record<string, string> = {
       'Templates': 'Templates/Systems',
       'Scripts': 'Tools/Utilities', 
       'Tools': 'Tools/Utilities',

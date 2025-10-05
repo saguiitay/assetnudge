@@ -1,7 +1,57 @@
+import type { Asset } from '../types';
+
+/**
+ * Vocabulary word with frequency data
+ */
+interface VocabularyWord {
+  word: string;
+  frequency: number;
+}
+
+/**
+ * Exemplar asset interface for prompts
+ */
+interface ExemplarAsset {
+  title: string;
+  qualityScore: number;
+  tags?: string[];
+  price?: number;
+  rating?: number;
+  reviews_count?: number;
+}
+
+/**
+ * Vocabulary patterns interface
+ */
+interface VocabularyPatterns {
+  title_words?: VocabularyWord[];
+  title_bigrams?: VocabularyWord[];
+  description_words?: VocabularyWord[];
+  common_tags?: VocabularyWord[];
+  title_length?: { median?: number };
+  images_count?: { median?: number };
+  price?: { q1?: number; q3?: number; median?: number };
+  quality_score?: { mean?: number };
+}
+
+/**
+ * Playbook recommendations interface
+ */
+interface PlaybookRecommendations {
+  recommendations?: Record<string, any>;
+  topExemplars?: ExemplarAsset[];
+}
+
 /**
  * Detailed user prompt with exemplar-based sections for comprehensive optimization
  */
-export const buildDetailedUserPrompt = (asset, exemplars, vocab, playbook, validCategories) => {
+export const buildDetailedUserPrompt = (
+  asset: Asset,
+  exemplars: ExemplarAsset[],
+  vocab: VocabularyPatterns,
+  playbook: PlaybookRecommendations,
+  validCategories: string[]
+): string => {
   const topExemplars = exemplars.slice(0, 5);
   const categoryRecommendations = playbook?.recommendations || {};
   

@@ -13,7 +13,7 @@ import { URLValidator, FileValidator } from './utils/validation';
 import VocabularyBuilder from './vocabulary';
 import AssetGrader from './grader';
 import SimilarityEngine from './similarity';
-import AISuggestionEngine from './ai-suggestions.mjs';
+import AISuggestionEngine from './ai-suggestions';
 import HeuristicSuggestions from './heuristic-suggestions.mjs';
 
 // External dependencies

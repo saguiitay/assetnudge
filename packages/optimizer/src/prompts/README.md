@@ -27,7 +27,7 @@ import {
   buildDetailedUserPrompt, 
   buildFocusedSystemPrompt, 
   buildFocusedUserPrompt 
-} from './prompts/index.js';
+} from './prompts/index';
 
 // Use the functions to generate prompts with dynamic data
 const systemPrompt = buildSystemPrompt(validCategories);
