@@ -7,6 +7,13 @@ import OpenAI from 'openai';
 import { Logger } from './utils/logger';
 import { AssetValidator } from './utils/validation';
 import HeuristicSuggestions from './heuristic-suggestions.mjs';
+import { 
+  buildSystemPrompt, 
+  buildDetailedUserPrompt, 
+  buildFocusedSystemPrompt, 
+  buildFocusedUserPrompt, 
+  buildBaseAssetContext 
+} from './prompts/index.js';
 
 const logger = new Logger('ai');
 
@@ -189,109 +196,15 @@ export class AISuggestionEngine {
    */
   buildSystemPrompt() {
     const validCategories = this.config.getValidCategories();
-    
-    return `You are an expert Unity Asset Store optimization consultant with deep knowledge of successful listing patterns. You analyze exemplars (high-performing assets) to provide targeted improvement suggestions.
-
-Key Principles:
-- Ground ALL suggestions in provided exemplar vocabulary and patterns
-- Reference specific successful exemplar patterns without copying text
-- Use playbook recommendations for strategic guidance
-- Provide concrete, actionable recommendations with exemplar benchmarks
-- Maintain professional, conversion-focused tone
-- Return structured JSON as specified
-
-CRITICAL CATEGORY CONSTRAINTS:
-Each asset MUST belong to exactly ONE category from this official Unity Asset Store structure:
-${validCategories.map(cat => `- ${cat}`).join('\n')}
-
-NEVER suggest multiple categories or categories outside this list. Always suggest ONE specific category in the format "MainCategory/SubCategory".
-
-Your expertise covers:
-1. Title optimization using exemplar vocabulary patterns
-2. Tag suggestions based on successful exemplar tag strategies  
-3. Description enhancement following exemplar structures
-4. Strategic recommendations using exemplar benchmarks
-5. Category classification using ONLY the official categories listed above
-
-Always explain WHY each suggestion works by referencing exemplar patterns and performance data.`;
+    return buildSystemPrompt(validCategories);
   }
 
   /**
    * Build detailed user prompt with exemplar-based sections
    */
   buildDetailedUserPrompt(asset, exemplars, vocab, playbook) {
-    const topExemplars = exemplars.slice(0, 5);
-    const categoryRecommendations = playbook?.recommendations || {};
-    
-    return `ASSET TO OPTIMIZE:
-Title: "${asset.title}"
-Short Description: "${asset.short_description || 'None provided'}"
-Long Description: "${(asset.long_description || '').substring(0, 500)}${asset.long_description?.length > 500 ? '...' : ''}"
-Current Tags: [${(asset.tags || []).join(', ')}]
-Category: ${asset.category}
-Price: $${asset.price || 'Not set'}
-Images: ${asset.images_count || 0}, Videos: ${asset.videos_count || 0}
-Rating: ${asset.rating || 'None'} (${asset.reviews_count || 0} reviews)
-
-EXEMPLAR VOCABULARY (from successful assets in ${asset.category}):
-Title Words: ${(vocab.title_words || []).slice(0, 15).map(w => w.word).join(', ')}
-Title Phrases: ${(vocab.title_bigrams || []).slice(0, 10).map(w => w.word).join(', ')}
-Description Terms: ${(vocab.description_words || []).slice(0, 20).map(w => w.word).join(', ')}
-Common Tags: ${(vocab.common_tags || []).slice(0, 15).map(w => w.word).join(', ')}
-
-TOP EXEMPLARS IN CATEGORY:
-${topExemplars.map((ex, i) => `${i + 1}. "${ex.title}" (Quality Score: ${ex.qualityScore?.toFixed(1)}, ${ex.reviews_count} reviews, Rating: ${ex.rating})`).join('\n')}
-
-CATEGORY BENCHMARKS:
-- Optimal title length: ${vocab.title_length?.median || 30} characters
-- Average images: ${vocab.images_count?.median || 5}
-- Price range: $${vocab.price?.q1 || 10} - $${vocab.price?.q3 || 50}
-- Average quality score: ${vocab.quality_score?.mean?.toFixed(1) || 100}
-
-PLAYBOOK RECOMMENDATIONS:
-${JSON.stringify(categoryRecommendations, null, 2)}
-
-TASKS:
-Provide comprehensive optimization suggestions for:
-
-1. TITLE SUGGESTIONS (3 alternatives):
-   - Use exemplar vocabulary patterns
-   - Keep 60-75 characters if possible
-   - Reference which exemplar patterns you're following
-   - Explain vocabulary coverage for each suggestion
-
-2. TAG SUGGESTIONS (10-15 tags):
-   - Balance high-signal category terms with specific use-cases
-   - Use exemplar tag patterns
-   - Rank by expected discoverability
-   - Reference successful exemplar tag strategies
-
-3. DESCRIPTION SUGGESTIONS:
-   - Short description (140-160 characters)
-   - Long description with exemplar structures
-   - Use exemplar vocabulary naturally
-   - Include features, benefits, compatibility
-   - Reference exemplar formatting patterns
-
-4. GENERAL RECOMMENDATIONS:
-   - Compare against exemplar benchmarks
-   - Provide effort/impact ratings
-   - Reference specific exemplar achievements
-   - Include current vs benchmark comparisons
-
-5. CATEGORY CLASSIFICATION:
-   - Classify into ONE category from the official Unity Asset Store structure
-   - Choose from: ${this.config.getValidCategories().join(', ')}
-   - Provide confidence score and vocabulary similarity reasoning
-   - NEVER suggest multiple categories or unofficial categories
-
-6. SIMILAR EXEMPLARS:
-   - Find 3-5 similar exemplars for inspiration
-   - Explain specific takeaways
-   - Show shared vocabulary patterns
-   - Highlight key differentiators
-
-Return structured JSON matching the required schema.`;
+    const validCategories = this.config.getValidCategories();
+    return buildDetailedUserPrompt(asset, exemplars, vocab, playbook, validCategories);
   }
 
   /**
@@ -568,60 +481,19 @@ Return structured JSON matching the required schema.`;
    * Build focused system prompts for specific suggestion types
    */
   buildFocusedSystemPrompt(type) {
-    const basePrompt = `You are an expert Unity Asset Store optimization consultant specializing in ${type} optimization. You analyze exemplars (high-performing assets) to provide targeted ${type} improvements.`;
-    
     const validCategories = this.config.getValidCategories();
-    
-    const typeSpecific = {
-      tags: `Focus on tag discovery and ranking. Balance high-signal category terms with specific use-cases. Reference successful exemplar tag patterns.`,
-      title: `Focus on title optimization for clarity and conversion. Use exemplar vocabulary patterns while maintaining uniqueness. Keep 60-75 characters when possible.`,
-      description: `Focus on conversion-focused descriptions. Use exemplar structures: short description (140-160 chars) + detailed long description with benefits, features, and compatibility.`,
-      category: `Focus on accurate category classification using ONLY the official Unity Asset Store categories: ${validCategories.join(', ')}. NEVER suggest multiple categories or categories outside this list. Always suggest exactly ONE category in MainCategory/SubCategory format.`,
-      recommendations: `Focus on actionable improvement recommendations using exemplar benchmarks and performance data.`
-    };
-
-    return `${basePrompt}\n\n${typeSpecific[type]}\n\nAlways ground suggestions in exemplar patterns and explain your reasoning with specific exemplar references.`;
+    return buildFocusedSystemPrompt(type, validCategories);
   }
 
   /**
    * Build focused user prompts for specific suggestion types  
    */
   buildFocusedUserPrompt(type, asset, exemplars, vocab, playbook) {
-    const baseContext = this.buildBaseAssetContext(asset, exemplars, vocab, playbook);
-    
-    const typeSpecific = {
-      tags: `TASK: Suggest 10-15 optimized tags ranked by discoverability. Use exemplar tag patterns and explain why each tag works in this category.`,
-      title: `TASK: Suggest 3 alternative titles using exemplar vocabulary patterns. Explain intent and vocabulary coverage for each.`,
-      description: `TASK: Create short description (140-160 chars) and long description using exemplar structures. Include benefits, features, compatibility.`,
-      category: `TASK: Classify into exactly ONE category from the official Unity Asset Store structure. Choose from: ${this.config.getValidCategories().join(', ')}. Provide confidence score and reasoning based on exemplar vocabulary similarity.`,
-      recommendations: `TASK: Provide 5-7 prioritized improvement recommendations using exemplar benchmarks. Include effort/impact ratings.`
-    };
-
-    return `${baseContext}\n\n${typeSpecific[type]}`;
+    const validCategories = this.config.getValidCategories();
+    return buildFocusedUserPrompt(type, asset, exemplars, vocab, playbook, validCategories);
   }
 
-  /**
-   * Build base asset context for focused prompts
-   */
-  buildBaseAssetContext(asset, exemplars, vocab, playbook) {
-    const topExemplars = exemplars.slice(0, 3);
-    
-    return `ASSET: "${asset.title}"
-Category: ${asset.category}
-Current Tags: [${(asset.tags || []).join(', ')}]
-Price: $${asset.price || 'Not set'}
 
-EXEMPLAR VOCABULARY:
-- Title Words: ${(vocab.title_words || []).slice(0, 10).map(w => w.word).join(', ')}
-- Common Tags: ${(vocab.common_tags || []).slice(0, 10).map(w => w.word).join(', ')}
-
-TOP EXEMPLARS:
-${topExemplars.map((ex, i) => `${i + 1}. "${ex.title}" (Score: ${ex.qualityScore?.toFixed(1)})`).join('\n')}
-
-BENCHMARKS:
-- Avg Quality: ${vocab.quality_score?.mean?.toFixed(1) || 100}
-- Optimal Price: $${vocab.price?.median || 25}`;
-  }
 
   /**
    * Build focused response schemas for specific suggestion types
