@@ -169,8 +169,21 @@ interface CookieData {
  * @returns The asset ID or null if not found
  */
 function extractIdFromUrl(url: string): string | null {
-  const match = url.match(/\/packages\/[^\/]+\/[^\/]+\/(\d+)/) || url.match(/-(\d+)$/);
-  return match ? (match[1] || null) : null;
+  try {
+    // Parse URL to handle hash fragments and query parameters properly
+    const urlObj = new URL(url);
+    const pathname = urlObj.pathname;
+    
+    // Try to match the standard Unity Asset Store URL pattern: /packages/category/name/id
+    const match = pathname.match(/\/packages\/[^\/]+\/[^\/]+\/(\d+)/) || 
+                  pathname.match(/-(\d+)$/);
+    
+    return match ? (match[1] || null) : null;
+  } catch (error) {
+    // Fallback to original regex if URL parsing fails
+    const match = url.match(/\/packages\/[^\/]+\/[^\/]+\/(\d+)/) || url.match(/-(\d+)$/);
+    return match ? (match[1] || null) : null;
+  }
 }
 
 /**
