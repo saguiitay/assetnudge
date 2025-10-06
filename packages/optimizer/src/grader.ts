@@ -258,14 +258,6 @@ export class AssetGrader {
       );
     }
 
-    // Publisher information - users can control this
-    const hasPublisher = asset.publisher && asset.publisher.trim().length > 0;
-    if (hasPublisher) {
-      score.score += w.publisher;
-    } else {
-      score.reasons.push('Add publisher information');
-    }
-
     // Asset documentation/support links - users can control this
     const hasDocumentation = this.hasDocumentationLinks(asset);
     if (hasDocumentation) {
@@ -458,7 +450,6 @@ export class AssetGrader {
       asset.category,
       asset.tags && asset.tags.length > 0,
       asset.images_count && asset.images_count > 0,
-      asset.publisher,
       asset.version
     ];
     

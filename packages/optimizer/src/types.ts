@@ -123,7 +123,6 @@ export interface WeightConfig {
   };
   trust: {
     freshness: number;
-    publisher: number;
     documentation: number;
     completeness: number;
     version: number;
