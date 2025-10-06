@@ -3,7 +3,7 @@
  * Provides heuristic scoring and evaluation for Unity Asset Store listings
  */
 
-import { daysBetween, clamp, zscore, jaccard, tokenize } from './utils/utils';
+import { daysBetween, clamp, zscore, jaccard, tokenize, countBullets } from './utils/utils';
 import { Logger } from './utils/logger';
 import { AssetValidator, Asset } from './utils/validation';
 import { CategoryVocabulary, GraderConfig, GradeResult, PreparedContent, ScoreResult, ThresholdConfig, Vocabulary, WeightConfig } from './types';
@@ -112,7 +112,7 @@ export class AssetGrader {
       longDesc,
       description,
       short: shortDesc.slice(0, 180),
-      bullets: (description.match(/\n[-•*]/g) || []).length,
+      bullets: countBullets(description),
       hasCTA: /buy|get|download|try|start|upgrade|pro|support|docs|click/i.test(description),
       hasUVP: /for|use|build|create|template|tool|optimi[sz]e/i.test(
         description.replace(/\s+/g, ' ').slice(0, 50)

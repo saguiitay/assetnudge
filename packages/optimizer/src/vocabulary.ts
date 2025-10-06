@@ -3,7 +3,7 @@
  * Handles vocabulary generation and category analysis for Unity Asset Store listings
  */
 
-import { tokenize, median, meanStd } from './utils/utils';
+import { tokenize, median, meanStd, countBullets } from './utils/utils';
 import { Logger } from './utils/logger';
 import { AssetValidator, Asset } from './utils/validation';
 import { GraderConfig, CategoryVocabulary, Vocabulary, ThresholdConfig } from './types';
@@ -310,8 +310,8 @@ export class VocabularyBuilder {
       categoryData.word_counts_long.push(
         cleanLong.split(/\s+/).filter((w: string) => w.length > 0).length
       );
-      // Count bullet points in long description
-      const bullets = (longDesc.match(/\n[-•*]/g) || []).length;
+      // Count bullet points in long description using improved detection
+      const bullets = countBullets(longDesc);
       categoryData.bullet_counts.push(bullets);
     }
     if (Array.isArray((asset as any).tags)) {

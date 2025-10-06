@@ -190,3 +190,34 @@ export const cosine = (a: TFVector, b: TFVector): number => {
   
   return (na && nb) ? dot / (Math.sqrt(na) * Math.sqrt(nb)) : 0;
 };
+
+/**
+ * Count bullet points in text supporting both HTML lists and markdown-style bullets
+ * @param text - Text to count bullets in
+ * @returns Number of bullet points found
+ */
+export const countBullets = (text: string): number => {
+  if (!text) return 0;
+  
+  let count = 0;
+  
+  // Count HTML list items (<li> tags)
+  const htmlListItems = text.match(/<li[^>]*>/gi) || [];
+  count += htmlListItems.length;
+  
+  // Count markdown-style bullets (lines starting with bullet characters)
+  // Look for common bullet characters at the start of lines or after whitespace
+  const markdownBullets = text.match(/(?:^|\n)\s*[-•*▪▫◦‣⁃⚡▸▹►▻‣✓✔◆◇■□●○]+/gm) || [];
+  count += markdownBullets.length;
+  
+  // Count numbered list items (1. 2. etc. at start of lines)
+  const numberedItems = text.match(/(?:^|\n)\s*\d+\./gm) || [];
+  count += numberedItems.length;
+  
+  // Count dashes and asterisks specifically when they appear to be list items
+  // (to catch cases where the previous regex might miss some formats)
+  const dashBullets = text.match(/(?:^|\n)\s*[-*]\s+/gm) || [];
+  count += dashBullets.length;
+  
+  return count;
+};

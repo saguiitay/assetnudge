@@ -1,5 +1,5 @@
 import { Logger } from './utils/logger';
-import { isStopWord, filterStopWords } from './utils/utils';
+import { isStopWord, filterStopWords, countBullets } from './utils/utils';
 
 /**
  * Pattern Extraction from Exemplars
@@ -329,12 +329,10 @@ export function extractStructurePatterns(exemplars: Asset[]): StructurePatterns 
         }
         
         // Structure analysis
-        const fullDesc = (shortDesc + ' ' + longDesc).toLowerCase();
+        const fullDesc = (shortDesc + ' ' + longDesc);
         
-        // Bullet points
-        const bulletMatches = fullDesc.match(/[⚡•▪▫◦‣⁃]/g) || [];
-        const listMatches = fullDesc.match(/<li>/g) || [];
-        const totalBullets = bulletMatches.length + listMatches.length;
+        // Bullet points using improved detection
+        const totalBullets = countBullets(fullDesc);
         lengths.bullets.push(totalBullets);
         if (totalBullets > 0) patterns.bulletPoints.present++;
         
