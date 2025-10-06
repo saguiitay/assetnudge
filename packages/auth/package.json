@@ -7,20 +7,24 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@clerk/nextjs": "^6.33.1",
-    "@clerk/themes": "^2.4.23",
+    "@clerk/nextjs": "^6.33.2",
+    "@clerk/themes": "^2.4.24",
     "@t3-oss/env-nextjs": "^0.13.8",
     "next-themes": "^0.4.6",
-    "react": "^19.1.1",
+    "react": "^19.2.0",
     "server-only": "^0.0.1",
     "zod": "^4.1.11"
   },
   "devDependencies": {
-    "@clerk/types": "^4.90.0",
+    "@clerk/types": "^4.91.0",
     "@repo/typescript-config": "*",
+    "@t3-oss/env-nextjs": "^0.13.8",
     "@types/node": "24.6.1",
     "@types/react": "19.1.16",
     "@types/react-dom": "^19.1.9",
-    "typescript": "^5.9.3"
+    "next-themes": "^0.4.6",
+    "react": "^19.2.0",
+    "typescript": "^5.9.3",
+    "zod": "^4.1.11"
   }
 }

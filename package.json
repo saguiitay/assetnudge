@@ -9,9 +9,24 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
-    "prettier": "^3.6.0",
-    "prettier-plugin-tailwindcss": "^0.6.11",
-    "turbo": "^2.5.8"
+    "@repo/auth": "^0.0.0",
+    "@repo/design-system": "^0.0.0",
+    "@repo/eslint-config": "^0.0.0",
+    "@repo/internationalization": "^0.0.0",
+    "@repo/next-config": "^0.0.0",
+    "@repo/optimizer": "^2.0.0",
+    "@repo/security": "^0.0.0",
+    "@repo/seo": "^0.0.0",
+    "@repo/tailwind-config": "^0.0.0",
+    "@repo/typescript-config": "^0.0.0",
+    "api": "*",
+    "app": "^1.0.0",
+    "prettier": "^3.6.2",
+    "prettier-plugin-tailwindcss": "^0.6.14",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "turbo": "^2.5.8",
+    "web": "^1.0.0"
   },
   "engines": {
     "node": ">=18"
@@ -20,5 +35,9 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  }
 }
