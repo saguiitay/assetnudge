@@ -21,6 +21,7 @@ import { Badge } from '@repo/design-system/components/ui/badge';
 import { Alert, AlertDescription } from '@repo/design-system/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@repo/design-system/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@repo/design-system/components/ui/dialog';
+import { AssetMediaGallery } from './media-gallery';
 import { X, Download, AlertCircle, CheckCircle, ShoppingCart } from 'lucide-react';
 
 // HTML validation function for allowed tags
@@ -61,6 +62,23 @@ const assetSchema = z.object({
   favorites: z.number().min(0).optional(),
   images_count: z.number().min(0).optional(),
   videos_count: z.number().min(0).optional(),
+  // Media fields
+  mainImage: z.object({
+    big: z.string().optional(),
+    small: z.string().optional(),
+    icon: z.string().optional(),
+    facebook: z.string().optional(),
+    icon75: z.string().optional(),
+  }).optional(),
+  images: z.array(z.object({
+    imageUrl: z.string(),
+    thumbnailUrl: z.string().optional(),
+  })).optional(),
+  videos: z.array(z.object({
+    videoUrl: z.string(),
+    thumbnailUrl: z.string().optional(),
+    title: z.string().optional(),
+  })).optional(),
 });
 
 type AssetFormData = z.infer<typeof assetSchema>;
@@ -74,6 +92,7 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
   const [newTag, setNewTag] = useState('');
   const [importUrl, setImportUrl] = useState('');
   const [isImporting, setIsImporting] = useState(false);
+  const [isBatchUpdating, setIsBatchUpdating] = useState(false);
   const [importError, setImportError] = useState<string | null>(null);
   const [importSuccess, setImportSuccess] = useState(false);
   const [importedData, setImportedData] = useState<any>(null);
@@ -94,6 +113,9 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
       favorites: 0,
       images_count: 0,
       videos_count: 0,
+      mainImage: undefined,
+      images: [],
+      videos: [],
     },
   });
 
@@ -103,6 +125,9 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
   // Watch all form values for changes and trigger updates with debounce
   const watchedValues = watch();
   useEffect(() => {
+    // Skip grading during import or batch updates to prevent multiple API calls
+    if (isImporting || isBatchUpdating) return;
+    
     // Only trigger update if we have meaningful data (at least title and some description)
     if (watchedValues.title && watchedValues.title.length > 0 && 
         (watchedValues.short_description || watchedValues.long_description) &&
@@ -116,6 +141,8 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
       return () => clearTimeout(timeoutId);
     }
   }, [
+    isImporting,
+    isBatchUpdating,
     watchedValues.title,
     watchedValues.short_description, 
     watchedValues.long_description,
@@ -139,7 +166,6 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
 
   const onSubmit = (data: AssetFormData) => {
     console.log('Asset data:', data);
-    onAssetUpdate?.(data);
     // Note: Automatic updates are now handled by useEffect above
   };
 
@@ -149,6 +175,7 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
     setImportSuccess(false);
     setImportedData(null);
     setIsImportModalOpen(false);
+    setIsBatchUpdating(false);
     onAssetClear?.();
     
     // Reset form to defaults
@@ -165,6 +192,9 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
       favorites: 0,
       images_count: 0,
       videos_count: 0,
+      mainImage: undefined,
+      images: [],
+      videos: [],
     });
   };
 
@@ -212,12 +242,16 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
         scraped_at: result.scraped_at
       });
 
-      // Populate the form with scraped data
+      console.log('Raw scraped asset data:', result.asset);
+
+      // Start batch updating to prevent multiple useEffect triggers
+      setIsBatchUpdating(true);
+
+      // Process the asset data first
       const asset = result.asset;
-      if (asset.title) form.setValue('title', asset.title);
-      if (asset.short_description) form.setValue('short_description', asset.short_description);
       
       // Handle long description - preserve HTML but clean up disallowed tags
+      let processedLongDescription = '';
       if (asset.long_description) {
         let htmlDescription = asset.long_description;
         
@@ -233,48 +267,116 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
           htmlDescription = htmlDescription.replace(/<(?!\/?(b|i|a|ol|ul|li)(?:\s[^>]*)?\/?)[^>]*>/gi, '');
         }
         
-        form.setValue('long_description', htmlDescription.slice(0, 5000)); // Respect max length
+        processedLongDescription = htmlDescription.slice(0, 5000); // Respect max length
       }
       
-      if (asset.category) form.setValue('category', asset.category);
-      if (asset.tags && Array.isArray(asset.tags)) form.setValue('tags', asset.tags.slice(0, 20)); // Limit tags
-      if (typeof asset.price === 'number') form.setValue('price', asset.price);
+      // Process main image
+      let processedMainImage = undefined;
+      if (asset.mainImage) {
+        const processMainImage = (url?: string) => {
+          if (!url) return undefined;
+          // Handle different URL formats
+          if (url.startsWith('//')) return `https:${url}`;
+          if (url.startsWith('http')) return url;
+          return `https://${url}`;
+        };
+        
+        processedMainImage = {
+          big: processMainImage(asset.mainImage.big),
+          small: processMainImage(asset.mainImage.small),
+          icon: processMainImage(asset.mainImage.icon),
+          facebook: processMainImage(asset.mainImage.facebook),
+          icon75: processMainImage(asset.mainImage.icon75),
+        };
+      }
       
-      // Set additional display fields
-      if (typeof asset.rating === 'number') form.setValue('rating', asset.rating);
-      if (typeof asset.rating_count === 'number') form.setValue('rating_count', asset.rating_count);
-      if (typeof asset.favorites === 'number') form.setValue('favorites', asset.favorites);
-      if (typeof asset.images_count === 'number') form.setValue('images_count', asset.images_count);
-      if (typeof asset.videos_count === 'number') form.setValue('videos_count', asset.videos_count);
+      // Process images
+      let processedImages: any[] = [];
+      if (asset.images && Array.isArray(asset.images)) {
+        const processImageUrl = (url?: string) => {
+          if (!url) return '';
+          if (url.startsWith('//')) return `https:${url}`;
+          if (url.startsWith('http')) return url;
+          return `https://${url}`;
+        };
+        
+        processedImages = asset.images.map((img: any) => ({
+          imageUrl: processImageUrl(img.imageUrl),
+          thumbnailUrl: processImageUrl(img.thumbnailUrl),
+        })).filter((img: any) => img.imageUrl);
+        
+        console.log('Processed images:', processedImages);
+      }
+      
+      // Process videos
+      let processedVideos: any[] = [];
+      if (asset.videos && Array.isArray(asset.videos)) {
+        const processVideoUrl = (url?: string) => {
+          if (!url) return '';
+          if (url.startsWith('//')) return `https:${url}`;
+          if (url.startsWith('http')) return url;
+          return `https://${url}`;
+        };
+        
+        processedVideos = asset.videos.map((vid: any) => ({
+          videoUrl: processVideoUrl(vid.videoUrl),
+          thumbnailUrl: processVideoUrl(vid.thumbnailUrl),
+          title: vid.title || undefined,
+        })).filter((vid: any) => vid.videoUrl);
+        
+        console.log('Processed videos:', processedVideos);
+      }
       
       // Parse size if it's a string (e.g., "222.0 KB")
+      let processedSize = 0;
       if (asset.size) {
-        let sizeInMB = 0;
         if (typeof asset.size === 'string') {
           const sizeMatch = asset.size.match(/([\d.]+)\s*(KB|MB|GB)/i);
           if (sizeMatch) {
             const value = parseFloat(sizeMatch[1]);
             const unit = sizeMatch[2].toLowerCase();
             switch (unit) {
-              case 'kb': sizeInMB = value / 1024; break;
-              case 'mb': sizeInMB = value; break;
-              case 'gb': sizeInMB = value * 1024; break;
+              case 'kb': processedSize = value / 1024; break;
+              case 'mb': processedSize = value; break;
+              case 'gb': processedSize = value * 1024; break;
             }
           }
         } else if (typeof asset.size === 'number') {
-          sizeInMB = asset.size;
+          processedSize = asset.size;
         }
-        form.setValue('size', Math.round(sizeInMB * 100) / 100); // Round to 2 decimals
+        processedSize = Math.round(processedSize * 100) / 100; // Round to 2 decimals
       }
+
+      // Use form.reset() to populate all fields in a single batch operation
+      form.reset({
+        title: asset.title || '',
+        short_description: asset.short_description || '',
+        long_description: processedLongDescription,
+        category: asset.category || '',
+        tags: (asset.tags && Array.isArray(asset.tags)) ? asset.tags.slice(0, 20) : [],
+        price: (typeof asset.price === 'number') ? asset.price : 0,
+        size: processedSize,
+        rating: (typeof asset.rating === 'number') ? asset.rating : 0,
+        rating_count: (typeof asset.rating_count === 'number') ? asset.rating_count : 0,
+        favorites: (typeof asset.favorites === 'number') ? asset.favorites : 0,
+        images_count: (typeof asset.images_count === 'number') ? asset.images_count : 0,
+        videos_count: (typeof asset.videos_count === 'number') ? asset.videos_count : 0,
+        mainImage: processedMainImage,
+        images: processedImages,
+        videos: processedVideos,
+      });
 
       setImportSuccess(true);
       
-      // Notify parent component immediately with imported data
-      const formData = form.getValues();
-      onAssetUpdate?.(formData);
-      
       // Close modal on successful import
       setIsImportModalOpen(false);
+      
+      // End batch updating and trigger single grading call
+      setIsBatchUpdating(false);
+      
+      // Trigger grading with the complete form data
+      const formData = form.getValues();
+      onAssetUpdate?.(formData);
       
       // Keep the URL for reference but don't clear it immediately
     } catch (error) {
@@ -539,6 +641,17 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
                 </div>
               </div>
             </div>
+
+            {/* Asset Media Gallery */}
+            <AssetMediaGallery 
+              data={{
+                mainImage: form.watch('mainImage'),
+                images: form.watch('images'),
+                videos: form.watch('videos'),
+                title: form.watch('title')
+              }}
+              showIfEmpty={importSuccess}
+            />
 
             <div className="flex justify-end space-x-4">
               <Button type="button" variant="outline">
