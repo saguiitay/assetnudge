@@ -4,6 +4,14 @@ import { TooltipProvider } from './components/ui/tooltip';
 import { ThemeProvider } from './providers/theme';
 import { AuthProvider } from '@repo/auth/provider';
 
+// Export ProxyImage component
+export { ProxyImage } from './components/proxy-image';
+export type { ProxyImageProps } from './components/proxy-image';
+
+// Export proxy utilities and hooks
+export { getProxiedImageUrl, needsProxy, smartImageUrl } from './lib/proxy-utils';
+export { useProxyImage, useProxiedUrl } from './hooks/useProxyImage';
+export type { UseProxyImageOptions, UseProxyImageState } from './hooks/useProxyImage';
 
 type DesignSystemProviderProperties = ThemeProviderProps & {
   privacyUrl?: string;
