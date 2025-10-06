@@ -19,9 +19,11 @@ export interface WeightConfig {
     gif: number;
   };
   trust: {
-    rating: number;
-    reviews: number;
     freshness: number;
+    publisher: number;
+    documentation: number;
+    completeness: number;
+    version: number;
   };
   find: {
     tagcov: number;
@@ -53,12 +55,6 @@ export interface ThresholdConfig {
     minimum: number;
   };
   bullets: {
-    minimum: number;
-  };
-  rating: {
-    minimum: number;
-  };
-  reviews: {
     minimum: number;
   };
   freshness: {
@@ -108,7 +104,7 @@ export interface OpenAIClientConfig {
 export const DEFAULT_WEIGHTS: WeightConfig = {
   content: { title: 6, short: 6, long: 8, bullets: 7, cta: 3, uvp: 5 },
   media: { images: 8, video: 8, gif: 4 },
-  trust: { rating: 5, reviews: 5, freshness: 5 },
+  trust: { freshness: 6, publisher: 3, documentation: 3, completeness: 2, version: 1 },
   find: { tagcov: 7, titlekw: 5, pricez: 3 },
   perf: { cvr: 10, hv_lc_penalty: 5 }
 };
@@ -121,8 +117,6 @@ export const DEFAULT_THRESHOLDS: ThresholdConfig = {
   images: { minimum: 5 },
   videos: { minimum: 1 },
   bullets: { minimum: 6 },
-  rating: { minimum: 4.5 },
-  reviews: { minimum: 10 },
   freshness: { maxDays: 180 },
   tags: { minimum: 10, maximum: 15 },
   similarity: { neighbors: 5, topUnigrams: 200, topBigrams: 200, topTags: 100 }

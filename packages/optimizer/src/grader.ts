@@ -7,7 +7,6 @@ import { daysBetween, clamp, zscore, jaccard, tokenize } from './utils/utils';
 import { Logger } from './utils/logger';
 import { AssetValidator, Asset } from './utils/validation';
 import { CategoryVocabulary, GraderConfig, GradeResult, PreparedContent, ScoreResult, ThresholdConfig, Vocabulary, WeightConfig } from './types';
-import { calculateDetailedRating, DetailedRatingResult } from './utils/rating-analysis';
 // Note: VocabularyBuilder is imported from the .mjs file for now
 
 const logger = new Logger('grader');
@@ -241,112 +240,14 @@ export class AssetGrader {
   }
 
   /**
-   * Score trust signals (ratings, reviews, freshness)
-   */
-  /**
-   * Score trust signals with enhanced rating analysis
-   * Evaluates rating quality, review volume, and content freshness
+   * Score trust signals with controllable factors
+   * Evaluates content freshness, completeness, and professional presentation
    */
   scoreTrust(asset: Asset): ScoreResult {
     const score: ScoreResult = { score: 0, reasons: [] };
     const w = this.weights.trust;
 
-    // Enhanced Rating Analysis
-    // Handle both AssetRating[] and legacy number formats
-    let ratingData: DetailedRatingResult;
-    if (Array.isArray(asset.rating)) {
-      ratingData = calculateDetailedRating(asset.rating);
-    } else if (typeof asset.rating === 'number') {
-      // Legacy format - create synthetic rating data
-      ratingData = {
-        averageRating: asset.rating,
-        totalRatings: asset.reviews_count || 0,
-        ratingQuality: asset.rating >= 4 ? 70 : asset.rating >= 3 ? 50 : 30,
-        distribution: [],
-        consistency: {
-          positivePercentage: asset.rating >= 4 ? 80 : 50,
-          excellentPercentage: asset.rating >= 4.5 ? 70 : 30,
-          negativePercentage: asset.rating < 3 ? 30 : 10,
-          isControversial: false,
-          polarizationScore: 0
-        }
-      };
-    } else {
-      // No rating data available
-      ratingData = calculateDetailedRating([]);
-    }
-    
-    // Rating scoring with quality considerations
-    const minRating = this.thresholds.rating.minimum;
-    if (ratingData.averageRating >= minRating) {
-      let ratingScore = w.rating;
-      
-      // Quality bonuses
-      if (ratingData.ratingQuality > 80) {
-        ratingScore += Math.round(w.rating * 0.5); // 50% bonus for excellent quality
-        score.reasons.push(`Excellent rating quality (${ratingData.ratingQuality.toFixed(1)}/100) +${Math.round(w.rating * 0.5)} bonus`);
-      } else if (ratingData.ratingQuality > 60) {
-        ratingScore += Math.round(w.rating * 0.2); // 20% bonus for good quality
-        score.reasons.push(`Good rating quality (${ratingData.ratingQuality.toFixed(1)}/100) +${Math.round(w.rating * 0.2)} bonus`);
-      }
-      
-      // Consistency bonuses
-      if (ratingData.consistency.excellentPercentage > 70) {
-        ratingScore += 1;
-        score.reasons.push(`${ratingData.consistency.excellentPercentage.toFixed(1)}% excellent ratings +1 bonus`);
-      }
-      
-      // Volume + quality combo bonus
-      if (ratingData.totalRatings >= 50 && ratingData.averageRating >= 4.5) {
-        ratingScore += 2;
-        score.reasons.push(`High-volume excellent ratings (${ratingData.totalRatings} ratings, ${ratingData.averageRating.toFixed(2)} avg) +2 bonus`);
-      }
-      
-      score.score += ratingScore;
-    } else {
-      // Quality penalties
-      let penalty = 0;
-      if (ratingData.consistency.isControversial) {
-        penalty += 2;
-        score.reasons.push(`Controversial rating pattern (polarization: ${ratingData.consistency.polarizationScore.toFixed(1)}) -2 penalty`);
-      }
-      
-      if (ratingData.consistency.negativePercentage > 20) {
-        penalty += 1;
-        score.reasons.push(`High negative sentiment (${ratingData.consistency.negativePercentage.toFixed(1)}% negative) -1 penalty`);
-      }
-      
-      score.reasons.push(`Rating below ${minRating} - currently ${ratingData.averageRating.toFixed(2)} (${ratingData.totalRatings} ratings)${penalty > 0 ? ` with -${penalty} quality penalties` : ''}`);
-    }
-
-    // Reviews with enhanced volume assessment
-    const minReviews = this.thresholds.reviews.minimum;
-    const reviewsCount = asset.reviews_count || 0;
-    
-    if (reviewsCount >= minReviews) {
-      let reviewScore = w.reviews;
-      
-      // Volume bonuses
-      if (reviewsCount >= 100) {
-        reviewScore += 2; // Significant review volume
-        score.reasons.push(`High review volume (${reviewsCount} reviews) +2 bonus`);
-      } else if (reviewsCount >= 50) {
-        reviewScore += 1; // Good review volume
-        score.reasons.push(`Good review volume (${reviewsCount} reviews) +1 bonus`);
-      }
-      
-      // Rating-review alignment bonus
-      if (ratingData.totalRatings >= reviewsCount * 0.8) {
-        reviewScore += 1; // Ratings align with reviews (engagement)
-        score.reasons.push(`High rating engagement (${ratingData.totalRatings} ratings vs ${reviewsCount} reviews) +1 bonus`);
-      }
-      
-      score.score += reviewScore;
-    } else {
-      score.reasons.push(`Fewer than ${minReviews} reviews - currently ${reviewsCount}`);
-    }
-
-    // Freshness (unchanged)
+    // Freshness - users can control this
     const days = daysBetween(asset.last_update);
     const freshOK = days != null && days <= this.thresholds.freshness.maxDays;
     if (freshOK) {
@@ -357,16 +258,37 @@ export class AssetGrader {
       );
     }
 
-    // Log detailed trust scoring for debugging
-    this.logger.debug('Trust score calculated', {
-      title: asset.title?.substring(0, 50),
-      trustScore: score.score,
-      averageRating: ratingData.averageRating.toFixed(2),
-      ratingQuality: ratingData.ratingQuality.toFixed(1),
-      totalRatings: ratingData.totalRatings,
-      reviewsCount: reviewsCount,
-      isControversial: ratingData.consistency.isControversial
-    });
+    // Publisher information - users can control this
+    const hasPublisher = asset.publisher && asset.publisher.trim().length > 0;
+    if (hasPublisher) {
+      score.score += w.publisher;
+    } else {
+      score.reasons.push('Add publisher information');
+    }
+
+    // Asset documentation/support links - users can control this
+    const hasDocumentation = this.hasDocumentationLinks(asset);
+    if (hasDocumentation) {
+      score.score += w.documentation;
+    } else {
+      score.reasons.push('Add documentation or support links');
+    }
+
+    // Complete asset information - users can control this
+    const completeness = this.calculateCompletenessScore(asset);
+    if (completeness >= 0.8) {
+      score.score += w.completeness;
+    } else {
+      score.reasons.push(`Incomplete asset information (${Math.round(completeness * 100)}% complete)`);
+    }
+
+    // Version information - users can control this
+    const hasVersion = asset.version && asset.version.trim().length > 0;
+    if (hasVersion) {
+      score.score += w.version;
+    } else {
+      score.reasons.push('Add version information');
+    }
 
     return score;
   }
@@ -515,6 +437,33 @@ export class AssetGrader {
       bullet_count: { median: 6, mean: 6 },
       sample_size: 0
     };
+  }
+
+  /**
+   * Check for documentation or support links in descriptions
+   */
+  private hasDocumentationLinks(asset: Asset): boolean {
+    const description = (asset.long_description || asset.short_description || '').toLowerCase();
+    return /https?:\/\/|documentation|docs|manual|guide|support|help|wiki|tutorial/i.test(description);
+  }
+
+  /**
+   * Calculate completeness score based on filled fields
+   */
+  private calculateCompletenessScore(asset: Asset): number {
+    const fields = [
+      asset.title,
+      asset.short_description,
+      asset.long_description,
+      asset.category,
+      asset.tags && asset.tags.length > 0,
+      asset.images_count && asset.images_count > 0,
+      asset.publisher,
+      asset.version
+    ];
+    
+    const filledFields = fields.filter(field => field && field !== '').length;
+    return filledFields / fields.length;
   }
 }
 

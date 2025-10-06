@@ -122,9 +122,11 @@ export interface WeightConfig {
     gif: number;
   };
   trust: {
-    rating: number;
-    reviews: number;
     freshness: number;
+    publisher: number;
+    documentation: number;
+    completeness: number;
+    version: number;
   };
   find: {
     tagcov: number;
@@ -159,12 +161,6 @@ export interface ThresholdConfig {
     minimum: number;
   };
   videos: {
-    minimum: number;
-  };
-  rating: {
-    minimum: number;
-  };
-  reviews: {
     minimum: number;
   };
   freshness: {
