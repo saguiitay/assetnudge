@@ -174,15 +174,42 @@ function extractIdFromUrl(url: string): string | null {
     const urlObj = new URL(url);
     const pathname = urlObj.pathname;
     
-    // Try to match the standard Unity Asset Store URL pattern: /packages/category/name/id
-    const match = pathname.match(/\/packages\/[^\/]+\/[^\/]+\/(\d+)/) || 
-                  pathname.match(/-(\d+)$/);
+    // Try multiple patterns to match different Unity Asset Store URL formats:
+    // 1. /packages/category/name/id (old format)
+    // 2. /packages/category/subcategory/name-id (current format)
+    // 3. Any URL ending with -id
+    const patterns = [
+      /\/packages\/[^\/]+\/[^\/]+\/(\d+)$/,           // /packages/category/name/id
+      /\/packages\/[^\/]+\/[^\/]+\/[^\/]+-(\d+)$/,    // /packages/category/subcategory/name-id
+      /\/packages\/.*?-(\d+)$/,                       // /packages/.../anything-id
+      /-(\d+)$/                                       // fallback: anything ending with -id
+    ];
     
-    return match ? (match[1] || null) : null;
+    for (const pattern of patterns) {
+      const match = pathname.match(pattern);
+      if (match && match[1]) {
+        return match[1];
+      }
+    }
+    
+    return null;
   } catch (error) {
     // Fallback to original regex if URL parsing fails
-    const match = url.match(/\/packages\/[^\/]+\/[^\/]+\/(\d+)/) || url.match(/-(\d+)$/);
-    return match ? (match[1] || null) : null;
+    const patterns = [
+      /\/packages\/[^\/]+\/[^\/]+\/(\d+)$/,
+      /\/packages\/[^\/]+\/[^\/]+\/[^\/]+-(\d+)$/,
+      /\/packages\/.*?-(\d+)$/,
+      /-(\d+)$/
+    ];
+    
+    for (const pattern of patterns) {
+      const match = url.match(pattern);
+      if (match && match[1]) {
+        return match[1];
+      }
+    }
+    
+    return null;
   }
 }
 
