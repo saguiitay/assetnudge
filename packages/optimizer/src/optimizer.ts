@@ -3,8 +3,8 @@
  * Coordinates all modules and provides the main CLI interface
  */
 
-import fs from 'fs';
-import path from 'path';
+import * as fs from 'fs';
+import * as path from 'path';
 
 // Core modules
 import { Config } from './config';

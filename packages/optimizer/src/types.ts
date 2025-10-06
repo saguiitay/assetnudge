@@ -126,6 +126,8 @@ export interface WeightConfig {
     documentation: number;
     completeness: number;
     version: number;
+    rating: number;
+    reviews: number;
   };
   find: {
     tagcov: number;
@@ -164,6 +166,12 @@ export interface ThresholdConfig {
   };
   freshness: {
     maxDays: number;
+  };
+  rating: {
+    minimum: number;
+  };
+  reviews: {
+    minimum: number;
   };
   similarity: {
     topUnigrams: number;

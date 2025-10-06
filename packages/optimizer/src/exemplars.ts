@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import * as fs from 'fs';
+import * as path from 'path';
 import { Logger } from './utils/logger';
 import { calculateDetailedRating, DetailedRatingResult } from './utils/rating-analysis';
 import { Asset, BestSellerAsset } from './types';
@@ -261,14 +261,14 @@ function extractCategory(asset: Asset): string {
     
     // Try to extract from URL path
     const urlMatch = asset.url?.match(/\/packages\/([^\/]+)/);
-    if (urlMatch) {
+    if (urlMatch && urlMatch[1]) {
         return urlMatch[1].split('-').map(word => 
             word.charAt(0).toUpperCase() + word.slice(1)
         ).join(' ');
     }
     
     // Fall back to first tag if available
-    if (asset.tags && asset.tags.length > 0) {
+    if (asset.tags && asset.tags.length > 0 && asset.tags[0]) {
         return asset.tags[0];
     }
     
@@ -336,6 +336,9 @@ export function identifyExemplars(
     
     Object.keys(assetsByCategory).forEach(category => {
         const categoryAssets = assetsByCategory[category];
+        if (!categoryAssets || categoryAssets.length === 0) {
+            return;
+        }
         
         // Separate best sellers from regular assets
         const bestSellerAssets = categoryAssets.filter(asset => asset.isBestSeller);

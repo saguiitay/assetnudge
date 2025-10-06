@@ -5,7 +5,7 @@
 
 import { Logger } from './logger';
 import { OFFICIAL_CATEGORIES } from '../config';
-import fs from 'fs';
+import * as fs from 'fs';
 
 const logger = new Logger('validator');
 
@@ -98,9 +98,12 @@ export interface WeightConfig {
     gif: number;
   };
   trust: {
+    freshness: number;
+    documentation: number;
+    completeness: number;
+    version: number;
     rating: number;
     reviews: number;
-    freshness: number;
   };
   find: {
     tagcov: number;
