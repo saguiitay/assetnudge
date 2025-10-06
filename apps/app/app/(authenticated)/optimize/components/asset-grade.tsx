@@ -14,7 +14,7 @@ import {
   Clock,
   RefreshCw
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 interface GradeResult {
   score: number;
@@ -35,15 +35,16 @@ interface AssetGradeProps {
   onRefresh?: () => void;
   isLoading?: boolean;
   error?: string | null;
+  autoGrade?: boolean;
 }
 
-export function AssetGrade({ assetData, onRefresh, isLoading = false, error = null }: AssetGradeProps) {
+export function AssetGrade({ assetData, onRefresh, isLoading = false, error = null, autoGrade = true }: AssetGradeProps) {
   const [gradeResult, setGradeResult] = useState<GradeResult | null>(null);
   const [grading, setGrading] = useState(false);
   const [gradeError, setGradeError] = useState<string | null>(null);
   const [gradedAt, setGradedAt] = useState<string | null>(null);
 
-  const gradeAsset = async () => {
+  const gradeAsset = useCallback(async () => {
     if (!assetData) {
       setGradeError('No asset data available to grade');
       return;
@@ -99,7 +100,14 @@ export function AssetGrade({ assetData, onRefresh, isLoading = false, error = nu
     } finally {
       setGrading(false);
     }
-  };
+  }, [assetData]);
+
+  // Auto-grade when asset data is available and autoGrade is enabled
+  useEffect(() => {
+    if (assetData && autoGrade && !gradeResult && !grading) {
+      gradeAsset();
+    }
+  }, [assetData, autoGrade, gradeResult, grading, gradeAsset]);
 
   const getScoreColor = (score: number) => {
     if (score >= 80) return 'text-green-600';
@@ -168,18 +176,6 @@ export function AssetGrade({ assetData, onRefresh, isLoading = false, error = nu
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        {!gradeResult && !grading && !gradeError && assetData && (
-          <div className="text-center py-4">
-            <Button onClick={gradeAsset} className="gap-2">
-              <Star className="h-4 w-4" />
-              Grade Asset
-            </Button>
-            <p className="text-sm text-muted-foreground mt-2">
-              Get an educational assessment of this asset
-            </p>
-          </div>
-        )}
-
         {grading && (
           <div className="text-center py-4">
             <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-2 text-muted-foreground" />

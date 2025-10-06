@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -19,8 +19,9 @@ import { Button } from '@repo/design-system/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@repo/design-system/components/ui/card';
 import { Badge } from '@repo/design-system/components/ui/badge';
 import { Alert, AlertDescription } from '@repo/design-system/components/ui/alert';
-import { Separator } from '@repo/design-system/components/ui/separator';
-import { X, Download, AlertCircle, CheckCircle } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@repo/design-system/components/ui/tabs';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@repo/design-system/components/ui/dialog';
+import { X, Download, AlertCircle, CheckCircle, ShoppingCart } from 'lucide-react';
 
 // HTML validation function for allowed tags
 const validateHtml = (html: string) => {
@@ -54,6 +55,12 @@ const assetSchema = z.object({
   category: z.string().min(1, 'Category is required'),
   price: z.number().min(0, 'Price must be non-negative'),
   size: z.number().min(0, 'Size must be non-negative'),
+  // Additional display-only fields
+  rating: z.number().min(0).max(5).optional(),
+  rating_count: z.number().min(0).optional(),
+  favorites: z.number().min(0).optional(),
+  images_count: z.number().min(0).optional(),
+  videos_count: z.number().min(0).optional(),
 });
 
 type AssetFormData = z.infer<typeof assetSchema>;
@@ -70,6 +77,7 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
   const [importError, setImportError] = useState<string | null>(null);
   const [importSuccess, setImportSuccess] = useState(false);
   const [importedData, setImportedData] = useState<any>(null);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
   const form = useForm<AssetFormData>({
     resolver: zodResolver(assetSchema),
@@ -81,11 +89,42 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
       category: '',
       price: 0,
       size: 0,
+      rating: 0,
+      rating_count: 0,
+      favorites: 0,
+      images_count: 0,
+      videos_count: 0,
     },
   });
 
   const { watch, setValue } = form;
   const tags = watch('tags');
+
+  // Watch all form values for changes and trigger updates with debounce
+  const watchedValues = watch();
+  useEffect(() => {
+    // Only trigger update if we have meaningful data (at least title and some description)
+    if (watchedValues.title && watchedValues.title.length > 0 && 
+        (watchedValues.short_description || watchedValues.long_description) &&
+        watchedValues.tags && watchedValues.tags.length > 0) {
+      
+      // Debounce the update to avoid excessive API calls
+      const timeoutId = setTimeout(() => {
+        onAssetUpdate?.(watchedValues as AssetFormData);
+      }, 500); // Wait 500ms after user stops typing
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [
+    watchedValues.title,
+    watchedValues.short_description, 
+    watchedValues.long_description,
+    watchedValues.tags?.length, // Only watch tags length, not the array reference
+    watchedValues.category,
+    watchedValues.size
+    // Exclude onAssetUpdate from dependencies to prevent loop
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  ]);
 
   const addTag = () => {
     if (newTag.trim() && !tags.includes(newTag.trim())) {
@@ -101,7 +140,7 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
   const onSubmit = (data: AssetFormData) => {
     console.log('Asset data:', data);
     onAssetUpdate?.(data);
-    // Here you would typically save the asset
+    // Note: Automatic updates are now handled by useEffect above
   };
 
   const clearImportedData = () => {
@@ -109,6 +148,7 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
     setImportError(null);
     setImportSuccess(false);
     setImportedData(null);
+    setIsImportModalOpen(false);
     onAssetClear?.();
     
     // Reset form to defaults
@@ -120,6 +160,11 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
       category: '',
       price: 0,
       size: 0,
+      rating: 0,
+      rating_count: 0,
+      favorites: 0,
+      images_count: 0,
+      videos_count: 0,
     });
   };
 
@@ -195,6 +240,13 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
       if (asset.tags && Array.isArray(asset.tags)) form.setValue('tags', asset.tags.slice(0, 20)); // Limit tags
       if (typeof asset.price === 'number') form.setValue('price', asset.price);
       
+      // Set additional display fields
+      if (typeof asset.rating === 'number') form.setValue('rating', asset.rating);
+      if (typeof asset.rating_count === 'number') form.setValue('rating_count', asset.rating_count);
+      if (typeof asset.favorites === 'number') form.setValue('favorites', asset.favorites);
+      if (typeof asset.images_count === 'number') form.setValue('images_count', asset.images_count);
+      if (typeof asset.videos_count === 'number') form.setValue('videos_count', asset.videos_count);
+      
       // Parse size if it's a string (e.g., "222.0 KB")
       if (asset.size) {
         let sizeInMB = 0;
@@ -221,6 +273,9 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
       const formData = form.getValues();
       onAssetUpdate?.(formData);
       
+      // Close modal on successful import
+      setIsImportModalOpen(false);
+      
       // Keep the URL for reference but don't clear it immediately
     } catch (error) {
       console.error('Import error:', error);
@@ -232,62 +287,77 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6">
-      {/* Import from URL Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Download className="h-5 w-5" />
-            Import from Unity Asset Store
-          </CardTitle>
-          <CardDescription>
-            Import asset details from a Unity Asset Store URL to automatically populate the form below.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex gap-2">
-            <Input
-              placeholder="https://assetstore.unity.com/packages/..."
-              value={importUrl}
-              onChange={(e) => setImportUrl(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  importFromUrl();
-                }
-              }}
-              disabled={isImporting}
-              className="flex-1"
-            />
-            <Button 
-              onClick={importFromUrl} 
-              disabled={isImporting || !importUrl.trim()}
-              className="whitespace-nowrap"
-            >
-              {isImporting ? 'Importing...' : 'Import'}
-            </Button>
-          </div>
-          
-          {importError && (
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{importError}</AlertDescription>
-            </Alert>
-          )}
-        </CardContent>
-      </Card>
-
-      <Separator />
-
       {/* Manual Asset Creation Form */}
       <Card>
         <CardHeader>
-          <CardTitle>Asset Details</CardTitle>
-          <CardDescription>
-            {importSuccess 
-              ? 'Review and edit the imported asset details below.'
-              : 'Fill in the details below to create a new asset manually.'
-            }
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Asset Details</CardTitle>
+              <CardDescription>
+                {importSuccess 
+                  ? 'Review and edit the imported asset details below.'
+                  : 'Fill in the details below to create a new asset manually.'
+                }
+              </CardDescription>
+            </div>
+            <Dialog open={isImportModalOpen} onOpenChange={setIsImportModalOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="flex items-center gap-2">
+                  <ShoppingCart className="h-4 w-4" />
+                  Import from Store
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <Download className="h-5 w-5" />
+                    Import from Unity Asset Store
+                  </DialogTitle>
+                  <DialogDescription>
+                    Import asset details from a Unity Asset Store URL to automatically populate the form.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="https://assetstore.unity.com/packages/..."
+                      value={importUrl}
+                      onChange={(e) => setImportUrl(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          importFromUrl();
+                        }
+                      }}
+                      disabled={isImporting}
+                      className="flex-1"
+                    />
+                    <Button 
+                      onClick={importFromUrl} 
+                      disabled={isImporting || !importUrl.trim()}
+                      className="whitespace-nowrap"
+                    >
+                      {isImporting ? 'Importing...' : 'Import'}
+                    </Button>
+                  </div>
+                  
+                  {importError && (
+                    <Alert variant="destructive">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription>{importError}</AlertDescription>
+                    </Alert>
+                  )}
+
+                  {importSuccess && (
+                    <Alert>
+                      <CheckCircle className="h-4 w-4" />
+                      <AlertDescription>Asset data imported successfully!</AlertDescription>
+                    </Alert>
+                  )}
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
         </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -354,20 +424,31 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
                       <div className="flex gap-2 text-xs text-muted-foreground border-b pb-2">
                         <span>Allowed tags: &lt;b&gt;, &lt;i&gt;, &lt;a&gt;, &lt;ol&gt;, &lt;ul&gt;, &lt;li&gt;</span>
                       </div>
-                      <Textarea
-                        placeholder="Enter detailed description with HTML formatting"
-                        className="min-h-32 resize-y font-mono text-sm"
-                        {...field}
-                      />
-                      {field.value && (
-                        <div className="border rounded p-3 bg-muted/50">
-                          <div className="text-xs text-muted-foreground mb-2">Preview:</div>
-                          <div 
-                            className="prose prose-sm max-w-none"
-                            dangerouslySetInnerHTML={{ __html: field.value }}
+                      <Tabs defaultValue="edit" className="w-full">
+                        <TabsList className="grid w-full grid-cols-2">
+                          <TabsTrigger value="edit">Edit</TabsTrigger>
+                          <TabsTrigger value="preview">Preview</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="edit" className="mt-2">
+                          <Textarea
+                            placeholder="Enter detailed description with HTML formatting"
+                            className="min-h-32 resize-y font-mono text-sm"
+                            {...field}
                           />
-                        </div>
-                      )}
+                        </TabsContent>
+                        <TabsContent value="preview" className="mt-2">
+                          <div className="border rounded p-3 bg-muted/50 min-h-32">
+                            {field.value ? (
+                              <div 
+                                className="prose prose-sm max-w-none"
+                                dangerouslySetInnerHTML={{ __html: field.value }}
+                              />
+                            ) : (
+                              <p className="text-muted-foreground text-sm">No content to preview</p>
+                            )}
+                          </div>
+                        </TabsContent>
+                      </Tabs>
                     </div>
                   </FormControl>
                   <FormDescription>
@@ -397,13 +478,21 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
                 </Button>
               </div>
               <div className="flex flex-wrap gap-2">
-                {tags.map((tag) => (
-                  <Badge key={tag} variant="secondary" className="flex items-center gap-1">
-                    {tag}
-                    <X
-                      className="h-3 w-3 cursor-pointer"
-                      onClick={() => removeTag(tag)}
-                    />
+                {tags.map((tag, index) => (
+                  <Badge key={`${tag}-${index}`} variant="secondary" className="flex items-center gap-1 pr-1">
+                    <span>{tag}</span>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        removeTag(tag);
+                      }}
+                      className="ml-1 rounded-full p-0.5 hover:bg-destructive/20 hover:text-destructive transition-colors"
+                      aria-label={`Remove ${tag} tag`}
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
                   </Badge>
                 ))}
               </div>
@@ -414,50 +503,41 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
               )}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormField
-                control={form.control}
-                name="price"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Price</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        placeholder="0.00"
-                        {...field}
-                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                      />
-                    </FormControl>
-                    <FormDescription>Price in USD</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="size"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Size</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        placeholder="0.00"
-                        {...field}
-                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                      />
-                    </FormControl>
-                    <FormDescription>Size in MB</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            {/* Asset Statistics */}
+            <div className="space-y-4">
+              <FormLabel>Asset Statistics</FormLabel>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div>
+                  <span className="text-muted-foreground">Rating:</span>
+                  <div className="font-medium">{form.watch('rating')?.toFixed(1) || '0.0'} / 5</div>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Reviews:</span>
+                  <div className="font-medium">{form.watch('rating_count') || 0}</div>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Favorites:</span>
+                  <div className="font-medium">{form.watch('favorites') || 0}</div>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Price:</span>
+                  <div className="font-medium">${form.watch('price')?.toFixed(2) || '0.00'}</div>
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-4 text-sm">
+                <div>
+                  <span className="text-muted-foreground">Images:</span>
+                  <div className="font-medium">{form.watch('images_count') || 0}</div>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Videos:</span>
+                  <div className="font-medium">{form.watch('videos_count') || 0}</div>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Size:</span>
+                  <div className="font-medium">{form.watch('size')?.toFixed(2) || '0.00'} MB</div>
+                </div>
+              </div>
             </div>
 
             <div className="flex justify-end space-x-4">
