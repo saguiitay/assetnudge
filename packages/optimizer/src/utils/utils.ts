@@ -205,19 +205,30 @@ export const countBullets = (text: string): number => {
   const htmlListItems = text.match(/<li[^>]*>/gi) || [];
   count += htmlListItems.length;
   
-  // Count markdown-style bullets (lines starting with bullet characters)
+  // Count markdown-style bullets with enhanced pattern matching
   // Look for common bullet characters at the start of lines or after whitespace
-  const markdownBullets = text.match(/(?:^|\n)\s*[-•*▪▫◦‣⁃⚡▸▹►▻‣✓✔◆◇■□●○]+/gm) || [];
+  // Enhanced to better capture the ● character and other Unicode bullets
+  const bulletPattern = /(?:^|\n)\s*[●○•◦▪▫‣⁃◆◇■□▸▹►▻✓✔⚡*-]\s+/gm;
+  const markdownBullets = text.match(bulletPattern) || [];
   count += markdownBullets.length;
   
+  // Specifically look for the ● character (U+25CF BLACK CIRCLE) which is commonly used
+  const blackCircleBullets = text.match(/(?:^|\n)\s*●\s+/gm) || [];
+  // Don't double count if already caught by the general pattern
+  if (blackCircleBullets.length > 0 && markdownBullets.length === 0) {
+    count += blackCircleBullets.length;
+  }
+  
   // Count numbered list items (1. 2. etc. at start of lines)
-  const numberedItems = text.match(/(?:^|\n)\s*\d+\./gm) || [];
+  const numberedItems = text.match(/(?:^|\n)\s*\d+\.\s+/gm) || [];
   count += numberedItems.length;
   
-  // Count dashes and asterisks specifically when they appear to be list items
-  // (to catch cases where the previous regex might miss some formats)
-  const dashBullets = text.match(/(?:^|\n)\s*[-*]\s+/gm) || [];
-  count += dashBullets.length;
+  // Additional pattern for spaced bullets like "• item" or "* item"
+  const spacedBullets = text.match(/(?:^|\n)\s*[•*]\s+\S/gm) || [];
+  // Only count these if not already captured by other patterns
+  if (spacedBullets.length > markdownBullets.length) {
+    count += (spacedBullets.length - markdownBullets.length);
+  }
   
   return count;
 };

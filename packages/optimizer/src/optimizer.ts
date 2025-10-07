@@ -351,8 +351,8 @@ export class UnityAssetOptimizer {
         }
       };
       
-      // Save exemplars
-      saveExemplars(exemplarsByCategory, outputPath);
+      // Save exemplars (save the complete exemplarsData object, not just exemplarsByCategory)
+      await this.writeJSON(outputPath, exemplarsData);
       
       this.logger.success('Exemplars built successfully', {
         categories: Object.keys(exemplarsByCategory).length,

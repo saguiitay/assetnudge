@@ -501,9 +501,22 @@ export class VocabularyBuilder {
    */
   async buildExemplarVocabulary(exemplarsData: ExemplarsData): Promise<Record<string, ExtendedCategoryVocabulary>> {
     return this.logger.time('buildExemplarVocabulary', async () => {
+      // Defensive programming: check the data structure
+      if (!exemplarsData) {
+        throw new Error('ExemplarsData is null or undefined');
+      }
+      
+      if (!exemplarsData.exemplars) {
+        throw new Error('ExemplarsData.exemplars is null or undefined. Expected structure: { exemplars: {...}, patterns: {...}, metadata: {...} }');
+      }
+      
+      if (!exemplarsData.patterns) {
+        throw new Error('ExemplarsData.patterns is null or undefined. Expected structure: { exemplars: {...}, patterns: {...}, metadata: {...} }');
+      }
+      
       this.logger.info('Building exemplar-based vocabulary', { 
         categories: Object.keys(exemplarsData.exemplars).length,
-        totalExemplars: exemplarsData.metadata.stats.totalExemplars
+        totalExemplars: exemplarsData.metadata?.stats?.totalExemplars || 'unknown'
       });
 
       const vocabByCategory: Record<string, ExtendedCategoryVocabulary> = {};
