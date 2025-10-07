@@ -103,6 +103,7 @@ interface Product {
   overlayText?: string;
   popularTags?: PopularTag[];
   plusProSale?: boolean;
+  packageInListHotness?: number;
   licenseText?: string;
   packageType?: string;
   publisher?: { name: string };
@@ -590,6 +591,7 @@ export async function scrapeAssetWithGraphQL(url: string): Promise<Asset> {
             __typename
           }
           plusProSale
+          packageInListHotness
           licenseText
           packageType
           __typename
@@ -761,7 +763,7 @@ export async function scrapeAssetWithGraphQL(url: string): Promise<Asset> {
       publisher: 'Unknown Publisher', // Not needed according to user
       size: formatFileSize(product.downloadSize || ''),
       version: product.currentVersion?.name || extractVersionFromSupportedVersions(product.supportedUnityVersions || []),
-      favorites: 1, // Default value since not using wishlist
+      favorites: product.packageInListHotness || 0,
       mainImage: product.mainImage || null,
       images: extractImagesArray(product.images),
       videos: extractVideosArray(product.images)
