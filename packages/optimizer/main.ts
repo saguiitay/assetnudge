@@ -80,8 +80,8 @@ class SimpleLoggerImpl implements SimpleLogger {
 }
 
 /**
- * Load and merge multiple corpus files
- * @param corpusPaths - Comma-separated list of corpus file paths
+ * Load and merge multiple corpus files or folders
+ * @param corpusPaths - Comma-separated list of corpus file paths or folder paths
  * @returns Merged corpus array
  */
 async function loadMultipleCorpusFiles(corpusPaths: string): Promise<Asset[]> {
@@ -89,24 +89,67 @@ async function loadMultipleCorpusFiles(corpusPaths: string): Promise<Asset[]> {
   const optimizer = new UnityAssetOptimizer([]);
   
   let mergedCorpus: Asset[] = [];
+  let totalFilesProcessed = 0;
   
   for (const path of paths) {
     try {
-      console.log(`Loading corpus file: ${path}`);
-      const corpus = await optimizer.readJSON(path) as Asset[];
+      // Check if path is a directory
+      const stat = await fs.stat(path);
       
-      if (!Array.isArray(corpus)) {
-        throw new Error(`Corpus file ${path} must contain an array of assets`);
+      if (stat.isDirectory()) {
+        console.log(`Processing corpus folder: ${path}`);
+        
+        // Read all JSON files in the directory
+        const files = await fs.readdir(path);
+        const jsonFiles = files.filter(file => file.toLowerCase().endsWith('.json'));
+        
+        if (jsonFiles.length === 0) {
+          console.warn(`No JSON files found in folder: ${path}`);
+          continue;
+        }
+        
+        for (const file of jsonFiles) {
+          const filePath = path.endsWith('/') || path.endsWith('\\') ? path + file : path + '/' + file;
+          try {
+            console.log(`  Loading corpus file: ${filePath}`);
+            const corpus = await optimizer.readJSON(filePath) as Asset[];
+            
+            if (!Array.isArray(corpus)) {
+              console.warn(`  Skipping ${filePath}: not an array of assets`);
+              continue;
+            }
+            
+            mergedCorpus = mergedCorpus.concat(corpus);
+            totalFilesProcessed++;
+            console.log(`  Loaded ${corpus.length} assets from ${filePath}`);
+          } catch (error) {
+            console.warn(`  Failed to load ${filePath}: ${(error as Error).message}`);
+          }
+        }
+        
+        console.log(`Processed ${jsonFiles.length} files from folder ${path}`);
+      } else {
+        // Single file
+        console.log(`Loading corpus file: ${path}`);
+        const corpus = await optimizer.readJSON(path) as Asset[];
+        
+        if (!Array.isArray(corpus)) {
+          throw new Error(`Corpus file ${path} must contain an array of assets`);
+        }
+        
+        mergedCorpus = mergedCorpus.concat(corpus);
+        totalFilesProcessed++;
+        console.log(`Loaded ${corpus.length} assets from ${path}`);
       }
-      
-      mergedCorpus = mergedCorpus.concat(corpus);
-      console.log(`Loaded ${corpus.length} assets from ${path}`);
     } catch (error) {
-      throw new Error(`Failed to load corpus file ${path}: ${(error as Error).message}`);
+      if ((error as any).code === 'ENOENT') {
+        throw new Error(`Path not found: ${path}`);
+      }
+      throw new Error(`Failed to process corpus path ${path}: ${(error as Error).message}`);
     }
   }
   
-  console.log(`Total corpus size: ${mergedCorpus.length} assets from ${paths.length} files`);
+  console.log(`Total corpus size: ${mergedCorpus.length} assets from ${totalFilesProcessed} files`);
   return mergedCorpus;
 }
 
@@ -123,11 +166,12 @@ Commands:
                  graphql: Official GraphQL API (fastest, most reliable)
                  fallback: Try graphql first, then other methods
                
-  build-exemplars --corpus <corpus1.json,corpus2.json,...> --out <exemplars.json> [--top-n 20] [--top-percent 10] [--best-sellers <best_sellers.json>]
+  build-exemplars --corpus <corpus1.json,corpus2.json,...|folder1,folder2,...> --out <exemplars.json> [--top-n 20] [--top-percent 10] [--best-sellers <best_sellers.json>]
                Identify high-quality exemplar assets and extract patterns
                --best-sellers: JSON file containing list of Unity best seller assets (always included as exemplars)
                Use either --top-n (fixed number) or --top-percent (percentage of corpus)
-               Supports multiple corpus files separated by commas
+               Supports multiple corpus files/folders separated by commas
+               For folders: automatically loads all JSON files within
                
   build-grading-rules --exemplars <exemplars.json> --out <grading-rules.json>
                Generate dynamic grading rules from exemplar patterns
@@ -139,10 +183,11 @@ Commands:
   generate-playbooks --exemplars <exemplars.json> --out <playbooks.json>
                Generate category playbooks from exemplar patterns
                
-  build-all    --corpus <corpus1.json,corpus2.json,...> [--out-dir <directory>] [--top-n 20] [--top-percent 10]
+  build-all    --corpus <corpus1.json,corpus2.json,...|folder1,folder2,...> [--out-dir <directory>] [--top-n 20] [--top-percent 10]
                🚀 ONE-STOP COMMAND: Build exemplars, vocab, and playbooks from corpus
                Use either --top-n (fixed number) or --top-percent (percentage of corpus)
-               Supports multiple corpus files separated by commas
+               Supports multiple corpus files/folders separated by commas
+               For folders: automatically loads all JSON files within
                
   grade        --input <asset.json> [--vocab <vocab.json>] [--rules <grading-rules.json>]
                Grade an asset using heuristic scoring
@@ -175,10 +220,12 @@ Global Options:
 Examples:
   # 🚀 RECOMMENDED: One-stop exemplar ecosystem creation
   node main.mjs build-all --corpus data/packages.json --out-dir data/ --top-n 15
+  node main.mjs build-all --corpus data/corpus-folder/ --out-dir data/ --top-n 15
   node main.mjs optimize --input asset.json --exemplars data/exemplars.json --vocab data/exemplar_vocab.json
   
   # Build exemplars with best sellers list
   node main.mjs build-exemplars --corpus data/corpus.json --out data/exemplars.json --top-n 25 --best-sellers data/unity_best_sellers.json
+  node main.mjs build-exemplars --corpus data/corpus-folder/ --out data/exemplars.json --top-n 25
   
   # Generate dynamic grading rules from exemplars
   node main.mjs build-grading-rules --exemplars data/exemplars.json --out data/grading-rules.json
@@ -186,13 +233,14 @@ Examples:
   # Grade with dynamic rules
   node main.mjs grade --input asset.json --vocab vocab.json --rules grading-rules.json
   
-  # Multiple corpus files (for large datasets)
-  node main.mjs build-all --corpus "data/corpus1.json,data/corpus2.json,data/corpus3.json" --out-dir data/ --top-n 15
+  # Multiple corpus files and folders (for large datasets)
+  node main.mjs build-all --corpus "data/corpus1.json,data/corpus2.json,data/folder1/" --out-dir data/ --top-n 15
+  node main.mjs build-all --corpus "data/corpus-files/,data/additional-data/" --out-dir data/ --top-n 15
   
   # Traditional approach (individual commands for granular control)
   node main.mjs scrape --url "https://assetstore.unity.com/packages/..." --out asset.json
   node main.mjs build-exemplars --corpus data/corpus.json --out data/exemplars.json --top-n 25
-  node main.mjs build-exemplars --corpus "data/part1.json,data/part2.json" --out data/exemplars.json --top-percent 15
+  node main.mjs build-exemplars --corpus "data/part1.json,data/part2.json,data/folder/" --out data/exemplars.json --top-percent 15
   
   # Best sellers format example (data/unity_best_sellers.json):
   # [
@@ -212,7 +260,8 @@ Examples:
   node main.mjs optimize --input asset.json --vocab vocab.json --ignore-stop-words false
 
 Notes:
-  - Corpus format: Array of asset objects with required fields
+  - Corpus format: Array of asset objects with required fields OR folder containing JSON files
+  - When using folders: all .json files in the folder will be automatically loaded
   - Asset format: Single asset object (same structure as corpus items)
   - AI features require OpenAI API key (set OPENAI_API_KEY environment variable)
   - Offline mode (heuristic only) works without internet or API keys
@@ -256,7 +305,7 @@ async function cmdBuildExemplars(): Promise<void> {
   const topPercent = getFlag('top-percent');
   const bestSellersPath = getFlag('best-sellers'); // New parameter
   
-  ensure(!!corpusPaths, '--corpus path(s) required (comma-separated for multiple files)');
+  ensure(!!corpusPaths, '--corpus path(s) required (comma-separated for multiple files/folders)');
   ensure(!!outPath, '--out path is required');
   ensure(!(topN && topPercent), 'Cannot specify both --top-n and --top-percent');
   
@@ -380,7 +429,7 @@ async function cmdBuildAll(): Promise<void> {
   const topN = getFlag('top-n');
   const topPercent = getFlag('top-percent');
   
-  ensure(!!corpusPaths, '--corpus path(s) required (comma-separated for multiple files)');
+  ensure(!!corpusPaths, '--corpus path(s) required (comma-separated for multiple files/folders)');
   ensure(!(topN && topPercent), 'Cannot specify both --top-n and --top-percent');
   
   // Default to top 20 if neither is specified

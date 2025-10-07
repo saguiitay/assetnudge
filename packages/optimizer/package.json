@@ -4,6 +4,9 @@
   "private": true,
   "description": "AI-powered optimization tool for Unity Asset Store listings",
   "scripts": {
+    "build": "tsc",
+    "start": "node dist/main.js",
+    "dev": "tsx main.ts",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
@@ -13,6 +16,7 @@
   "devDependencies": {
     "@types/node": "^20.0.0",
     "openai": "^4.104.0",
+    "tsx": "^4.0.0",
     "typescript": "^5.9.3"
   },
   "files": [
