@@ -27,9 +27,10 @@ export function ScreenshotsGallery({ images }: ScreenshotsGalleryProps) {
           const displayUrl = image.thumbnailUrl || image.imageUrl;
           
           return (
-            <div key={index} className="group relative">
+            <div key={`${image.imageUrl}-${index}`} className="group relative">
               <AspectRatio ratio={16 / 9}>
                 <ImageWithFallback
+                  key={`screenshot-${displayUrl}-${index}`}
                   src={displayUrl}
                   alt={`Screenshot ${index + 1}`}
                   enableRetry={true}

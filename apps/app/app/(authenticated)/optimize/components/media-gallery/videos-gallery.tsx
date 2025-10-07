@@ -24,10 +24,11 @@ export function VideosGallery({ videos }: VideosGalleryProps) {
       </div>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
         {videos.map((video, index) => (
-          <div key={index} className="group relative">
+          <div key={`${video.videoUrl}-${index}`} className="group relative">
             <AspectRatio ratio={16 / 9}>
               {video.thumbnailUrl ? (
                 <ImageWithFallback
+                  key={`video-thumb-${video.thumbnailUrl}-${index}`}
                   src={video.thumbnailUrl}
                   alt={video.title || `Video ${index + 1}`}
                   enableRetry={true}

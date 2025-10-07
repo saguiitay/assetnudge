@@ -30,6 +30,7 @@ export function MainImageDisplay({ mainImage, title }: MainImageDisplayProps) {
       <h4 className="text-sm font-medium text-muted-foreground">Main Image</h4>
       <div className="max-w-md">
           <ImageWithFallback
+            key={`main-${imageUrl}`}
             src={imageUrl!}
             alt={title || 'Asset main image'}
             enableRetry={true}

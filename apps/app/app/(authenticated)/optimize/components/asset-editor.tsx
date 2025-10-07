@@ -193,7 +193,7 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
     setIsBatchUpdating(false);
     onAssetClear?.();
     
-    // Reset form to defaults
+    // Reset form to defaults with explicit undefined values to force re-render
     form.reset({
       title: '',
       short_description: '',
@@ -211,6 +211,12 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
       images: [],
       videos: [],
     });
+    
+    // Force a manual re-render by updating a timestamp or key
+    // This ensures the media gallery gets a new key
+    setTimeout(() => {
+      form.trigger(); // Trigger form validation to ensure all watchers update
+    }, 100);
   };
 
   const importFromUrl = async () => {
@@ -665,6 +671,7 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
 
             {/* Asset Media Gallery */}
             <AssetMediaGallery 
+              key={`media-${form.watch('title')}-${form.watch('mainImage')?.big || ''}-${form.watch('images')?.length || 0}`}
               data={{
                 mainImage: form.watch('mainImage'),
                 images: form.watch('images'),
@@ -675,6 +682,11 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
             />
 
             <div className="flex justify-end space-x-4">
+              {(importSuccess || form.watch('title')) && (
+                <Button type="button" variant="destructive" onClick={clearImportedData}>
+                  Clear Asset
+                </Button>
+              )}
               <Button type="button" variant="outline">
                 Reset
               </Button>

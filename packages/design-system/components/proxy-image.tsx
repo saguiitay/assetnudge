@@ -123,6 +123,17 @@ export function ProxyImage({
 
   const [currentSrc, setCurrentSrc] = useState(() => getProxiedImageUrl(src));
 
+  // Reset state when src changes
+  React.useEffect(() => {
+    setState({
+      loading: true,
+      error: false,
+      retryCount: 0,
+      usingProxy: needsProxy(src)
+    });
+    setCurrentSrc(getProxiedImageUrl(src));
+  }, [src]);
+
   const handleLoad = useCallback((event: React.SyntheticEvent<HTMLImageElement>) => {
     setState(prev => ({ ...prev, loading: false, error: false }));
     onLoad?.(event);
