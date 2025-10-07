@@ -3,6 +3,7 @@
  * Main entry point for programmatic use of the optimizer
  */
 
+import path from 'path';
 import UnityAssetOptimizer from './src/optimizer';
 import Config from './src/config';
 import { scrapeAssetWithGraphQL, Asset as GraphQLAsset } from './src/scrappers/graphql-scraper';
@@ -77,18 +78,39 @@ export async function gradeAsset(assetData: ValidatorAsset, vocabPath: string | 
   const args: string[] = [];
   if (config && config.debug) args.push('--debug', 'true');
   
+  // Try multiple possible locations for the data files
+  const possibleDataDirs = [
+    path.join(__dirname, 'data', 'results'), // Same directory as index.ts
+    path.join(__dirname, '..', 'optimizer', 'data', 'results'), // Relative to packages dir
+    path.join(process.cwd(), 'packages', 'optimizer', 'data', 'results'), // From monorepo root
+    path.join(process.cwd(), 'data', 'results'), // From current working directory
+    'data/results' // Relative path fallback
+  ];
+  
+  // Find the correct data directory
+  let dataDir: string = possibleDataDirs[0] || 'data/results'; // Default to first option or fallback
+  for (const dir of possibleDataDirs) {
+    try {
+      const testPath = path.join(dir, 'grading-rules.json');
+      await FileValidator.validateJSONFile(testPath);
+      dataDir = dir;
+      break;
+    } catch {
+      // Continue to next possible location
+    }
+  }
+  
+  const defaultVocabPath = vocabPath || path.join(dataDir, 'exemplar_vocab.json');
+  const defaultRulesPath = path.join(dataDir, 'grading-rules.json');
+  
   // Add default arguments as specified
   if (!vocabPath) {
-    args.push('--vocab', 'data/results/exemplar_vocab.json');
+    args.push('--vocab', defaultVocabPath);
   }
-  args.push('--rules', 'data/results/grading-rules.json');
+  args.push('--rules', defaultRulesPath);
   
   const optimizer = new UnityAssetOptimizer(args);
   await optimizer.validateSetup();
-  
-  // Use default paths if not provided
-  const defaultVocabPath = vocabPath || 'data/results/exemplar_vocab.json';
-  const defaultRulesPath = 'data/results/grading-rules.json';
   
   // Load vocabulary
   let vocabulary: TypesVocabulary = {};
