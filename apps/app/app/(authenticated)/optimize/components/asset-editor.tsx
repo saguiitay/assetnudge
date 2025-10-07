@@ -23,35 +23,50 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@workspace/ui/componen
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@workspace/ui/components/dialog';
 import { AssetMediaGallery } from './media-gallery';
 import { X, Download, AlertCircle, CheckCircle, ShoppingCart } from 'lucide-react';
+import { EditorProvider, EditorBubbleMenu, EditorFormatBold, EditorFormatItalic, EditorLinkSelector, EditorNodeBulletList, EditorNodeOrderedList, type JSONContent, type Editor } from '@workspace/ui/components/kibo-ui/editor';
 
-// HTML validation function for allowed tags
-const validateHtml = (html: string) => {
-  // Allow only specific tags: b, i, a, ol, ul, li
-  const allowedTags = /<\/?(?:b|i|a(?:\s+href=["'][^"']*["'])?|ol|ul|li)(?:\s[^>]*)?>|[^<]+/gi;
-  const cleanHtml = html.match(allowedTags)?.join('') || '';
+// JSON validation function for Kibo UI editor output
+const validateEditorContent = (content: any) => {
+  if (!content) return true;
   
-  // Check if the cleaned HTML matches the original (meaning no disallowed tags)
-  const tempDiv = document.createElement('div');
-  tempDiv.innerHTML = cleanHtml;
-  const hasDisallowedTags = cleanHtml !== html && /<[^>]+>/g.test(html);
+  // If it's a string (legacy HTML), allow it
+  if (typeof content === 'string') {
+    return content.length <= 5000;
+  }
   
-  return !hasDisallowedTags;
+  // If it's JSON content from Tiptap, validate structure
+  if (typeof content === 'object' && content.type === 'doc') {
+    // Convert to HTML and check length
+    const htmlLength = JSON.stringify(content).length;
+    return htmlLength <= 10000; // Allow more for JSON structure
+  }
+  
+  return true;
 };
 
 // Zod schema for Asset validation
 const assetSchema = z.object({
   title: z.string().min(1, 'Title is required').max(100, 'Title must be 100 characters or less'),
   short_description: z.string().min(1, 'Short description is required').max(200, 'Short description must be 200 characters or less'),
-  long_description: z.string()
-    .min(1, 'Long description is required')
-    .max(5000, 'Long description must be 5000 characters or less')
-    .refine(
-      (html) => {
+  long_description: z.union([
+    z.string().min(1, 'Long description is required').max(5000, 'Long description must be 5000 characters or less'),
+    z.object({
+      type: z.literal('doc'),
+      content: z.array(z.any()).optional()
+    }).refine(
+      (content) => {
         if (typeof window === 'undefined') return true; // Skip validation on server
-        return validateHtml(html);
+        return validateEditorContent(content);
       },
-      { message: 'Only the following HTML tags are allowed: <b>, <i>, <a>, <ol>, <ul>, <li>' }
-    ),
+      { message: 'Content is too long or invalid format' }
+    )
+  ]).refine(
+    (content) => {
+      if (typeof window === 'undefined') return true; // Skip validation on server
+      return validateEditorContent(content);
+    },
+    { message: 'Invalid content format' }
+  ),
   tags: z.array(z.string()).min(1, 'At least one tag is required'),
   category: z.string().min(1, 'Category is required'),
   price: z.number().min(0, 'Price must be non-negative'),
@@ -250,21 +265,25 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
       // Process the asset data first
       const asset = result.asset;
       
-      // Handle long description - preserve HTML but clean up disallowed tags
+      // Handle long description - preserve HTML and clean up for Tiptap editor
       let processedLongDescription = '';
       if (asset.long_description) {
         let htmlDescription = asset.long_description;
         
-        // If it's plain text, wrap it properly
+        // If it's plain text, wrap it properly for Tiptap
         if (!/<[^>]+>/g.test(htmlDescription)) {
-          // Convert line breaks to proper HTML
-          htmlDescription = htmlDescription.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>');
-          if (!htmlDescription.startsWith('<p>')) {
-            htmlDescription = '<p>' + htmlDescription + '</p>';
-          }
+          // Convert line breaks to paragraphs
+          const paragraphs = htmlDescription.split(/\n\s*\n/);
+          htmlDescription = paragraphs.map((p: string) => p.trim() ? `<p>${p.replace(/\n/g, '<br>')}</p>` : '').join('');
         } else {
-          // Clean up existing HTML - remove disallowed tags but keep content
-          htmlDescription = htmlDescription.replace(/<(?!\/?(b|i|a|ol|ul|li)(?:\s[^>]*)?\/?)[^>]*>/gi, '');
+          // Clean up existing HTML - convert to Tiptap compatible format
+          htmlDescription = htmlDescription
+            .replace(/<b>/gi, '<strong>')
+            .replace(/<\/b>/gi, '</strong>')
+            .replace(/<i>/gi, '<em>')
+            .replace(/<\/i>/gi, '</em>')
+            // Keep common HTML tags that Tiptap supports
+            .replace(/<(?!\/?(p|strong|em|b|i|a|ol|ul|li|br|h[1-6])(?:\s[^>]*)?\/?)[^>]*>/gi, '');
         }
         
         processedLongDescription = htmlDescription.slice(0, 5000); // Respect max length
@@ -520,41 +539,43 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
               name="long_description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Long Description (HTML)</FormLabel>
+                  <FormLabel>Long Description</FormLabel>
                   <FormControl>
                     <div className="space-y-2">
-                      <div className="flex gap-2 text-xs text-muted-foreground border-b pb-2">
-                        <span>Allowed tags: &lt;b&gt;, &lt;i&gt;, &lt;a&gt;, &lt;ol&gt;, &lt;ul&gt;, &lt;li&gt;</span>
-                      </div>
-                      <Tabs defaultValue="edit" className="w-full">
-                        <TabsList className="grid w-full grid-cols-2">
-                          <TabsTrigger value="edit">Edit</TabsTrigger>
-                          <TabsTrigger value="preview">Preview</TabsTrigger>
-                        </TabsList>
-                        <TabsContent value="edit" className="mt-2">
-                          <Textarea
-                            placeholder="Enter detailed description with HTML formatting"
-                            className="min-h-32 resize-y font-mono text-sm"
-                            {...field}
-                          />
-                        </TabsContent>
-                        <TabsContent value="preview" className="mt-2">
-                          <div className="border rounded p-3 bg-muted/50 min-h-32">
-                            {field.value ? (
-                              <div 
-                                className="prose prose-sm max-w-none"
-                                dangerouslySetInnerHTML={{ __html: field.value }}
-                              />
-                            ) : (
-                              <p className="text-muted-foreground text-sm">No content to preview</p>
-                            )}
-                          </div>
-                        </TabsContent>
-                      </Tabs>
+                      <EditorProvider
+                        key={typeof field.value === 'string' && field.value ? `editor-${field.value.slice(0, 50)}` : `editor-${JSON.stringify(field.value)?.slice(0, 50) || 'empty'}`}
+                        className="border rounded-md"
+                        content={
+                          // Handle both HTML strings and JSON content
+                          typeof field.value === 'string' && field.value
+                            ? field.value  // Pass HTML string directly
+                            : field.value as JSONContent  // Pass JSON content for Tiptap
+                        }
+                        onUpdate={(props) => {
+                          // Get HTML content for backward compatibility
+                          const html = props.editor.getHTML();
+                          const isEmpty = html === '<p></p>' || html === '';
+                          field.onChange(isEmpty ? '' : html);
+                        }}
+                        placeholder="Enter detailed description with rich text formatting"
+                        editorProps={{
+                          attributes: {
+                            class: 'prose prose-sm max-w-none min-h-[120px] p-3 focus:outline-none [&_a]:text-blue-600 [&_a]:underline [&_a:hover]:text-blue-800 [&_a]:cursor-pointer',
+                          },
+                        }}
+                      >
+                        <EditorBubbleMenu>
+                          <EditorFormatBold hideName />
+                          <EditorFormatItalic hideName />
+                          <EditorLinkSelector />
+                          <EditorNodeBulletList hideName />
+                          <EditorNodeOrderedList hideName />
+                        </EditorBubbleMenu>
+                      </EditorProvider>
                     </div>
                   </FormControl>
                   <FormDescription>
-                    A detailed description with HTML formatting (max 5000 characters including HTML tags)
+                    A detailed description with rich text formatting (max 5000 characters)
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
