@@ -80,7 +80,7 @@ const data = {
   navMain: [
     {
       title: 'Optimize',
-      url: '#',
+      url: '/optimize',
       icon: SquareTerminalIcon,
       isActive: true,
       items: []
