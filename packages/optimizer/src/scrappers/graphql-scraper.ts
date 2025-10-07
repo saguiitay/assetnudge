@@ -739,6 +739,10 @@ export async function scrapeAssetWithGraphQL(url: string): Promise<Asset> {
       ratingArray = convertRatingToArray(data[1].data.rating);
     }
 
+    // Get reviews data from the first query
+    const reviewsData = productResponse.data.product.reviews;
+    const reviewCount = reviewsData?.count || product.rating?.count || product.reviewCount || 0;
+
     // Transform the GraphQL data to our asset format
     const asset: Asset = {
       id: product.id || assetId,
@@ -752,12 +756,12 @@ export async function scrapeAssetWithGraphQL(url: string): Promise<Asset> {
       images_count: countAllImages(product.images, product.mainImage),
       videos_count: countVideos(product.images),
       rating: ratingArray, // Use rating array format
-      reviews_count: product.rating?.count || product.reviewCount || 0,
+      reviews_count: reviewCount,
       last_update: formatDate(product.currentVersion?.publishedDate || product.firstPublishedDate),
-      publisher: product.publisher?.name || 'Unknown Publisher',
+      publisher: 'Unknown Publisher', // Not needed according to user
       size: formatFileSize(product.downloadSize || ''),
       version: product.currentVersion?.name || extractVersionFromSupportedVersions(product.supportedUnityVersions || []),
-      favorites: 1, // Default to 1 as shown in expected output (GraphQL doesn't provide this field)
+      favorites: 1, // Default value since not using wishlist
       mainImage: product.mainImage || null,
       images: extractImagesArray(product.images),
       videos: extractVideosArray(product.images)

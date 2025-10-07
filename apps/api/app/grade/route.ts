@@ -45,12 +45,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Use exemplar vocabulary file
-    const vocabPath = path.resolve(process.cwd(), '../../packages/optimizer/data/exemplar_vocab.json');
+    // Use exemplar vocabulary file - let the optimizer package handle path resolution
+    // Pass null to let the optimizer use its default path resolution
+    const vocabPath = null;
 
     if (debug) {
       console.log('Grading asset with data:', JSON.stringify(assetData, null, 2));
-      console.log('Using exemplar vocabulary from:', vocabPath);
+      console.log('Using default exemplar vocabulary path (auto-resolved by optimizer)');
     }
 
     // Grade the asset using exemplar vocabulary
