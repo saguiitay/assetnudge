@@ -6,10 +6,10 @@ import { AssetEditor } from './components/asset-editor';
 import { AssetGrade } from './components/asset-grade';
 import { AssetGenerator } from './components/asset-generator';
 import { SimilarAssets } from './components/similar-assets';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@repo/design-system/components/ui/tabs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@repo/design-system/components/ui/card';
-import { Separator } from '@repo/design-system/components/ui/separator';
-import { Badge } from '@repo/design-system/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@workspace/ui/components/tabs';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@workspace/ui/components/card';
+import { Separator } from '@workspace/ui/components/separator';
+import { Badge } from '@workspace/ui/components/badge';
 import { FileText, Sparkles, Search, BarChart3 } from 'lucide-react';
 
 interface AssetData {

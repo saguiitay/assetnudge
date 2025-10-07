@@ -1,5 +1,5 @@
-import { Button } from '@repo/design-system/components/ui/button';
-import { Badge } from '@repo/design-system/components/ui/badge';
+import { Button } from '@workspace/ui/components/button';
+import { Badge } from '@workspace/ui/components/badge';
 import type { Dictionary } from '@repo/internationalization';
 
 type HeroProps = {

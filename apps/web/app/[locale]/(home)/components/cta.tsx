@@ -1,4 +1,4 @@
-import { Button } from '@repo/design-system/components/ui/button';
+import { Button } from '@workspace/ui/components/button';
 import type { Dictionary } from '@repo/internationalization';
 import { MoveRight, PhoneCall } from 'lucide-react';
 import Link from 'next/link';

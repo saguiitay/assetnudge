@@ -10,7 +10,8 @@
     "paths": {
       "@/*": ["./*"],
       "@repo/*": ["../*"],
-      "@repo/design-system/*": ["./*"]
+      "@repo/design-system/*": ["./*"],
+      "@workspace/ui/*": ["../../packages/ui/src/*"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx"],

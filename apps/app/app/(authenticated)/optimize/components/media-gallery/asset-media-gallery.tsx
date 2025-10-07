@@ -1,6 +1,6 @@
 'use client';
 
-import { FormLabel } from '@repo/design-system/components/ui/form';
+import { FormLabel } from '@workspace/ui/components/form';
 import { MainImageDisplay } from './main-image-display';
 import { ScreenshotsGallery } from './screenshots-gallery';
 import { VideosGallery } from './videos-gallery';

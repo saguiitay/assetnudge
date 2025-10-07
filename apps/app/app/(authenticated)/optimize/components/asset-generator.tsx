@@ -1,12 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@repo/design-system/components/ui/card';
-import { Button } from '@repo/design-system/components/ui/button';
-import { Alert, AlertDescription } from '@repo/design-system/components/ui/alert';
-import { Badge } from '@repo/design-system/components/ui/badge';
-import { Separator } from '@repo/design-system/components/ui/separator';
-import { Checkbox } from '@repo/design-system/components/ui/checkbox';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@workspace/ui/components/card';
+import { Button } from '@workspace/ui/components/button';
+import { Alert, AlertDescription } from '@workspace/ui/components/alert';
+import { Badge } from '@workspace/ui/components/badge';
+import { Separator } from '@workspace/ui/components/separator';
+import { Checkbox } from '@workspace/ui/components/checkbox';
 import { 
   Sparkles, 
   Wand2, 

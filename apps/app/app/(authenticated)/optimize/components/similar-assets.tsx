@@ -1,12 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@repo/design-system/components/ui/card';
-import { Button } from '@repo/design-system/components/ui/button';
-import { Alert, AlertDescription } from '@repo/design-system/components/ui/alert';
-import { Badge } from '@repo/design-system/components/ui/badge';
-import { Skeleton } from '@repo/design-system/components/ui/skeleton';
-import { Separator } from '@repo/design-system/components/ui/separator';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@workspace/ui/components/card';
+import { Button } from '@workspace/ui/components/button';
+import { Alert, AlertDescription } from '@workspace/ui/components/alert';
+import { Badge } from '@workspace/ui/components/badge';
+import { Skeleton } from '@workspace/ui/components/skeleton';
+import { Separator } from '@workspace/ui/components/separator';
 import {
   Search,
   ExternalLink,

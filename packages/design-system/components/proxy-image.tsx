@@ -6,8 +6,8 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
-import { Button } from './ui/button';
-import { cn } from '../lib/utils';
+import { Button } from '@workspace/ui/components/button';
+import { cn } from '@workspace/ui/lib/utils';
 
 // Define Unity Asset Store domains that need proxying
 const UNITY_DOMAINS = [

@@ -2,19 +2,19 @@
 
 import { OrganizationSwitcher, UserButton } from '@repo/auth/client';
 import { ModeToggle } from '@repo/design-system/components/mode-toggle';
-import { Button } from '@repo/design-system/components/ui/button';
+import { Button } from '@workspace/ui/components/button';
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from '@repo/design-system/components/ui/collapsible';
+} from '@workspace/ui/components/collapsible';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@repo/design-system/components/ui/dropdown-menu';
+} from '@workspace/ui/components/dropdown-menu';
 import {
   Sidebar,
   SidebarContent,
@@ -32,8 +32,8 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   useSidebar,
-} from '@repo/design-system/components/ui/sidebar';
-import { cn } from '@repo/design-system/lib/utils';
+} from '@workspace/ui/components/sidebar';
+import { cn } from '@workspace/ui/lib/utils';
 import {
   AnchorIcon,
   BookOpenIcon,

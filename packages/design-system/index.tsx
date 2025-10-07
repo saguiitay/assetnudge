@@ -1,6 +1,6 @@
 import type { ThemeProviderProps } from 'next-themes';
-import { Toaster } from './components/ui/sonner';
-import { TooltipProvider } from './components/ui/tooltip';
+import { Toaster } from '@workspace/ui/components/sonner';
+import { TooltipProvider } from '@workspace/ui/components/tooltip';
 import { ThemeProvider } from './providers/theme';
 import { AuthProvider } from '@repo/auth/provider';
 

@@ -1,5 +1,5 @@
 import { auth, currentUser } from '@repo/auth/server';
-import { SidebarProvider } from '@repo/design-system/components/ui/sidebar';
+import { SidebarProvider } from '@workspace/ui/components/sidebar';
 //import { secure } from '@repo/security';
 import type { ReactNode } from 'react';
 import { GlobalSidebar } from './components/sidebar';

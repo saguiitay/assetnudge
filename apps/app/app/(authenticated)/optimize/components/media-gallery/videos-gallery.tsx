@@ -1,6 +1,6 @@
 'use client';
 
-import { AspectRatio } from '@repo/design-system/components/ui/aspect-ratio';
+import { AspectRatio } from '@workspace/ui/components/aspect-ratio';
 import { Video, Play } from 'lucide-react';
 import { ImageWithFallback } from './image-with-fallback';
 import type { VideoData } from './types';

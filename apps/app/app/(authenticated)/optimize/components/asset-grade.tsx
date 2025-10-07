@@ -1,10 +1,10 @@
 'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@repo/design-system/components/ui/card';
-import { Badge } from '@repo/design-system/components/ui/badge';
-import { Alert, AlertDescription } from '@repo/design-system/components/ui/alert';
-import { Progress } from '@repo/design-system/components/ui/progress';
-import { Button } from '@repo/design-system/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@workspace/ui/components/card';
+import { Badge } from '@workspace/ui/components/badge';
+import { Alert, AlertDescription } from '@workspace/ui/components/alert';
+import { Progress } from '@workspace/ui/components/progress';
+import { Button } from '@workspace/ui/components/button';
 import { 
   GraduationCap, 
   Star, 
