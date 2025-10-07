@@ -184,7 +184,7 @@ Commands:
                Generate category playbooks from exemplar patterns
                
   build-all    --corpus <corpus1.json,corpus2.json,...|folder1,folder2,...> [--out-dir <directory>] [--top-n 20] [--top-percent 10] [--best-sellers <best_sellers.json>]
-               🚀 ONE-STOP COMMAND: Build exemplars, vocab, and playbooks from corpus
+               🚀 ONE-STOP COMMAND: Build exemplars, vocab, playbooks, and grading rules from corpus
                --best-sellers: JSON file containing list of Unity best seller assets (always included as exemplars)
                Use either --top-n (fixed number) or --top-percent (percentage of corpus)
                Supports multiple corpus files/folders separated by commas
@@ -422,7 +422,7 @@ async function cmdGeneratePlaybooks(): Promise<void> {
 
 /**
  * BUILD-ALL COMMAND: One-stop command to build complete exemplar ecosystem
- * Creates exemplars, exemplar vocabulary, and playbooks from a single corpus
+ * Creates exemplars, exemplar vocabulary, playbooks, and grading rules from a single corpus
  */
 async function cmdBuildAll(): Promise<void> {
   const corpusPaths = getFlag('corpus');
@@ -452,6 +452,7 @@ async function cmdBuildAll(): Promise<void> {
   const exemplarsPath = outputDir + 'exemplars.json';
   const vocabPath = outputDir + 'exemplar_vocab.json';
   const playbooksPath = outputDir + 'playbooks.json';
+  const gradingRulesPath = outputDir + 'grading-rules.json';
   
   const optimizer = new UnityAssetOptimizer(args);
   await optimizer.validateSetup();
@@ -477,19 +478,24 @@ async function cmdBuildAll(): Promise<void> {
     }
     
     // Step 1: Build exemplars
-    console.log('\n📊 Step 1/3: Identifying exemplar assets...');
+    console.log('\n📊 Step 1/4: Identifying exemplar assets...');
     const exemplarStats = await optimizer.buildExemplarsFromCorpus(corpus, exemplarsPath, finalTopN, finalTopPercent, bestSellers);
     console.log(`✅ Exemplars built: ${exemplarStats.totalExemplars} assets across ${exemplarStats.categories} categories\n`);
     
     // Step 2: Build exemplar vocabulary
-    console.log('📚 Step 2/3: Building exemplar-based vocabulary...');
+    console.log('📚 Step 2/4: Building exemplar-based vocabulary...');
     const vocabStats = await optimizer.buildExemplarVocabulary(exemplarsPath, vocabPath);
     console.log(`✅ Vocabulary built: ${vocabStats.categories} category vocabularies\n`);
     
     // Step 3: Generate playbooks
-    console.log('📖 Step 3/3: Generating category playbooks...');
+    console.log('📖 Step 3/4: Generating category playbooks...');
     const playbookStats = await optimizer.generatePlaybooks(exemplarsPath, playbooksPath);
     console.log(`✅ Playbooks generated: ${playbookStats.categories} category guides\n`);
+    
+    // Step 4: Build grading rules
+    console.log('⚖️ Step 4/4: Building dynamic grading rules...');
+    const gradingRulesStats = await optimizer.buildGradingRules(exemplarsPath, gradingRulesPath);
+    console.log(`✅ Grading rules built: ${gradingRulesStats.categories} category-specific rule sets\n`);
     
     // Success summary
     const result = {
@@ -506,16 +512,17 @@ async function cmdBuildAll(): Promise<void> {
       files_created: {
         exemplars: exemplarsPath,
         vocabulary: vocabPath,
-        playbooks: playbooksPath
+        playbooks: playbooksPath,
+        grading_rules: gradingRulesPath
       },
       next_steps: [
-        `Grade assets: node main.mjs grade --input asset.json --vocab ${vocabPath}`,
+        `Grade with dynamic rules: node main.mjs grade --input asset.json --vocab ${vocabPath} --rules ${gradingRulesPath}`,
         `Optimize with exemplars: node main.mjs optimize --input asset.json --exemplars ${exemplarsPath} --vocab ${vocabPath}`,
         `View category guidance: cat ${playbooksPath}`
       ]
     };
     
-    console.log('🎉 Complete exemplar ecosystem ready!\n');
+    console.log('🎉 Complete exemplar ecosystem with dynamic grading ready!\n');
     console.log(JSON.stringify(result, null, 2));
     
   } catch (error) {
