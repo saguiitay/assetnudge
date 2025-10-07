@@ -183,8 +183,9 @@ Commands:
   generate-playbooks --exemplars <exemplars.json> --out <playbooks.json>
                Generate category playbooks from exemplar patterns
                
-  build-all    --corpus <corpus1.json,corpus2.json,...|folder1,folder2,...> [--out-dir <directory>] [--top-n 20] [--top-percent 10]
+  build-all    --corpus <corpus1.json,corpus2.json,...|folder1,folder2,...> [--out-dir <directory>] [--top-n 20] [--top-percent 10] [--best-sellers <best_sellers.json>]
                🚀 ONE-STOP COMMAND: Build exemplars, vocab, and playbooks from corpus
+               --best-sellers: JSON file containing list of Unity best seller assets (always included as exemplars)
                Use either --top-n (fixed number) or --top-percent (percentage of corpus)
                Supports multiple corpus files/folders separated by commas
                For folders: automatically loads all JSON files within
@@ -220,7 +221,7 @@ Global Options:
 Examples:
   # 🚀 RECOMMENDED: One-stop exemplar ecosystem creation
   node main.mjs build-all --corpus data/packages.json --out-dir data/ --top-n 15
-  node main.mjs build-all --corpus data/corpus-folder/ --out-dir data/ --top-n 15
+  node main.mjs build-all --corpus data/corpus-folder/ --out-dir data/ --top-n 15 --best-sellers data/unity_best_sellers.json
   node main.mjs optimize --input asset.json --exemplars data/exemplars.json --vocab data/exemplar_vocab.json
   
   # Build exemplars with best sellers list
@@ -235,7 +236,7 @@ Examples:
   
   # Multiple corpus files and folders (for large datasets)
   node main.mjs build-all --corpus "data/corpus1.json,data/corpus2.json,data/folder1/" --out-dir data/ --top-n 15
-  node main.mjs build-all --corpus "data/corpus-files/,data/additional-data/" --out-dir data/ --top-n 15
+  node main.mjs build-all --corpus "data/corpus-files/,data/additional-data/" --out-dir data/ --top-n 15 --best-sellers data/unity_best_sellers.json
   
   # Traditional approach (individual commands for granular control)
   node main.mjs scrape --url "https://assetstore.unity.com/packages/..." --out asset.json
@@ -428,6 +429,7 @@ async function cmdBuildAll(): Promise<void> {
   const outDir = getFlag('out-dir', 'data/');
   const topN = getFlag('top-n');
   const topPercent = getFlag('top-percent');
+  const bestSellersPath = getFlag('best-sellers');
   
   ensure(!!corpusPaths, '--corpus path(s) required (comma-separated for multiple files/folders)');
   ensure(!(topN && topPercent), 'Cannot specify both --top-n and --top-percent');
@@ -461,9 +463,22 @@ async function cmdBuildAll(): Promise<void> {
     console.log('📁 Loading corpus files...');
     const corpus = await loadMultipleCorpusFiles(corpusPaths!);
     
+    // Load best sellers if provided
+    let bestSellers: BestSellerAsset[] = [];
+    if (bestSellersPath) {
+      try {
+        const bestSellersData = await fs.readFile(bestSellersPath, 'utf8');
+        bestSellers = JSON.parse(bestSellersData) as BestSellerAsset[];
+        console.log(`📌 Loaded ${bestSellers.length} best sellers from ${bestSellersPath}`);
+      } catch (error) {
+        console.error(`❌ Failed to load best sellers from ${bestSellersPath}:`, (error as Error).message);
+        process.exit(1);
+      }
+    }
+    
     // Step 1: Build exemplars
     console.log('\n📊 Step 1/3: Identifying exemplar assets...');
-    const exemplarStats = await optimizer.buildExemplarsFromCorpus(corpus, exemplarsPath, finalTopN, finalTopPercent);
+    const exemplarStats = await optimizer.buildExemplarsFromCorpus(corpus, exemplarsPath, finalTopN, finalTopPercent, bestSellers);
     console.log(`✅ Exemplars built: ${exemplarStats.totalExemplars} assets across ${exemplarStats.categories} categories\n`);
     
     // Step 2: Build exemplar vocabulary
@@ -485,6 +500,7 @@ async function cmdBuildAll(): Promise<void> {
         exemplars_per_category: finalTopN || `${finalTopPercent}%`,
         total_exemplars: exemplarStats.totalExemplars,
         total_categories: exemplarStats.categories,
+        best_sellers_provided: bestSellers.length,
         output_directory: outputDir
       },
       files_created: {
