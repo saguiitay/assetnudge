@@ -4,9 +4,7 @@
   "private": true,
   "description": "AI-powered optimization tool for Unity Asset Store listings",
   "scripts": {
-    "build": "tsc",
-    "start": "node dist/main.js",
-    "dev": "tsx main.ts",
+    "build-all": "npx tsx main.ts build-all --corpus data/corpus/ --out-dir data/results/ --top-percent 15 --best-sellers data/best_seller_assets_full.json",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },

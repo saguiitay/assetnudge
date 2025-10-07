@@ -8,6 +8,7 @@ import Config from './src/config';
 import { scrapeAssetWithGraphQL, Asset as GraphQLAsset } from './src/scrappers/graphql-scraper';
 import { Asset as ValidatorAsset, Vocabulary as ValidatorVocabulary, FileValidator } from './src/utils/validation';
 import { GradeResult, Vocabulary as TypesVocabulary } from './src/types';
+import { DynamicAssetGrader } from './src/dynamic-asset-grader';
 
 /**
  * Export Config class as OptimizerConfig for compatibility
@@ -76,17 +77,47 @@ export async function gradeAsset(assetData: ValidatorAsset, vocabPath: string | 
   const args: string[] = [];
   if (config && config.debug) args.push('--debug', 'true');
   
+  // Add default arguments as specified
+  if (!vocabPath) {
+    args.push('--vocab', 'data/results/exemplar_vocab.json');
+  }
+  args.push('--rules', 'data/results/grading-rules.json');
+  
   const optimizer = new UnityAssetOptimizer(args);
   await optimizer.validateSetup();
   
-  // Load vocabulary if provided
+  // Use default paths if not provided
+  const defaultVocabPath = vocabPath || 'data/results/exemplar_vocab.json';
+  const defaultRulesPath = 'data/results/grading-rules.json';
+  
+  // Load vocabulary
   let vocabulary: TypesVocabulary = {};
-  if (vocabPath) {
-    vocabulary = await FileValidator.validateJSONFile(vocabPath);
+  try {
+    vocabulary = await FileValidator.validateJSONFile(defaultVocabPath);
+  } catch (error) {
+    // If default vocab file doesn't exist, continue with empty vocabulary
+    console.warn(`Warning: Could not load vocabulary from ${defaultVocabPath}: ${(error as Error).message}`);
   }
   
-  // Grade the asset directly using the grader
-  const grade = await optimizer.grader.gradeAsset(assetData, vocabulary);
+  // Load grading rules if available
+  let gradingRules = null;
+  try {
+    gradingRules = await FileValidator.validateJSONFile(defaultRulesPath);
+  } catch (error) {
+    // If rules file doesn't exist, fall back to static grading
+    console.warn(`Warning: Could not load grading rules from ${defaultRulesPath}, using static heuristics: ${(error as Error).message}`);
+  }
+  
+  // Grade the asset
+  let grade: GradeResult;
+  if (gradingRules) {
+    // Use dynamic grading rules if available
+    const dynamicGrader = new DynamicAssetGrader(optimizer.config, gradingRules);
+    grade = await dynamicGrader.gradeAsset(assetData, vocabulary);
+  } else {
+    // Fall back to static heuristic grading
+    grade = await optimizer.grader.gradeAsset(assetData, vocabulary);
+  }
   
   return { grade };
 }
