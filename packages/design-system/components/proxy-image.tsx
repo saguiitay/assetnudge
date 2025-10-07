@@ -6,6 +6,7 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
+import Image from 'next/image';
 import { cn } from '@workspace/ui/lib/utils';
 
 // Define Unity Asset Store domains that need proxying
@@ -69,7 +70,7 @@ function getProxiedImageUrl(url: string): string {
   }
 }
 
-export interface ProxyImageProps extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'src'> {
+export interface ProxyImageProps extends Omit<React.ComponentProps<typeof Image>, 'src'> {
   /** Original image URL */
   src: string;
   /** Alternative image source if proxy fails */
@@ -174,10 +175,11 @@ export function ProxyImage({
       )}
       
       {/* Actual image */}
-      <img
+      <Image
         {...imgProps}
         src={currentSrc}
         alt={alt}
+        loading="lazy"
         onLoad={handleLoad}
         onError={handleError}
         className={cn(
