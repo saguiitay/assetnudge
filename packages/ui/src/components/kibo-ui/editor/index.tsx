@@ -565,7 +565,7 @@ export const EditorProvider = ({
       },
       link: {
         HTMLAttributes: {
-          class: cn("text-blue-600 underline hover:text-blue-800 cursor-pointer"),
+          class: cn("text-blue-600 dark:text-blue-400 underline hover:text-blue-800 dark:hover:text-blue-300 cursor-pointer transition-colors"),
         },
       },
     }),

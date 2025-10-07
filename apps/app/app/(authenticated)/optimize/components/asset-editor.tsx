@@ -560,7 +560,7 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
                         placeholder="Enter detailed description with rich text formatting"
                         editorProps={{
                           attributes: {
-                            class: 'prose prose-sm max-w-none min-h-[120px] p-3 focus:outline-none [&_a]:text-blue-600 [&_a]:underline [&_a:hover]:text-blue-800 [&_a]:cursor-pointer',
+                            class: 'prose prose-sm max-w-none min-h-[120px] p-3 focus:outline-none [&_a]:text-blue-600 [&_a]:dark:text-blue-400 [&_a]:underline [&_a:hover]:text-blue-800 [&_a:hover]:dark:text-blue-300 [&_a]:cursor-pointer [&_a]:transition-colors',
                           },
                         }}
                       >
