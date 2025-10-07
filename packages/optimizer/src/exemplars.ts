@@ -3,6 +3,7 @@ import * as path from 'path';
 import { Logger } from './utils/logger';
 import { calculateDetailedRating, DetailedRatingResult } from './utils/rating-analysis';
 import { Asset, BestSellerAsset } from './types';
+import { OFFICIAL_CATEGORIES } from './config';
 
 /**
  * Exemplar Management System
@@ -249,6 +250,49 @@ function isBestSellerAsset(asset: Asset, bestSellerLookup: Set<string>): boolean
 }
 
 /**
+ * Create a reverse mapping from short category names to full category paths
+ */
+function createCategoryReverseMap(): Map<string, string> {
+    const reverseMap = new Map<string, string>();
+    
+    for (const [mainCategory, subCategories] of Object.entries(OFFICIAL_CATEGORIES)) {
+        // Add main category
+        reverseMap.set(mainCategory, mainCategory);
+        
+        // Add subcategories
+        for (const subCategory of subCategories) {
+            const parts = subCategory.split('/');
+            const lastPart = parts[parts.length - 1];
+            if (lastPart) {
+                const fullPath = `${mainCategory}/${subCategory}`;
+                
+                // Map the last part to the full path
+                if (!reverseMap.has(lastPart)) {
+                    reverseMap.set(lastPart, fullPath);
+                }
+            }
+            
+            // Also map any intermediate parts
+            for (let i = 0; i < parts.length; i++) {
+                const part = parts[i];
+                if (part) {
+                    const partialPath = parts.slice(0, i + 1).join('/');
+                    const mapValue = `${mainCategory}/${partialPath}`;
+                    if (!reverseMap.has(part)) {
+                        reverseMap.set(part, mapValue);
+                    }
+                }
+            }
+        }
+    }
+    
+    return reverseMap;
+}
+
+// Create the reverse mapping once at module load
+const categoryReverseMap = createCategoryReverseMap();
+
+/**
  * Extract category from asset data
  * @param asset - Asset data
  * @returns Normalized category
@@ -256,7 +300,16 @@ function isBestSellerAsset(asset: Asset, bestSellerLookup: Set<string>): boolean
 function extractCategory(asset: Asset): string {
     // Use category field, or fall back to extracting from URL or tags
     if (asset.category && asset.category.trim()) {
-        return asset.category.trim();
+        const truncatedCategory = asset.category.trim();
+        
+        // Try to map truncated category to full path
+        const fullPath = categoryReverseMap.get(truncatedCategory);
+        if (fullPath) {
+            return fullPath;
+        }
+        
+        // If no mapping found, return the original category
+        return truncatedCategory;
     }
     
     // Try to extract from URL path

@@ -370,18 +370,15 @@ function formatDate(isoDate: string | undefined): string | null {
 }
 
 /**
- * Extract main category from full category path
+ * Extract full category path from category object
  * @param categoryObj - Category object from GraphQL
- * @returns Main category name
+ * @returns Full category path (e.g., "Characters/Animals/Mammals")
  */
-function extractMainCategory(categoryObj: Category | undefined): string {
+function extractFullCategory(categoryObj: Category | undefined): string {
   if (!categoryObj) return 'Unknown';
   
-  // If it's Tools/Game Toolkits, return just "Tools"
-  // If it's Templates/Packs, return just "Templates"
-  const longName = categoryObj.longName || categoryObj.name || '';
-  const parts = longName.split('/');
-  return parts[0] || categoryObj.name || 'Unknown';
+  // Return the full category path to preserve hierarchy
+  return categoryObj.longName || categoryObj.name || 'Unknown';
 }
 
 /**
@@ -750,7 +747,7 @@ export async function scrapeAssetWithGraphQL(url: string): Promise<Asset> {
       short_description: cleanHtmlText(product.elevatorPitch || ''),
       long_description: product.description || '', // Keep HTML format as in the expected output
       tags: extractTags(product.popularTags),
-      category: extractMainCategory(product.category),
+      category: extractFullCategory(product.category),
       price: parseFloat(String(product.originalPrice?.finalPrice || 0)),
       images_count: countAllImages(product.images, product.mainImage),
       videos_count: countVideos(product.images),
