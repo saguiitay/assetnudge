@@ -1,7 +1,6 @@
 'use client';
 
 import { OrganizationSwitcher, UserButton } from '@repo/auth/client';
-import { ModeToggle } from '@repo/design-system/components/mode-toggle';
 import { Button } from '@workspace/ui/components/button';
 import {
   Collapsible,
@@ -15,6 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@workspace/ui/components/dropdown-menu';
+import { ModeToggle } from '@workspace/ui/components/mode-toggle';
 import {
   Sidebar,
   SidebarContent,

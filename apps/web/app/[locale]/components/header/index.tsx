@@ -1,6 +1,6 @@
 'use client';
 
-import { ModeToggle } from '@repo/design-system/components/mode-toggle';
+import { ModeToggle } from '@workspace/ui/components/mode-toggle';
 import { Button } from '@workspace/ui/components/button';
 import {
   NavigationMenu,

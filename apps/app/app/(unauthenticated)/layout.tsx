@@ -1,4 +1,4 @@
-import { ModeToggle } from '@repo/design-system/components/mode-toggle';
+import { ModeToggle } from '@workspace/ui/components/mode-toggle';
 import { CommandIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 
