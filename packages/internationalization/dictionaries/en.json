@@ -11,6 +11,7 @@
         "description": "Managing a small business today is already tough.",
         "pricing": "Pricing"
       },
+      "features": "Features",
       "blog": "Blog",
       "docs": "Docs",
       "contact": "Contact",
@@ -29,22 +30,21 @@
         "title": "Empowering Success Stories Across the Globe"
       },
       "features": {
-        "title": "Powerful Tools for Assets Developers",
+        "title": "Everything you need to sell smarter.",
         "description": "Discover how our cutting-edge features can revolutionize your daily operations.",
         "items": [
           {
+            "icon": "ChartLine",
             "title": "Analyze Your Listing",
             "description": "Know exactly what makes your asset stand out and what might be hurting your sales potential"
           },
           {
-            "title": "Grade Your Listing",
-            "description": "Get immediate, actionable feedback on how to improve your asset store listing"
-          },
-          {
+            "icon": "FileText",
             "title": "Optimize Fast",
             "description": "Get clear, actionable tips or use AI to fix issues and improve your asset page in minutes, not days"
           },
           {
+            "icon": "DollarSign",
             "title": "Boost Your Sales",
             "description": "Use the right keywords and visuals to reach more buyers and increase your conversion rates"
           }
@@ -145,8 +145,8 @@
         ]
       },
       "cta": {
-        "title": "Start Your Business Transformation",
-        "description": "Join thousands of forward-thinking businesses who have already modernized their operations. Our platform offers the tools, support, and efficiency you need to succeed in today's competitive market. Get started in minutes."
+        "title": "Optimize My Asset Now",
+        "description": "Turn your Unity Asset Store listing into a sales magnet — analyze keywords, pricing, and copy with one click."
       }
     },
     "blog": {

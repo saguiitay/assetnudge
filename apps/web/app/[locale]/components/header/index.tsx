@@ -17,7 +17,7 @@ import { useState } from 'react';
 import type { Dictionary } from '@repo/internationalization';
 import Image from 'next/image';
 //import { LanguageSwitcher } from './language-switcher';
-import Logo from './logo.svg';
+import logoSmall from '@repo/design-system/images/logo-small.webp';
 
 type HeaderProps = {
   dictionary: Dictionary;
@@ -30,19 +30,19 @@ export const Header = ({ dictionary }: HeaderProps) => {
       href: '/',
       description: '',
     },
+    // {
+    //   title: dictionary.web.header.product.title,
+    //   description: dictionary.web.header.product.description,
+    //   items: [
+    //     {
+    //       title: dictionary.web.header.product.pricing,
+    //       href: '/pricing',
+    //     },
+    //   ],
+    // },
     {
-      title: dictionary.web.header.product.title,
-      description: dictionary.web.header.product.description,
-      items: [
-        {
-          title: dictionary.web.header.product.pricing,
-          href: '/pricing',
-        },
-      ],
-    },
-    {
-      title: dictionary.web.header.blog,
-      href: '/blog',
+      title: dictionary.web.header.features,
+      href: '/#features',
       description: '',
     },
   ];
@@ -115,18 +115,18 @@ export const Header = ({ dictionary }: HeaderProps) => {
         </div>
         <div className="flex items-center gap-2 lg:justify-center">
           <Image
-            src={Logo}
+            src={logoSmall}
             alt="Logo"
             width={24}
             height={24}
             className="dark:invert"
           />
-          <p className="whitespace-nowrap font-semibold">next-forge</p>
+          <p className="whitespace-nowrap font-semibold">Asset Nudge</p>
         </div>
         <div className="flex w-full justify-end gap-4">
-          <Button variant="ghost" className="hidden md:inline" asChild>
+          {/* <Button variant="ghost" className="hidden md:inline" asChild>
             <Link href="/contact">{dictionary.web.header.contact}</Link>
-          </Button>
+          </Button> */}
           <div className="hidden border-r md:inline" />
           {/* <div className="hidden md:inline">
             <LanguageSwitcher />

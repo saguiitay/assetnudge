@@ -16,15 +16,15 @@ export const Hero = async ({ dictionary }: HeroProps) => (
           </div>
           <div className="flex gap-4 flex-col">
             <h1 className="text-5xl md:text-7xl max-w-lg tracking-tighter text-left font-regular">
-              Sell More on the Unity Asset Store with Smarter Optimization
+              Sell More Assets. Get a Data-Driven Listing Optimization in Minutes.
             </h1>
             <p className="text-xl leading-relaxed tracking-tight text-muted-foreground max-w-md text-left">
-              Get quick tips, analyze your listing, and watch your sales grow. Try it free — no credit card needed.
+              Turn your Unity Asset Store listing into a sales magnet — analyze keywords, pricing, and copy with one click.
             </p>
           </div>
           <div className="flex flex-row gap-4">
             <Button size="lg" className="gap-4" variant="outline">
-              Start Free Trial
+              Optimize My Asset
             </Button>
             <Button size="lg" className="gap-4">
               Learn More

@@ -7,7 +7,7 @@ type MetadataGenerator = Omit<Metadata, 'description' | 'title'> & {
   image?: string;
 };
 
-const applicationName = 'next-forge';
+const applicationName = 'Asset Nudge';
 const author: Metadata['authors'] = {
   name: 'Itay Sagui',
   url: 'https://www.saguiitay.com/',
