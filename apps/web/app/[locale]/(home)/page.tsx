@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 //import { Cases } from './components/cases';
 import { CTA } from './components/cta';
 import { FAQ } from './components/faq';
-import FeatureCards, { Features } from './components/features';
+import FeatureCards from './components/features';
 import { Hero } from './components/hero';
 //import { Stats } from './components/stats';
 //import { Testimonials } from './components/testimonials';
@@ -36,7 +36,7 @@ const Home = async ({ params }: HomeProps) => {
       {/* <Features dictionary={dictionary} /> */}
       {/* <Stats dictionary={dictionary} /> */}
       {/* <Testimonials dictionary={dictionary} /> */}
-      {/* <FAQ dictionary={dictionary} /> */}
+      <FAQ dictionary={dictionary} />
       <CTA dictionary={dictionary} />
     </>
   );

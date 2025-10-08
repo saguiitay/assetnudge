@@ -14,7 +14,7 @@ type FAQProps = {
 };
 
 export const FAQ = ({ dictionary }: FAQProps) => (
-  <div className="w-full py-20 lg:py-40">
+  <div className="w-full py-20">
     <div className="container mx-auto">
       <div className="grid gap-10 lg:grid-cols-2">
         <div className="flex flex-col gap-10">
@@ -26,14 +26,6 @@ export const FAQ = ({ dictionary }: FAQProps) => (
               <p className="max-w-xl text-left text-lg text-muted-foreground leading-relaxed tracking-tight lg:max-w-lg">
                 {dictionary.web.home.faq.description}
               </p>
-            </div>
-            <div className="">
-              <Button className="gap-4" variant="outline" asChild>
-                <Link href="/contact">
-                  {dictionary.web.home.faq.cta}{' '}
-                  <PhoneCall className="h-4 w-4" />
-                </Link>
-              </Button>
             </div>
           </div>
         </div>
