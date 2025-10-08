@@ -117,6 +117,35 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+@theme {
+  /* 🔥 Brand colors */
+  --color-primary: oklch(0.68 0.21 45);          /* vivid orange */
+  --color-primary-light: oklch(0.78 0.18 50);
+  --color-primary-dark: oklch(0.56 0.18 40);
+
+  --color-secondary: oklch(0.70 0.16 220);       /* teal / sky blue */
+  --color-secondary-light: oklch(0.78 0.12 215);
+  --color-secondary-dark: oklch(0.60 0.17 230);
+
+  --color-bg: oklch(0.16 0.02 260);              /* deep navy background */
+  --color-bg-light: oklch(0.26 0.03 260);
+
+  --color-text: oklch(0.88 0.02 260);
+  --color-text-muted: oklch(0.72 0.03 260);
+  --color-text-highlight: oklch(1 0 0);          /* pure white */
+
+  --color-accent-yellow: oklch(0.88 0.14 100);   /* warm yellow highlights */
+  --color-accent-glow: oklch(0.84 0.17 95);
+
+  /* ✨ Shadows and gradients */
+  --shadow-glow: 0 0 12px oklch(0.84 0.17 95 / 0.4);
+  --shadow-neon: 0 0 18px oklch(0.70 0.16 220 / 0.6);
+
+  /* 🖋 Fonts */
+  --font-sans: "Inter", ui-sans-serif, system-ui;
+  --font-display: "Poppins", "Inter", ui-sans-serif;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

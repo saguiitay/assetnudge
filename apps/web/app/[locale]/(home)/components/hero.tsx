@@ -1,6 +1,7 @@
 import { Button } from '@workspace/ui/components/button';
 import { Badge } from '@workspace/ui/components/badge';
 import type { Dictionary } from '@repo/internationalization';
+import logo from '@repo/design-system/images/logo.webp';
 
 type HeroProps = {
   dictionary: Dictionary;
@@ -23,15 +24,18 @@ export const Hero = async ({ dictionary }: HeroProps) => (
             </p>
           </div>
           <div className="flex flex-row gap-4">
-            <Button size="lg" className="gap-4" variant="outline">
+            <Button size="lg" className="gap-4  bg-primary hover:bg-primary/80" variant="default">
               Optimize My Asset
             </Button>
-            <Button size="lg" className="gap-4">
+            <Button size="lg" className="gap-4 bg-secondary hover:bg-secondary/80" variant="default">
               Learn More
             </Button>
           </div>
         </div>
-        <div className="bg-muted rounded-md aspect-square"></div>
+        <div className="bg-muted rounded-md aspect-square">
+          <img src={logo.src} alt="Asset Nudge Logo" className="object-contain w-full h-full p-10" />
+
+        </div>
       </div>
     </div>
   </div>
