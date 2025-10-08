@@ -3,7 +3,7 @@
  * Provides heuristic scoring and evaluation for Unity Asset Store listings
  */
 
-import { daysBetween, clamp, zscore, jaccard, tokenize, countBullets } from './utils/utils';
+import { daysBetween, clamp, zscore, jaccard, tokenize, countBullets, isStopWord } from './utils/utils';
 import { Logger } from './utils/logger';
 import { AssetValidator } from './utils/validation';
 import { Asset, CategoryVocabulary, GraderConfig, GradeResult, PreparedContent, ScoreResult, ThresholdConfig, Vocabulary, WeightConfig } from './types';
@@ -305,10 +305,17 @@ export class AssetGrader {
       score.reasons.push(`Add ≥2 category keywords in title - currently ${titleOverlap}`);
     }
 
-    // Tag coverage
+    // Tag coverage - includes hierarchical category terms
     const assetTags = (asset.tags || []).map(x => String(x).toLowerCase());
     const topTags = (vocab.top_tags || []).slice(0, 30).map(x => x.t);
-    const tagCoverage = jaccard(assetTags, topTags);
+    
+    // Extract category hierarchy terms (e.g., "3D/Characters/Humanoids/Humans" -> ["3d", "characters", "humanoids", "humans"])
+    const categoryTerms = this.extractCategoryTerms(asset.category || '');
+    
+    // Combine top tags with category hierarchy terms for more comprehensive coverage
+    const combinedTags = [...new Set([...topTags, ...categoryTerms])];
+    
+    const tagCoverage = jaccard(assetTags, combinedTags);
     const tagCoverageOK = tagCoverage >= 0.35;
     
     if (tagCoverageOK) {
@@ -407,6 +414,19 @@ export class AssetGrader {
       bullet_count: { median: 6, mean: 6 },
       sample_size: 0
     };
+  }
+
+  /**
+   * Extract terms from hierarchical category path
+   * E.g., "3D/Characters/Humanoids/Humans" -> ["3d", "characters", "humanoids", "humans"]
+   */
+  private extractCategoryTerms(category: string): string[] {
+    if (!category) return [];
+    
+    return category
+      .split('/')
+      .map(term => term.trim().toLowerCase())
+      .filter(term => term.length > 0 && !isStopWord(term));
   }
 
   /**
