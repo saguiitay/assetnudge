@@ -19,6 +19,8 @@
  * - Recommendations and related products
  */
 
+import { Asset, AssetImage, AssetVideo } from "../types";
+
 // Types for GraphQL response structures
 interface MainImage {
   big?: string;
@@ -117,41 +119,6 @@ interface GraphQLRating {
 interface RatingBreakdown {
   count: string;
   value: string;
-}
-
-interface AssetImage {
-  imageUrl: string;
-  thumbnailUrl: string;
-}
-
-interface AssetVideo {
-  type: string;
-  imageUrl: string;
-  thumbnailUrl: string;
-}
-
-export interface Asset {
-  id: string;
-  url: string;
-  title: string;
-  short_description: string;
-  long_description: string;
-  tags: string[];
-  category: string;
-  price: number;
-  images_count: number;
-  videos_count: number;
-  rating: RatingBreakdown[];
-  reviews_count: number;
-  last_update: string | null;
-  publisher: string;
-  size: string | null;
-  version: string | null;
-  favorites: number;
-  publishNotes: string | null;
-  mainImage: MainImage | null;
-  images: AssetImage[];
-  videos: AssetVideo[];
 }
 
 interface GraphQLQuery {
@@ -425,6 +392,7 @@ function extractImagesArray(images: Image[] | undefined): AssetImage[] {
   return images
     .filter(img => img.type === 'screenshot')
     .map(img => ({
+      type: img.type,
       imageUrl: img.imageUrl,
       thumbnailUrl: img.thumbnailUrl
     }));
@@ -760,13 +728,19 @@ export async function scrapeAssetWithGraphQL(url: string): Promise<Asset> {
       videos_count: countVideos(product.images),
       rating: ratingArray, // Use rating array format
       reviews_count: reviewCount,
-      last_update: formatDate(product.currentVersion?.publishedDate || product.firstPublishedDate),
+      last_update: formatDate(product.currentVersion?.publishedDate || product.firstPublishedDate) || '',
       publisher: 'Unknown Publisher', // Not needed according to user
-      size: formatFileSize(product.downloadSize || ''),
+      size: formatFileSize(product.downloadSize || '') ?? '',
       version: product.currentVersion?.name || '',
       favorites: product.packageInListHotness || 0,
-      publishNotes: product.publishNotes || null,
-      mainImage: product.mainImage || null,
+      publishNotes: product.publishNotes || 'null',
+      mainImage: {
+        big: product.mainImage?.big || '',
+        facebook: product.mainImage?.facebook || '',
+        small: product.mainImage?.small || '',
+        icon: product.mainImage?.icon || '',
+        icon75: product.mainImage?.icon75 || ''
+      },
       images: extractImagesArray(product.images),
       videos: extractVideosArray(product.images)
     };

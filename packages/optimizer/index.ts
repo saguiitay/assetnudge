@@ -6,9 +6,9 @@
 import path from 'path';
 import UnityAssetOptimizer from './src/optimizer';
 import Config from './src/config';
-import { scrapeAssetWithGraphQL, Asset as GraphQLAsset } from './src/scrappers/graphql-scraper';
-import { Asset as ValidatorAsset, Vocabulary as ValidatorVocabulary, FileValidator } from './src/utils/validation';
-import { GradeResult, Vocabulary as TypesVocabulary } from './src/types';
+import { scrapeAssetWithGraphQL } from './src/scrappers/graphql-scraper';
+import { Vocabulary as ValidatorVocabulary, FileValidator } from './src/utils/validation';
+import { Asset, GradeResult, Vocabulary as TypesVocabulary } from './src/types';
 import { DynamicAssetGrader } from './src/dynamic-asset-grader';
 
 /**
@@ -19,7 +19,7 @@ export class OptimizerConfig extends Config {}
 /**
  * Scrape asset function wrapper (uses fallback strategy by default)
  */
-export async function scrapeAsset(url: string, config: { debug?: boolean; apiKey?: string } | null = null): Promise<{ success: true; asset: GraphQLAsset } | { success: false; error: string }> {
+export async function scrapeAsset(url: string, config: { debug?: boolean; apiKey?: string } | null = null): Promise<{ success: true; asset: Asset } | { success: false; error: string }> {
   // Convert config to args array if provided
   const args: string[] = [];
   if (config) {
@@ -47,7 +47,7 @@ export async function scrapeAsset(url: string, config: { debug?: boolean; apiKey
 /**
  * Scrape asset with GraphQL API (most reliable)
  */
-export async function scrapeAssetWithGraphQLAPI(url: string, config: { debug?: boolean } | null = null): Promise<{ success: true; asset: GraphQLAsset; method: 'graphql' } | { success: false; error: string }> {
+export async function scrapeAssetWithGraphQLAPI(url: string, config: { debug?: boolean } | null = null): Promise<{ success: true; asset: Asset; method: 'graphql' } | { success: false; error: string }> {
   const args: string[] = [];
   if (config) {
     if (config.debug) args.push('--debug', 'true');
@@ -74,7 +74,7 @@ export async function scrapeAssetWithGraphQLAPI(url: string, config: { debug?: b
 /**
  * Grade asset function wrapper
  */
-export async function gradeAsset(assetData: ValidatorAsset, vocabPath: string | null = null, config: { debug?: boolean } | null = null): Promise<{ grade: GradeResult }> {
+export async function gradeAsset(assetData: Asset, vocabPath: string | null = null, config: { debug?: boolean } | null = null): Promise<{ grade: GradeResult }> {
   const args: string[] = [];
   if (config && config.debug) args.push('--debug', 'true');
   
@@ -168,4 +168,4 @@ export {
 };
 
 // Re-export types
-export type { ValidatorAsset as Asset, GraphQLAsset as ScrapedAsset, TypesVocabulary as Vocabulary, GradeResult };
+export type { TypesVocabulary as Vocabulary, GradeResult };

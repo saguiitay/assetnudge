@@ -6,7 +6,7 @@
 import { Logger } from './logger';
 import { OFFICIAL_CATEGORIES } from '../config';
 import * as fs from 'fs';
-import { Asset } from 'src/types';
+import { Asset } from '../types';
 
 const logger = new Logger('validator');
 
@@ -82,10 +82,6 @@ export interface WeightConfig {
     tagcov: number;
     titlekw: number;
     pricez: number;
-  };
-  perf: {
-    cvr: number;
-    hv_lc_penalty: number;
   };
 }
 
@@ -306,7 +302,7 @@ export class ConfigValidator {
       throw new ValidationError('Weights must be a valid object');
     }
 
-    const requiredSections: (keyof WeightConfig)[] = ['content', 'media', 'trust', 'find', 'perf'];
+    const requiredSections: (keyof WeightConfig)[] = ['content', 'media', 'trust', 'find'];
     for (const section of requiredSections) {
       if (!weights[section] || typeof weights[section] !== 'object') {
         throw new ValidationError(`Weights must include '${section}' section`);

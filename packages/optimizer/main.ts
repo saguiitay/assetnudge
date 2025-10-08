@@ -15,12 +15,15 @@
  * - Performance optimizations
  * - Comprehensive configuration management
  * 
- * SCORING SYSTEM (0-100 points):
- * - Content (29 pts): Title, descriptions, structure, messaging
+ * SCORING SYSTEM (0-100 points, normalized):
+ * - Content (35 pts): Title, descriptions, structure, messaging
  * - Media (20 pts): Images, videos, visual demonstrations  
- * - Trust (15 pts): Ratings, reviews, update recency
+ * - Trust (19 pts): Ratings, reviews, update recency
  * - Findability (15 pts): SEO keywords, tags, pricing
- * - Performance (21 pts): Conversion rates, traffic quality
+ * 
+ * Raw scores are normalized to a 0-100 scale for consistent grading.
+ * Note: After removing performance grading, existing grading-rules.json files
+ * should be regenerated using build-grading-rules command.
  * 
  * Requirements:
  *   npm i openai@^4

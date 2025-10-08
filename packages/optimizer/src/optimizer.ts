@@ -39,7 +39,6 @@ import type {
   CategoryVocabulary,
   DynamicGradingRulesFile
 } from './types';
-import type { Asset as ValidatedAsset } from './utils/validation';
 
 /**
  * Configuration for optimization analysis
@@ -525,7 +524,7 @@ export class UnityAssetOptimizer {
           const dynamicGrader = new DynamicAssetGrader(this.config, gradingRules);
           
           // Grade with dynamic rules
-          grade = await dynamicGrader.gradeAsset(asset as unknown as ValidatedAsset, vocabulary);
+          grade = await dynamicGrader.gradeAsset(asset as unknown as Asset, vocabulary);
           gradingMethod = 'dynamic';
           
           this.logger.info('Used dynamic grading rules', {
@@ -535,12 +534,12 @@ export class UnityAssetOptimizer {
           
         } catch (error) {
           this.logger.warn('Failed to load dynamic rules, falling back to static grading', error as Error);
-          grade = await this.grader.gradeAsset(asset as unknown as ValidatedAsset, vocabulary);
+          grade = await this.grader.gradeAsset(asset as unknown as Asset, vocabulary);
           gradingMethod = 'static-fallback';
         }
       } else {
         // Use static grading
-        grade = await this.grader.gradeAsset(asset as unknown as ValidatedAsset, vocabulary);
+        grade = await this.grader.gradeAsset(asset as unknown as Asset, vocabulary);
       }
       
       this.logger.success('Asset graded', {
@@ -628,7 +627,7 @@ export class UnityAssetOptimizer {
       }
 
       // Perform grading
-      const grade = await this.grader.gradeAsset(asset as unknown as ValidatedAsset, vocabulary);
+      const grade = await this.grader.gradeAsset(asset as unknown as Asset, vocabulary);
       
       // Choose coaching strategy: exemplar-based (preferred) or legacy similarity
       let suggestions: HeuristicSuggestionsResult;
@@ -677,7 +676,7 @@ export class UnityAssetOptimizer {
         const corpus = await FileValidator.validateJSONFile(neighborsPath) as Asset[];
         this.logger.info('Corpus loaded for similarity analysis', { size: corpus.length });
         
-        similarAssets = await this.similarityEngine.findSimilarAssets(asset as unknown as ValidatedAsset, corpus as unknown as ValidatedAsset[], 5);
+        similarAssets = await this.similarityEngine.findSimilarAssets(asset as unknown as Asset, corpus as unknown as Asset[], 5);
         try {
           const tagSuggestions = this.heuristicEngine.suggestTags(asset, vocabulary);
           const titleSuggestions = this.heuristicEngine.suggestTitle(asset, vocabulary);
@@ -829,7 +828,7 @@ export class UnityAssetOptimizer {
             currentAsset: asset.title
           });
 
-          const grade = await this.grader.gradeAsset(asset as unknown as ValidatedAsset, vocabulary);
+          const grade = await this.grader.gradeAsset(asset as unknown as Asset, vocabulary);
           const suggestions = this.generateHeuristicSuggestions(asset, vocabulary);
           
           results.push({

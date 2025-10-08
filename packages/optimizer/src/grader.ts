@@ -29,11 +29,11 @@ export class AssetGrader {
 
   /**
    * Grades a Unity Asset Store listing using heuristic scoring
-   * Evaluates content quality, media presence, trust signals, discoverability, and performance
+   * Evaluates content quality, media presence, trust signals, and discoverability
    * 
    * @param asset - Asset data (title, descriptions, tags, stats, etc.)
    * @param vocab - Category vocabulary and statistics from buildVocabAndMedians()
-   * @returns Grade with score (0-100), letter grade (A-F), and detailed reasons
+   * @returns Grade with normalized score (0-100), letter grade (A-F), and detailed reasons
    */
   async gradeAsset(asset: Asset, vocab: Vocabulary): Promise<GradeResult> {
     return this.logger.time('gradeAsset', async () => {
@@ -58,31 +58,32 @@ export class AssetGrader {
       const mediaScore = this.scoreMedia(asset);
       const trustScore = this.scoreTrust(asset);
       const findabilityScore = this.scoreFindability(asset, categoryVocab);
-      const performanceScore = this.scorePerformance(asset);
 
       // Combine scores and generate grade
       const totalScore = contentScore.score + mediaScore.score + trustScore.score + 
-                        findabilityScore.score + performanceScore.score;
+                        findabilityScore.score;
+      
+      // Normalize score to 0-100 scale
+      const maxScore = this.getMaxScore();
+      const normalizedScore = (totalScore / maxScore) * 100;
       
       const letterGrade = this.calculateLetterGrade(totalScore);
       const allReasons = [
         ...contentScore.reasons,
         ...mediaScore.reasons,
         ...trustScore.reasons,
-        ...findabilityScore.reasons,
-        ...performanceScore.reasons
+        ...findabilityScore.reasons
       ];
 
       const result = {
-        score: Math.round(totalScore),
+        score: Math.round(normalizedScore),
         letter: letterGrade,
         reasons: allReasons,
         breakdown: {
           content: contentScore.score,
           media: mediaScore.score,
           trust: trustScore.score,
-          findability: findabilityScore.score,
-          performance: performanceScore.score
+          findability: findabilityScore.score
         }
       };
 
@@ -332,23 +333,17 @@ export class AssetGrader {
   }
 
   /**
-   * Score performance metrics (if available)
-   */
-  scorePerformance(asset: Asset): ScoreResult {
-    const score: ScoreResult = { score: 0, reasons: [] };
-    const w = this.weights.perf;
-
-    return score;
-  }
-
-  /**
    * Calculate letter grade from numeric score
    */
   calculateLetterGrade(score: number): 'A' | 'B' | 'C' | 'D' | 'F' {
-    if (score >= 85) return 'A';
-    if (score >= 70) return 'B';
-    if (score >= 55) return 'C';
-    if (score >= 40) return 'D';
+    // Normalize score to 0-100 scale based on maximum possible score
+    const maxScore = this.getMaxScore();
+    const normalizedScore = (score / maxScore) * 100;
+    
+    if (normalizedScore >= 85) return 'A';
+    if (normalizedScore >= 70) return 'B';
+    if (normalizedScore >= 55) return 'C';
+    if (normalizedScore >= 40) return 'D';
     return 'F';
   }
 
@@ -360,8 +355,7 @@ export class AssetGrader {
     return Object.values(w.content).reduce((a, b) => a + b, 0) +
            Object.values(w.media).reduce((a, b) => a + b, 0) +
            Object.values(w.trust).reduce((a, b) => a + b, 0) +
-           Object.values(w.find).reduce((a, b) => a + b, 0) +
-           Object.values(w.perf).reduce((a, b) => a + b, 0);
+           Object.values(w.find).reduce((a, b) => a + b, 0);
   }
 
   /**

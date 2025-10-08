@@ -5,13 +5,14 @@
 
 import { AssetGrader } from './grader';
 import { Logger } from './utils/logger';
-import { Asset as ValidatedAsset } from './utils/validation';
+import { calculateDetailedRating } from './utils/rating-analysis';
 import { 
   Vocabulary, 
   GradeResult, 
   CategoryRules,
   DynamicGradingRulesFile,
-  GraderConfig
+  GraderConfig,
+  Asset
 } from './types';
 
 const logger = new Logger('dynamic-grader');
@@ -34,6 +35,26 @@ export class DynamicAssetGrader {
       fallbackAvailable: !!dynamicRules.fallbackRules
     });
   }
+
+  /**
+   * Clean weights configuration to remove deprecated performance weights
+   * This ensures compatibility with older grading rules files
+   */
+  private cleanWeights(weights: any): any {
+    if (!weights || typeof weights !== 'object') {
+      return weights;
+    }
+    
+    const cleaned = { ...weights };
+    
+    // Remove performance weights if they exist (for backward compatibility)
+    if ('perf' in cleaned) {
+      delete cleaned.perf;
+      this.dynamicLogger.warn('Removed deprecated performance weights from dynamic rules');
+    }
+    
+    return cleaned;
+  }
   
   /**
    * Grade asset using dynamic rules for the asset's category
@@ -41,7 +62,7 @@ export class DynamicAssetGrader {
    * @param vocab - Category vocabulary
    * @returns Grade result with dynamic rule explanations
    */
-  async gradeAsset(asset: ValidatedAsset, vocab: Vocabulary): Promise<GradeResult> {
+  async gradeAsset(asset: Asset, vocab: Vocabulary): Promise<GradeResult> {
     return this.dynamicLogger.time('gradeAsset', async () => {
       // Get category-specific rules
       const categoryRules = this.getCategoryRules(asset.category);
@@ -58,12 +79,12 @@ export class DynamicAssetGrader {
       
       if (categoryRules) {
         graderConfig = {
-          weights: categoryRules.weights,
+          weights: this.cleanWeights(categoryRules.weights),
           thresholds: categoryRules.thresholds
         };
       } else if (this.dynamicRules.fallbackRules) {
         graderConfig = {
-          weights: this.dynamicRules.fallbackRules.weights,
+          weights: this.cleanWeights(this.dynamicRules.fallbackRules.weights),
           thresholds: this.dynamicRules.fallbackRules.thresholds
         };
       } else {
@@ -148,7 +169,7 @@ export class DynamicAssetGrader {
    */
   private enhanceGradeResult(
     result: GradeResult, 
-    asset: ValidatedAsset, 
+    asset: Asset, 
     categoryRules: CategoryRules | null
   ): GradeResult {
     const enhancedReasons = [...result.reasons];
@@ -168,7 +189,8 @@ export class DynamicAssetGrader {
       
       // Add benchmarking information
       const ratingBenchmark = categoryRules.benchmarks.rating.target;
-      const currentRating = asset.rating || 0;
+      const ratingData = calculateDetailedRating(asset.rating || []);
+      const currentRating = ratingData.averageRating;
       if (currentRating > 0) {
         if (currentRating >= ratingBenchmark) {
           enhancedReasons.push(
@@ -219,7 +241,7 @@ export class DynamicAssetGrader {
    * @returns Top importance category
    */
   private getTopWeightImportance(importance: any): string {
-    const categories = ['content', 'media', 'trust', 'findability', 'performance'];
+    const categories = ['content', 'media', 'trust', 'findability'];
     let topCategory = 'content';
     let topValue = 0;
     

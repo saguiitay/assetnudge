@@ -31,10 +31,6 @@ export interface WeightConfig {
     titlekw: number;
     pricez: number;
   };
-  perf: {
-    cvr: number;
-    hv_lc_penalty: number;
-  };
 }
 
 export interface ThresholdConfig {
@@ -112,8 +108,7 @@ export const DEFAULT_WEIGHTS: WeightConfig = {
   content: { title: 6, short: 6, long: 8, bullets: 7, cta: 3, uvp: 5 },
   media: { images: 8, video: 8, gif: 4 },
   trust: { freshness: 6, documentation: 3, completeness: 2, publishNotes: 1, rating: 4, reviews: 3 },
-  find: { tagcov: 7, titlekw: 5, pricez: 3 },
-  perf: { cvr: 10, hv_lc_penalty: 5 }
+  find: { tagcov: 7, titlekw: 5, pricez: 3 }
 };
 
 // Default content thresholds and limits
@@ -388,11 +383,10 @@ export class Config {
     const mediaTotal = Object.values(this.weights.media).reduce((a, b) => a + b, 0);
     const trustTotal = Object.values(this.weights.trust).reduce((a, b) => a + b, 0);
     const findTotal = Object.values(this.weights.find).reduce((a, b) => a + b, 0);
-    const perfTotal = Object.values(this.weights.perf).reduce((a, b) => a + b, 0);
 
-    const total = contentTotal + mediaTotal + trustTotal + findTotal + perfTotal;
-    if (total < 80 || total > 120) {
-      issues.push(`Scoring weights total ${total} is outside expected range 80-120`);
+    const total = contentTotal + mediaTotal + trustTotal + findTotal;
+    if (total < 60 || total > 100) {
+      issues.push(`Scoring weights total ${total} is outside expected range 60-100`);
     }
 
     return issues;

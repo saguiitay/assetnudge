@@ -26,7 +26,6 @@ interface GradeResult {
     media?: number;
     trust?: number;
     findability?: number;
-    performance?: number;
   };
   [key: string]: any;
 }
@@ -86,7 +85,6 @@ export function AssetGrade({ assetData, onRefresh, isLoading = false, error = nu
           media: typeof gradeData.breakdown?.media === 'number' && !isNaN(gradeData.breakdown.media) ? gradeData.breakdown.media : 0,
           trust: typeof gradeData.breakdown?.trust === 'number' && !isNaN(gradeData.breakdown.trust) ? gradeData.breakdown.trust : 0,
           findability: typeof gradeData.breakdown?.findability === 'number' && !isNaN(gradeData.breakdown.findability) ? gradeData.breakdown.findability : 0,
-          performance: typeof gradeData.breakdown?.performance === 'number' && !isNaN(gradeData.breakdown.performance) ? gradeData.breakdown.performance : 0,
         },
       };
 
@@ -264,15 +262,6 @@ export function AssetGrade({ assetData, onRefresh, isLoading = false, error = nu
                   <Progress value={getSafeScore(gradeResult.breakdown.findability)} className="h-2" />
                 </div>
 
-                <div className="space-y-1">
-                  <div className="flex justify-between text-sm">
-                    <span>Performance</span>
-                    <span className={getScoreColor(getSafeScore(gradeResult.breakdown.performance))}>
-                      {Math.round(getSafeScore(gradeResult.breakdown.performance))}%
-                    </span>
-                  </div>
-                  <Progress value={getSafeScore(gradeResult.breakdown.performance)} className="h-2" />
-                </div>
               </div>
             )}
 

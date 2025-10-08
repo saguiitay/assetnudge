@@ -5,8 +5,9 @@
 
 import { tfVector, cosine, TFVector } from './utils/utils';
 import { Logger } from './utils/logger';
-import { AssetValidator, Asset } from './utils/validation';
+import { AssetValidator } from './utils/validation';
 import { Config } from './config';
+import { Asset, AssetRating } from './types';
 
 const logger = new Logger('similarity');
 
@@ -18,7 +19,7 @@ export interface SimilarAsset {
   url: string;
   category?: string;
   price?: number;
-  rating?: number;
+  rating?: AssetRating[];
   overlap: number;
   shared_tags: string[];
   similarity_score: number;

@@ -32,6 +32,8 @@ export interface AssetMainImage {
  * Screenshot image data for an asset
  */
 export interface AssetImage {
+  /** type of the image */
+  type: string;
   /** URL for full-size image */
   imageUrl: string;
   /** URL for thumbnail image */
@@ -43,8 +45,11 @@ export interface AssetImage {
  */
 export interface AssetVideo
 {
-  title: string | undefined;
+  /** type of the video */
+  type: string;
+  /** URL for full-size video */
   imageUrl: string;
+  /** URL for thumbnail image */
   thumbnailUrl: string;
 }
 
@@ -136,10 +141,6 @@ export interface WeightConfig {
     tagcov: number;
     titlekw: number;
     pricez: number;
-  };
-  perf: {
-    cvr: number;
-    hv_lc_penalty: number;
   };
 }
 
@@ -270,7 +271,6 @@ export interface GradeBreakdown {
   media: number;
   trust: number;
   findability: number;
-  performance: number;
 }
 
 /**
@@ -373,7 +373,6 @@ export interface WeightImportance {
   media: number;
   trust: number;
   findability: number;
-  performance: number;
   /** Detailed content sub-weights */
   contentBreakdown: {
     title: number;

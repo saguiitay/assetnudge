@@ -5,8 +5,8 @@
 
 import { tokenize, median, meanStd, countBullets } from './utils/utils';
 import { Logger } from './utils/logger';
-import { AssetValidator, Asset } from './utils/validation';
-import { GraderConfig, CategoryVocabulary, Vocabulary, ThresholdConfig } from './types';
+import { AssetValidator } from './utils/validation';
+import { GraderConfig, CategoryVocabulary, Vocabulary, ThresholdConfig, Asset } from './types';
 
 const logger = new Logger('vocab');
 

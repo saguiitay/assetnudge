@@ -348,7 +348,6 @@ function analyzeWeightImportance(exemplars: any[]): WeightImportance {
     media: Math.round((Math.abs(mediaCorr) / total) * 30) || 25,   // 20-30% baseline
     trust: Math.round((Math.abs(trustCorr) / total) * 20) || 20,   // 15-20% baseline
     findability: 15, // Fixed for now
-    performance: 10, // Fixed for now
     contentBreakdown: {
       title: 30,
       shortDesc: 25,
