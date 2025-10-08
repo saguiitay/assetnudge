@@ -17,7 +17,7 @@ const App = async () => {
 
   return (
     <>
-      <Header pages={[]} page="Optimize Your Assets">
+      <Header pages={[]} page="Home">
         {/* {env.LIVEBLOCKS_SECRET && (
           <CollaborationProvider orgId={orgId}>
             <AvatarStack />

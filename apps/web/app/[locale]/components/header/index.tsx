@@ -23,6 +23,13 @@ type HeaderProps = {
   dictionary: Dictionary;
 };
 
+
+type SubNavItem = {
+  title: string;
+  href: string;
+}
+
+
 export const Header = ({ dictionary }: HeaderProps) => {
   const navigationItems = [
     {
@@ -44,6 +51,7 @@ export const Header = ({ dictionary }: HeaderProps) => {
       title: dictionary.web.header.features,
       href: '/#features',
       description: '',
+      items:[] as SubNavItem[]
     },
   ];
 

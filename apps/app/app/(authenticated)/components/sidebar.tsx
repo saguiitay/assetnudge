@@ -1,19 +1,13 @@
 'use client';
 
-import { OrganizationSwitcher, UserButton } from '@repo/auth/client';
+import { UserButton } from '@repo/auth/client';
+import Image from 'next/image';
 import { Button } from '@workspace/ui/components/button';
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@workspace/ui/components/collapsible';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@workspace/ui/components/dropdown-menu';
 import { ModeToggle } from '@workspace/ui/components/mode-toggle';
 import {
   Sidebar,
@@ -33,26 +27,16 @@ import {
   SidebarMenuSubItem,
   useSidebar,
 } from '@workspace/ui/components/sidebar';
-import { cn } from '@workspace/ui/lib/utils';
 import {
-  AnchorIcon,
   BookOpenIcon,
-  BotIcon,
   ChevronRightIcon,
-  FolderIcon,
-  FrameIcon,
   LifeBuoyIcon,
-  MapIcon,
-  MoreHorizontalIcon,
-  PieChartIcon,
   SendIcon,
-  Settings2Icon,
-  ShareIcon,
   SquareTerminalIcon,
-  Trash2Icon,
 } from 'lucide-react';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import logoSmall from '@repo/design-system/images/logo-small.webp';
 
 type GlobalSidebarProperties = {
   readonly children: ReactNode;
@@ -64,12 +48,12 @@ type SubNavItem = {
 }
 
 type NavItem = {
-      title: string;
-      url: string;
-      icon: any;
-      isActive: boolean;
-      items: SubNavItem[];
-    };
+  title: string;
+  url: string;
+  icon: any;
+  isActive: boolean;
+  items: SubNavItem[];
+};
 
 const data = {
   user: {
@@ -138,17 +122,33 @@ export const GlobalSidebar = ({ children }: GlobalSidebarProperties) => {
         <SidebarHeader>
           <SidebarMenu>
             <SidebarMenuItem>
-              <div
-                className={cn(
-                  'h-[36px] overflow-hidden transition-all [&>div]:w-full',
-                  sidebar.open ? '' : '-mx-1'
-                )}
-              >
-                <OrganizationSwitcher
-                  hidePersonal
-                  afterSelectOrganizationUrl="/"
-                />
-              </div>
+              <SidebarMenuButton size="lg" asChild>
+                {/* <div
+                  className={cn(
+                    'h-[36px] overflow-hidden transition-all [&>div]:w-full',
+                    sidebar.open ? '' : '-mx-1'
+                  )}
+                >
+                  <OrganizationSwitcher
+                    hidePersonal
+                    afterSelectOrganizationUrl="/"
+                  />
+                </div> */}
+                <a href="/">
+                  <div className="text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                    <Image
+                      src={logoSmall}
+                      alt="Logo"
+                      width={32}
+                      height={32}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-0.5 leading-none">
+                    <span className="font-medium">Asset Nudge</span>
+                    <span className="">v1.0.0</span>
+                  </div>
+                </a>
+              </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarHeader>
