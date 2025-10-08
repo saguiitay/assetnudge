@@ -305,23 +305,33 @@ export class AssetGrader {
       score.reasons.push(`Add ≥2 category keywords in title - currently ${titleOverlap}`);
     }
 
-    // Tag coverage - includes hierarchical category terms
-    const assetTags = (asset.tags || []).map(x => String(x).toLowerCase());
+    // Tag coverage - measures how well asset tags cover the category hierarchy
+    const assetTags = new Set((asset.tags || []).map(x => String(x).toLowerCase()));
     const topTags = (vocab.top_tags || []).slice(0, 30).map(x => x.t);
     
     // Extract category hierarchy terms (e.g., "3D/Characters/Humanoids/Humans" -> ["3d", "characters", "humanoids", "humans"])
     const categoryTerms = this.extractCategoryTerms(asset.category || '');
     
-    // Combine top tags with category hierarchy terms for more comprehensive coverage
-    const combinedTags = [...new Set([...topTags, ...categoryTerms])];
+    // Calculate category coverage: percentage of category terms present in asset tags
+    const categoryCoverage = categoryTerms.length > 0 
+      ? categoryTerms.filter(term => assetTags.has(term)).length / categoryTerms.length
+      : 0;
     
-    const tagCoverage = jaccard(assetTags, combinedTags);
+    // Calculate top tags coverage for fallback when no category terms exist
+    const topTagsCoverage = jaccard(Array.from(assetTags), topTags);
+    
+    // Use category coverage if available, otherwise fall back to top tags coverage
+    const tagCoverage = categoryTerms.length > 0 ? categoryCoverage : topTagsCoverage;
     const tagCoverageOK = tagCoverage >= 0.35;
     
     if (tagCoverageOK) {
       score.score += w.tagcov;
     } else {
-      score.reasons.push(`Increase tag coverage vs category - currently ${Math.round(tagCoverage * 100)}%`);
+      const missingTerms = categoryTerms.filter(term => !assetTags.has(term));
+      const coverageDetail = categoryTerms.length > 0 
+        ? `category coverage ${Math.round(tagCoverage * 100)}% (missing: ${missingTerms.join(', ')})`
+        : `tag coverage ${Math.round(tagCoverage * 100)}%`;
+      score.reasons.push(`Increase ${coverageDetail}`);
     }
 
     // Price outlier detection
