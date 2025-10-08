@@ -31,26 +31,10 @@ export function VideosGallery({ videos }: VideosGalleryProps) {
                   key={`video-thumb-${video.thumbnailUrl}-${index}`}
                   src={video.thumbnailUrl}
                   alt={video.title || `Video ${index + 1}`}
-                  enableRetry={true}
-                  maxRetries={2}
-                  onClick={() => {
-                    console.log('Opening video:', video.videoUrl);
-                    window.open(video.videoUrl, '_blank');
-                  }}
-                  placeholder={
-                    <div className="flex flex-col items-center gap-1 text-muted-foreground">
-                      <Video className="h-6 w-6" />
-                      <span className="text-xs">Video {index + 1}</span>
-                    </div>
-                  }
                 />
               ) : (
                 <div 
                   className="rounded-lg border bg-muted flex items-center justify-center w-full h-full cursor-pointer hover:bg-muted/80 transition-colors"
-                  onClick={() => {
-                    console.log('Opening video:', video.videoUrl);
-                    window.open(video.videoUrl, '_blank');
-                  }}
                 >
                   <div className="flex flex-col items-center gap-1 text-muted-foreground">
                     <Video className="h-6 w-6" />

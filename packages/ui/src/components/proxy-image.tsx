@@ -73,6 +73,10 @@ function getProxiedImageUrl(url: string): string {
 export interface ProxyImageProps extends Omit<React.ComponentProps<typeof Image>, 'src'> {
   /** Original image URL */
   src: string;
+  /** Image width */
+  width: number;
+  /** Image height */
+  height: number;
   /** Alternative image source if proxy fails */
   fallbackSrc?: string;
   /** Show loading state */
@@ -92,6 +96,8 @@ interface ImageState {
  */
 export function ProxyImage({
   src,
+  width,
+  height,
   fallbackSrc,
   showLoading = true,
   alt = '',
@@ -179,6 +185,8 @@ export function ProxyImage({
         {...imgProps}
         src={currentSrc}
         alt={alt}
+        width={width}
+        height={height}
         loading="lazy"
         onLoad={handleLoad}
         onError={handleError}

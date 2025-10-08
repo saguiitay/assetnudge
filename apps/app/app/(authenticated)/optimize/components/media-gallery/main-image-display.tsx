@@ -33,14 +33,6 @@ export function MainImageDisplay({ mainImage, title }: MainImageDisplayProps) {
             key={`main-${imageUrl}`}
             src={imageUrl!}
             alt={title || 'Asset main image'}
-            enableRetry={true}
-            maxRetries={2}
-            placeholder={
-              <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                <ImageIcon className="h-8 w-8" />
-                <span className="text-xs">Main Image</span>
-              </div>
-            }
           />
       </div>
     </div>

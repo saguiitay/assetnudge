@@ -33,25 +33,8 @@ export function ScreenshotsGallery({ images }: ScreenshotsGalleryProps) {
                   key={`screenshot-${displayUrl}-${index}`}
                   src={displayUrl}
                   alt={`Screenshot ${index + 1}`}
-                  enableRetry={true}
-                  maxRetries={2}
-                  onClick={() => {
-                    console.log('Opening full image:', image.imageUrl);
-                    window.open(image.imageUrl, '_blank');
-                  }}
-                  placeholder={
-                    <div className="flex flex-col items-center gap-1 text-muted-foreground">
-                      <ImageIcon className="h-6 w-6" />
-                      <span className="text-xs">Screenshot {index + 1}</span>
-                    </div>
-                  }
                 />
               </AspectRatio>
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 pointer-events-none">
-                <div className="bg-white/90 rounded-full p-2">
-                  <ImageIcon className="h-4 w-4 text-gray-700" />
-                </div>
-              </div>
             </div>
           );
         })}
