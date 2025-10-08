@@ -15,6 +15,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
+import { Asset } from '@repo/optimizer/src/types';
 
 interface GradeResult {
   score: number;
@@ -31,7 +32,7 @@ interface GradeResult {
 }
 
 interface AssetGradeProps {
-  assetData: any;
+  assetData: Asset | null;
   onRefresh?: () => void;
   isLoading?: boolean;
   error?: string | null;

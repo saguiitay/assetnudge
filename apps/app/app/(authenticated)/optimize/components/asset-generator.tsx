@@ -20,24 +20,15 @@ import {
   DollarSign,
   Archive
 } from 'lucide-react';
-
-interface AssetData {
-  title: string;
-  short_description: string;
-  long_description: string;
-  tags: string[];
-  category: string;
-  price: number;
-  size: number;
-}
+import { Asset } from '@repo/optimizer/src/types';
 
 interface AssetGeneratorProps {
-  currentAssetData: AssetData | null;
-  onGeneratedDataUpdate?: (generatedData: Partial<AssetData>) => void;
+  currentAssetData: Asset | null;
+  onGeneratedDataUpdate?: (generatedData: Partial<Asset>) => void;
 }
 
 interface GenerationOption {
-  key: keyof AssetData;
+  key: keyof Asset;
   label: string;
   description: string;
   icon: React.ReactNode;
@@ -86,10 +77,10 @@ export function AssetGenerator({ currentAssetData, onGeneratedDataUpdate }: Asse
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationError, setGenerationError] = useState<string | null>(null);
   const [generationSuccess, setGenerationSuccess] = useState<string | null>(null);
-  const [selectedFields, setSelectedFields] = useState<Set<keyof AssetData>>(new Set());
-  const [lastGenerated, setLastGenerated] = useState<Partial<AssetData> | null>(null);
+  const [selectedFields, setSelectedFields] = useState<Set<keyof Asset>>(new Set());
+  const [lastGenerated, setLastGenerated] = useState<Partial<Asset> | null>(null);
 
-  const toggleField = (field: keyof AssetData) => {
+  const toggleField = (field: keyof Asset) => {
     const newSelected = new Set(selectedFields);
     if (newSelected.has(field)) {
       newSelected.delete(field);
@@ -152,7 +143,7 @@ export function AssetGenerator({ currentAssetData, onGeneratedDataUpdate }: Asse
       const generatedData = result.optimizedAsset || result.generated || {};
       
       // Validate and sanitize the generated data
-      const sanitizedData: Partial<AssetData> = {};
+      const sanitizedData: Partial<Asset> = {};
       
       if (generatedData.title && typeof generatedData.title === 'string') {
         sanitizedData.title = generatedData.title.slice(0, 100);

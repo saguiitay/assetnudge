@@ -5,8 +5,8 @@
 
 import { daysBetween, clamp, zscore, jaccard, tokenize, countBullets } from './utils/utils';
 import { Logger } from './utils/logger';
-import { AssetValidator, Asset } from './utils/validation';
-import { CategoryVocabulary, GraderConfig, GradeResult, PreparedContent, ScoreResult, ThresholdConfig, Vocabulary, WeightConfig } from './types';
+import { AssetValidator } from './utils/validation';
+import { Asset, CategoryVocabulary, GraderConfig, GradeResult, PreparedContent, ScoreResult, ThresholdConfig, Vocabulary, WeightConfig } from './types';
 // Note: VocabularyBuilder is imported from the .mjs file for now
 
 const logger = new Logger('grader');
@@ -275,9 +275,9 @@ export class AssetGrader {
     }
 
     // Version information - users can control this
-    const hasVersion = asset.version && asset.version.trim().length > 0;
-    if (hasVersion) {
-      score.score += w.version;
+    const hasPublishNotes = asset.publishNotes && asset.publishNotes.trim().length > 0;
+    if (hasPublishNotes) {
+      score.score += w.publishNotes;
     } else {
       score.reasons.push('Add version information');
     }
@@ -337,22 +337,6 @@ export class AssetGrader {
   scorePerformance(asset: Asset): ScoreResult {
     const score: ScoreResult = { score: 0, reasons: [] };
     const w = this.weights.perf;
-
-    if (asset.stats && typeof asset.stats.conversion === 'number') {
-      const cvr = asset.stats.conversion;
-      const medianCVR = 0.004; // Typical median conversion rate
-      const ratio = cvr / medianCVR;
-      
-      // Scale conversion rate performance
-      const cvrScore = clamp((ratio - 0.5) / 0.5 * w.cvr, 0, w.cvr);
-      score.score += cvrScore;
-
-      // Penalty for high views but low conversion
-      if (asset.stats.pageviews && asset.stats.pageviews > 1000 && cvr < medianCVR * 0.5) {
-        score.score -= w.hv_lc_penalty;
-        score.reasons.push('High views but low conversion');
-      }
-    }
 
     return score;
   }

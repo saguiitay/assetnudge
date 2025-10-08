@@ -20,7 +20,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -183,7 +183,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -347,7 +347,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -510,7 +510,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -674,7 +674,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -838,7 +838,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -1001,7 +1001,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -1165,7 +1165,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -1329,7 +1329,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -1492,7 +1492,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -1655,7 +1655,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -1818,7 +1818,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -1981,7 +1981,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -2145,7 +2145,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -2309,7 +2309,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -2473,7 +2473,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -2637,7 +2637,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -2800,7 +2800,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -2964,7 +2964,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -3128,7 +3128,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -3292,7 +3292,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -3456,7 +3456,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -3620,7 +3620,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -3784,7 +3784,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -3948,7 +3948,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -4112,7 +4112,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -4276,7 +4276,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -4439,7 +4439,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -4603,7 +4603,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -4766,7 +4766,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -4930,7 +4930,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -5093,7 +5093,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -5257,7 +5257,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -5421,7 +5421,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -5585,7 +5585,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -5746,7 +5746,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -5910,7 +5910,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -6073,7 +6073,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -6236,7 +6236,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -6400,7 +6400,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -6563,7 +6563,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -6727,7 +6727,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -6890,7 +6890,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -7053,7 +7053,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -7216,7 +7216,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -7379,7 +7379,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -7542,7 +7542,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -7703,7 +7703,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -7867,7 +7867,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -8031,7 +8031,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -8194,7 +8194,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -8357,7 +8357,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -8521,7 +8521,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -8685,7 +8685,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -8849,7 +8849,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -9013,7 +9013,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -9176,7 +9176,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -9339,7 +9339,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -9503,7 +9503,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -9667,7 +9667,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -9831,7 +9831,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -9995,7 +9995,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -10159,7 +10159,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -10323,7 +10323,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -10487,7 +10487,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -10651,7 +10651,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -10812,7 +10812,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -10976,7 +10976,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -11139,7 +11139,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 4
         },
@@ -11302,7 +11302,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -11466,7 +11466,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -11630,7 +11630,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -11794,7 +11794,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -11958,7 +11958,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -12121,7 +12121,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -12285,7 +12285,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -12449,7 +12449,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -12613,7 +12613,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -12777,7 +12777,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -12940,7 +12940,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -13101,7 +13101,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -13265,7 +13265,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -13426,7 +13426,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -13590,7 +13590,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -13753,7 +13753,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -13914,7 +13914,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -14078,7 +14078,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -14242,7 +14242,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -14406,7 +14406,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -14569,7 +14569,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -14733,7 +14733,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -14897,7 +14897,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -15060,7 +15060,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -15221,7 +15221,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -15384,7 +15384,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -15548,7 +15548,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -15711,7 +15711,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -15874,7 +15874,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -16038,7 +16038,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -16201,7 +16201,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -16365,7 +16365,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -16528,7 +16528,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -16692,7 +16692,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -16855,7 +16855,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -17018,7 +17018,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -17181,7 +17181,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -17345,7 +17345,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -17508,7 +17508,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -17672,7 +17672,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -17836,7 +17836,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -18000,7 +18000,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -18163,7 +18163,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -18327,7 +18327,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -18490,7 +18490,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -18654,7 +18654,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -18817,7 +18817,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -18981,7 +18981,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -19144,7 +19144,7 @@
           "freshness": 6,
           "documentation": 3,
           "completeness": 2,
-          "version": 1,
+          "publishNotes": 1,
           "rating": 4,
           "reviews": 3
         },
@@ -19320,7 +19320,7 @@
         "freshness": 6,
         "documentation": 3,
         "completeness": 2,
-        "version": 1,
+        "publishNotes": 1,
         "rating": 4,
         "reviews": 3
       },

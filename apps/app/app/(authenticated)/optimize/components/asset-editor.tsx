@@ -24,6 +24,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { AssetMediaGallery } from './media-gallery';
 import { X, Download, AlertCircle, CheckCircle, ShoppingCart } from 'lucide-react';
 import { EditorProvider, EditorBubbleMenu, EditorFormatBold, EditorFormatItalic, EditorLinkSelector, EditorNodeBulletList, EditorNodeOrderedList, type JSONContent, type Editor } from '@workspace/ui/components/kibo-ui/editor';
+import { Asset, AssetImage, AssetMainImage, AssetVideo } from '@repo/optimizer/src/types';
 
 // JSON validation function for Kibo UI editor output
 const validateEditorContent = (content: any) => {
@@ -73,7 +74,7 @@ const assetSchema = z.object({
   size: z.number().min(0, 'Size must be non-negative'),
   // Additional display-only fields
   rating: z.number().min(0).max(5).optional(),
-  rating_count: z.number().min(0).optional(),
+  reviews_count: z.number().min(0).optional(),
   favorites: z.number().min(0).optional(),
   images_count: z.number().min(0).optional(),
   videos_count: z.number().min(0).optional(),
@@ -99,7 +100,7 @@ const assetSchema = z.object({
 type AssetFormData = z.infer<typeof assetSchema>;
 
 interface AssetEditorProps {
-  onAssetUpdate?: (assetData: AssetFormData) => void;
+  onAssetUpdate?: (assetData: Asset) => void;
   onAssetClear?: () => void;
 }
 
@@ -110,7 +111,7 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
   const [isBatchUpdating, setIsBatchUpdating] = useState(false);
   const [importError, setImportError] = useState<string | null>(null);
   const [importSuccess, setImportSuccess] = useState(false);
-  const [importedData, setImportedData] = useState<any>(null);
+  const [importedData, setImportedData] = useState<Asset | undefined>(undefined);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
   const form = useForm<AssetFormData>({
@@ -124,7 +125,7 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
       price: 0,
       size: 0,
       rating: 0,
-      rating_count: 0,
+      reviews_count: 0,
       favorites: 0,
       images_count: 0,
       videos_count: 0,
@@ -150,7 +151,13 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
       
       // Debounce the update to avoid excessive API calls
       const timeoutId = setTimeout(() => {
-        onAssetUpdate?.(watchedValues as AssetFormData);
+        onAssetUpdate?.({ 
+          ...importedData, 
+          title: watchedValues.title,
+          short_description: watchedValues.short_description,
+          long_description: watchedValues.long_description,
+          tags: watchedValues.tags,
+        } as Asset);
       }, 500); // Wait 500ms after user stops typing
       
       return () => clearTimeout(timeoutId);
@@ -188,7 +195,7 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
     setImportUrl('');
     setImportError(null);
     setImportSuccess(false);
-    setImportedData(null);
+    setImportedData(undefined);
     setIsImportModalOpen(false);
     setIsBatchUpdating(false);
     onAssetClear?.();
@@ -203,7 +210,7 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
       price: 0,
       size: 0,
       rating: 0,
-      rating_count: 0,
+      reviews_count: 0,
       favorites: 0,
       images_count: 0,
       videos_count: 0,
@@ -233,7 +240,7 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
     setIsImporting(true);
     setImportError(null);
     setImportSuccess(false);
-    setImportedData(null);
+    setImportedData(undefined);
 
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
@@ -269,7 +276,7 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
       setIsBatchUpdating(true);
 
       // Process the asset data first
-      const asset = result.asset;
+      const asset = result.asset as Asset;
       
       // Handle long description - preserve HTML and clean up for Tiptap editor
       let processedLongDescription = '';
@@ -358,8 +365,8 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
         if (typeof asset.size === 'string') {
           const sizeMatch = asset.size.match(/([\d.]+)\s*(KB|MB|GB)/i);
           if (sizeMatch) {
-            const value = parseFloat(sizeMatch[1]);
-            const unit = sizeMatch[2].toLowerCase();
+            const value = parseFloat(sizeMatch[1]!);
+            const unit = sizeMatch[2]!.toLowerCase();
             switch (unit) {
               case 'kb': processedSize = value / 1024; break;
               case 'mb': processedSize = value; break;
@@ -382,7 +389,7 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
         price: (typeof asset.price === 'number') ? asset.price : 0,
         size: processedSize,
         rating: (typeof asset.rating === 'number') ? asset.rating : 0,
-        rating_count: (typeof asset.rating_count === 'number') ? asset.rating_count : 0,
+        reviews_count: asset.reviews_count ?? 0,
         favorites: (typeof asset.favorites === 'number') ? asset.favorites : 0,
         images_count: (typeof asset.images_count === 'number') ? asset.images_count : 0,
         videos_count: (typeof asset.videos_count === 'number') ? asset.videos_count : 0,
@@ -400,8 +407,8 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
       setIsBatchUpdating(false);
       
       // Trigger grading with the complete form data
-      const formData = form.getValues();
-      onAssetUpdate?.(formData);
+      //const formData = form.getValues();
+      onAssetUpdate?.(asset);
       
       // Keep the URL for reference but don't clear it immediately
     } catch (error) {
@@ -642,7 +649,7 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
                 </div>
                 <div>
                   <span className="text-muted-foreground">Reviews:</span>
-                  <div className="font-medium">{form.watch('rating_count') || 0}</div>
+                  <div className="font-medium">{form.watch('reviews_count') || 0}</div>
                 </div>
                 <div>
                   <span className="text-muted-foreground">Favorites:</span>

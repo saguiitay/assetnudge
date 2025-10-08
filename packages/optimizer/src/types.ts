@@ -43,6 +43,7 @@ export interface AssetImage {
  */
 export interface AssetVideo
 {
+  title: string | undefined;
   imageUrl: string;
   thumbnailUrl: string;
 }
@@ -83,10 +84,12 @@ export interface Asset {
   size: string;
   /** Asset version string */
   version: string;
+  /** Asset version information HTML string */
+  publishNotes: string;
   /** Number of users who favorited this asset */
   favorites: number;
   /** Main promotional images in various sizes */
-  mainImage: AssetMainImage;
+  mainImage: AssetMainImage | undefined;
   /** Array of screenshot images */
   images: AssetImage[];
   /** Array of video previews */
@@ -125,7 +128,7 @@ export interface WeightConfig {
     freshness: number;
     documentation: number;
     completeness: number;
-    version: number;
+    publishNotes: number;
     rating: number;
     reviews: number;
   };

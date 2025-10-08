@@ -16,6 +16,7 @@
     "@repo/design-system": "*",
     "@repo/internationalization": "*",
     "@repo/next-config": "*",
+    "@repo/optimizer": "^2.0.0",
     "@repo/seo": "*",
     "@t3-oss/env-nextjs": "^0.13.8",
     "@workspace/ui": "*",

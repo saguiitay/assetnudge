@@ -6,6 +6,7 @@
 import { Logger } from './logger';
 import { OFFICIAL_CATEGORIES } from '../config';
 import * as fs from 'fs';
+import { Asset } from 'src/types';
 
 const logger = new Logger('validator');
 
@@ -23,34 +24,6 @@ export class ValidationError extends Error {
     this.value = value;
   }
 }
-
-/**
- * Asset interface for type safety
- */
-export interface Asset {
-  title: string;
-  price?: number;
-  images_count?: number;
-  videos_count?: number;
-  rating?: number;
-  reviews_count?: number;
-  tags?: string[];
-  last_update?: string | Date;
-  stats?: AssetStats;
-  [key: string]: any;
-}
-
-/**
- * Asset stats interface
- */
-export interface AssetStats {
-  pageviews?: number;
-  sales?: number;
-  downloads?: number;
-  conversion?: number;
-  [key: string]: any;
-}
-
 /**
  * Vocabulary interface
  */
@@ -123,7 +96,7 @@ export class AssetValidator {
   /**
    * Validate basic asset structure
    */
-  static validateAsset(asset: any): boolean {
+  static validateAsset(asset: Asset): boolean {
     const errors: string[] = [];
 
     if (!asset || typeof asset !== 'object') {
@@ -136,7 +109,7 @@ export class AssetValidator {
     }
 
     // Validate optional numeric fields
-    const numericFields: (keyof Asset)[] = ['price', 'images_count', 'videos_count', 'rating', 'reviews_count'];
+    const numericFields: (keyof Asset)[] = ['price', 'images_count', 'videos_count', 'reviews_count'];
     for (const field of numericFields) {
       if (asset[field] !== undefined && asset[field] !== null) {
         if (typeof asset[field] !== 'number' || isNaN(asset[field] as number) || (asset[field] as number) < 0) {
@@ -165,22 +138,6 @@ export class AssetValidator {
         const date = new Date(asset[field] as string | Date);
         if (isNaN(date.getTime())) {
           errors.push(`${field} must be a valid date`);
-        }
-      }
-    }
-
-    // Validate stats object if present
-    if (asset.stats) {
-      if (typeof asset.stats !== 'object') {
-        errors.push('stats must be an object');
-      } else {
-        const statsFields: (keyof AssetStats)[] = ['pageviews', 'sales', 'downloads', 'conversion'];
-        for (const field of statsFields) {
-          if (asset.stats[field] !== undefined && asset.stats[field] !== null) {
-            if (typeof asset.stats[field] !== 'number' || isNaN(asset.stats[field] as number) || (asset.stats[field] as number) < 0) {
-              errors.push(`stats.${field} must be a non-negative number`);
-            }
-          }
         }
       }
     }

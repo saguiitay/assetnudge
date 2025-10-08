@@ -148,6 +148,7 @@ export interface Asset {
   size: string | null;
   version: string | null;
   favorites: number;
+  publishNotes: string | null;
   mainImage: MainImage | null;
   images: AssetImage[];
   videos: AssetVideo[];
@@ -762,8 +763,9 @@ export async function scrapeAssetWithGraphQL(url: string): Promise<Asset> {
       last_update: formatDate(product.currentVersion?.publishedDate || product.firstPublishedDate),
       publisher: 'Unknown Publisher', // Not needed according to user
       size: formatFileSize(product.downloadSize || ''),
-      version: product.currentVersion?.name || extractVersionFromSupportedVersions(product.supportedUnityVersions || []),
+      version: product.currentVersion?.name || '',
       favorites: product.packageInListHotness || 0,
+      publishNotes: product.publishNotes || null,
       mainImage: product.mainImage || null,
       images: extractImagesArray(product.images),
       videos: extractVideosArray(product.images)

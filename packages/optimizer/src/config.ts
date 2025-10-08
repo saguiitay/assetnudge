@@ -22,7 +22,7 @@ export interface WeightConfig {
     freshness: number;
     documentation: number;
     completeness: number;
-    version: number;
+    publishNotes: number;
     rating: number;
     reviews: number;
   };
@@ -111,7 +111,7 @@ export interface OpenAIClientConfig {
 export const DEFAULT_WEIGHTS: WeightConfig = {
   content: { title: 6, short: 6, long: 8, bullets: 7, cta: 3, uvp: 5 },
   media: { images: 8, video: 8, gif: 4 },
-  trust: { freshness: 6, documentation: 3, completeness: 2, version: 1, rating: 4, reviews: 3 },
+  trust: { freshness: 6, documentation: 3, completeness: 2, publishNotes: 1, rating: 4, reviews: 3 },
   find: { tagcov: 7, titlekw: 5, pricez: 3 },
   perf: { cvr: 10, hv_lc_penalty: 5 }
 };

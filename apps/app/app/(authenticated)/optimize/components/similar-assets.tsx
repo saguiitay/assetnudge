@@ -21,16 +21,7 @@ import {
   Archive,
   Tag
 } from 'lucide-react';
-
-interface AssetData {
-  title: string;
-  short_description: string;
-  long_description: string;
-  tags: string[];
-  category: string;
-  price: number;
-  size: number;
-}
+import { Asset } from '@repo/optimizer/src/types';
 
 interface SimilarAsset {
   id: string;
@@ -50,7 +41,7 @@ interface SimilarAsset {
 }
 
 interface SimilarAssetsProps {
-  currentAssetData: AssetData | null;
+  currentAssetData: Asset | null;
 }
 
 export function SimilarAssets({ currentAssetData }: SimilarAssetsProps) {
@@ -95,7 +86,7 @@ export function SimilarAssets({ currentAssetData }: SimilarAssetsProps) {
   }, [currentAssetData]);
 
   // Generate mock similar assets based on current asset data
-  const generateMockSimilarAssets = (assetData: AssetData): SimilarAsset[] => {
+  const generateMockSimilarAssets = (assetData: Asset): SimilarAsset[] => {
     const baseAssets = [
       {
         id: '1',

@@ -9,43 +9,33 @@ import { SimilarAssets } from './components/similar-assets';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@workspace/ui/components/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@workspace/ui/components/card';
 import { Separator } from '@workspace/ui/components/separator';
-import { Badge } from '@workspace/ui/components/badge';
 import { FileText, Sparkles, Search, BarChart3 } from 'lucide-react';
-
-interface AssetData {
-  title: string;
-  short_description: string;
-  long_description: string;
-  tags: string[];
-  category: string;
-  price: number;
-  size: number;
-}
+import { Asset } from '@repo/optimizer/src/types';
 
 const App = () => {
-  const [currentAssetData, setCurrentAssetData] = useState<AssetData | null>(null);
+  const [currentAssetData, setCurrentAssetData] = useState<Asset | null>(null);
   const [showGrade, setShowGrade] = useState(false);
   const [gradeKey, setGradeKey] = useState(0); // Force re-render of grade component
   const [activeTab, setActiveTab] = useState('input');
 
-  const handleAssetUpdate = (assetData: AssetData) => {
+  const handleAssetUpdate = (assetData: Asset) => {
     setCurrentAssetData(assetData);
     setShowGrade(true);
-    // Trigger grade re-calculation when asset data changes
-    setGradeKey(prev => prev + 1);
+    // Only increment gradeKey if the asset data actually changed significantly
+    // This prevents unnecessary re-mounts of the AssetGrade component
   };
 
   const handleAssetClear = () => {
     setCurrentAssetData(null);
     setShowGrade(false);
-    setGradeKey(prev => prev + 1);
+    setGradeKey(prev => prev + 1); // Force re-render when clearing
   };
 
-  const handleGeneratedDataUpdate = (generatedData: Partial<AssetData>) => {
+  const handleGeneratedDataUpdate = (generatedData: Partial<Asset>) => {
     if (currentAssetData) {
       const updatedData = { ...currentAssetData, ...generatedData };
       setCurrentAssetData(updatedData);
-      setGradeKey(prev => prev + 1);
+      // Let the AssetGrade component handle re-grading based on assetData changes
     }
   };
 
@@ -138,10 +128,10 @@ const App = () => {
             
             <Separator />
             
-            <AssetGenerator 
+            {/* <AssetGenerator 
               currentAssetData={currentAssetData}
               onGeneratedDataUpdate={handleGeneratedDataUpdate}
-            />
+            /> */}
           </div>
           
           {/* Right Column - Results & Analysis */}
@@ -157,9 +147,9 @@ const App = () => {
                 
                 <Separator />
                 
-                <SimilarAssets 
+                {/* <SimilarAssets 
                   currentAssetData={currentAssetData}
-                />
+                /> */}
               </>
             ) : (
               <>
