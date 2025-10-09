@@ -432,7 +432,6 @@ export interface CategoryRules {
   successPatterns: string[];
   /** Generation metadata */
   metadata: {
-    generatedAt: string;
     exemplarCount: number;
     avgQualityScore: number;
     avgRatingQuality: number;
@@ -456,7 +455,6 @@ export interface DynamicGradingRulesFile {
   rules: DynamicGradingRules;
   /** Global metadata */
   metadata: {
-    generatedAt: string;
     sourceExemplars: string;
     totalCategories: number;
     totalExemplars: number;

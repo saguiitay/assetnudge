@@ -192,7 +192,6 @@ interface CategoryPlaybook {
   summary: {
     exemplarCount: number;
     averageQualityScore: number;
-    lastUpdated: string;
   };
   recommendations: PlaybookRecommendations;
   topExemplars: ExemplarStrength[];
@@ -757,7 +756,6 @@ export function generateCategoryPlaybook(category: string, patterns: CategoryPat
         summary: {
             exemplarCount: exemplars.length,
             averageQualityScore: patterns.metadata.averageQualityScore,
-            lastUpdated: patterns.metadata.extractedAt
         },
         recommendations: {
             title: {

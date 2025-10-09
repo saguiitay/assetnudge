@@ -65,7 +65,6 @@ export function extractGradingRules(
   const rulesFile: DynamicGradingRulesFile = {
     rules,
     metadata: {
-      generatedAt: new Date().toISOString(),
       sourceExemplars: exemplarsData.metadata?.corpusSize?.toString() || 'unknown',
       totalCategories: Object.keys(rules).length,
       totalExemplars,
@@ -119,7 +118,6 @@ function generateCategoryRules(
   
   // Calculate metadata
   const metadata = {
-    generatedAt: new Date().toISOString(),
     exemplarCount: sampleSize,
     avgQualityScore: exemplars.reduce((sum, e) => sum + (e.qualityScore || 0), 0) / sampleSize,
     avgRatingQuality: exemplars.reduce((sum, e) => sum + (e._ratingAnalysis?.ratingQuality || 0), 0) / sampleSize,
