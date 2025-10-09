@@ -102,6 +102,17 @@ export function PromptHoverCard({
       <HoverCardContent className="w-80">
         <div className="space-y-2">
           <h4 className="text-sm font-semibold">AI Prompt for {fieldName}</h4>
+          {prompt && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => copyToClipboard(prompt)}
+              className="w-full gap-2 h-6 text-xs"
+            >
+              <Copy className="h-3 w-3" />
+              Copy Prompt
+            </Button>
+          )}
           {isLoading ? (
             <div className="text-xs text-muted-foreground flex items-center gap-2">
               <RefreshCw className="h-3 w-3 animate-spin" />

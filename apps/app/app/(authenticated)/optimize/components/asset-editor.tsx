@@ -25,6 +25,7 @@ import { X, Download, AlertCircle, CheckCircle, ShoppingCart, Sparkles, RefreshC
 import { EditorProvider, EditorBubbleMenu, EditorFormatBold, EditorFormatItalic, EditorLinkSelector, EditorNodeBulletList, EditorNodeOrderedList, type JSONContent, type Editor } from '@workspace/ui/components/kibo-ui/editor';
 import { Asset } from '@repo/optimizer/src/types';
 import { PromptHoverCard } from './prompt-hover-card';
+import { GenerateButton } from './generate-button';
 
 // JSON validation function for Kibo UI editor output
 const validateEditorContent = (content: any) => {
@@ -697,21 +698,13 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
                     <FormControl>
                       <div className="flex gap-2">
                         <Input placeholder="Enter asset title" {...field} className="flex-1" />
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => generateField('title')}
-                          disabled={Object.values(isGenerating).some(Boolean)}
-                          className="gap-2 whitespace-nowrap"
-                        >
-                          {isGenerating.title ? (
-                            <RefreshCw className="h-3 w-3 animate-spin" />
-                          ) : (
-                            <Sparkles className="h-3 w-3" />
-                          )}
-                          Generate
-                        </Button>
+                        <GenerateButton
+                          fieldKey="title"
+                          size='icon'
+                          isGenerating={isGenerating.title || false}
+                          isDisabled={Object.values(isGenerating).some(Boolean)}
+                          onGenerate={generateField}
+                        />
                       </div>
                     </FormControl>
                     <FormMessage />
@@ -748,21 +741,12 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
                         getCurrentAssetData={getCurrentAssetData}
                       />
                     </div>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => generateField('short_description')}
-                      disabled={Object.values(isGenerating).some(Boolean) || !form.watch('title')}
-                      className="gap-2 h-6 text-xs"
-                    >
-                      {isGenerating.short_description ? (
-                        <RefreshCw className="h-3 w-3 animate-spin" />
-                      ) : (
-                        <Sparkles className="h-3 w-3" />
-                      )}
-                      Generate
-                    </Button>
+                    <GenerateButton
+                      fieldKey="short_description"
+                      isGenerating={isGenerating.short_description || false}
+                      isDisabled={Object.values(isGenerating).some(Boolean) || !form.watch('title')}
+                      onGenerate={generateField}
+                    />
                   </FormLabel>
                   <FormControl>
                     <Textarea
@@ -793,21 +777,12 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
                         getCurrentAssetData={getCurrentAssetData}
                       />
                     </div>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => generateField('long_description')}
-                      disabled={Object.values(isGenerating).some(Boolean) || !form.watch('title')}
-                      className="gap-2 h-6 text-xs"
-                    >
-                      {isGenerating.long_description ? (
-                        <RefreshCw className="h-3 w-3 animate-spin" />
-                      ) : (
-                        <Sparkles className="h-3 w-3" />
-                      )}
-                      Generate
-                    </Button>
+                    <GenerateButton
+                      fieldKey="long_description"
+                      isGenerating={isGenerating.long_description || false}
+                      isDisabled={Object.values(isGenerating).some(Boolean) || !form.watch('title')}
+                      onGenerate={generateField}
+                    />
                   </FormLabel>
                   <FormControl>
                     <div className="space-y-2">
@@ -861,21 +836,12 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
                     getCurrentAssetData={getCurrentAssetData}
                   />
                 </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => generateField('tags')}
-                  disabled={Object.values(isGenerating).some(Boolean) || !form.watch('title')}
-                  className="gap-2 h-6 text-xs"
-                >
-                  {isGenerating.tags ? (
-                    <RefreshCw className="h-3 w-3 animate-spin" />
-                  ) : (
-                    <Sparkles className="h-3 w-3" />
-                  )}
-                  Generate
-                </Button>
+                <GenerateButton
+                  fieldKey="tags"
+                  isGenerating={isGenerating.tags || false}
+                  isDisabled={Object.values(isGenerating).some(Boolean) || !form.watch('title')}
+                  onGenerate={generateField}
+                />
               </div>
               <div className="flex gap-2">
                 <Input
