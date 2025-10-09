@@ -545,7 +545,7 @@
       "max": 122.8679744089703
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:48.000Z",
+    "extraction_date": "2025-10-09T14:46:56.541Z",
     "top_exemplar_score": 122.8679744089703,
     "has_video_percentage": 0.21978021978021978,
     "common_structures": {
@@ -1270,7 +1270,7 @@
       "max": 122.54517744447956
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:48.084Z",
+    "extraction_date": "2025-10-09T14:46:56.636Z",
     "top_exemplar_score": 122.54517744447956,
     "has_video_percentage": 0.9420849420849421,
     "common_structures": {
@@ -1891,7 +1891,7 @@
       "max": 127.49699048409872
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:48.109Z",
+    "extraction_date": "2025-10-09T14:46:56.663Z",
     "top_exemplar_score": 127.49699048409872,
     "has_video_percentage": 0.6195652173913043,
     "common_structures": {
@@ -2282,7 +2282,7 @@
       "max": 128.969813299576
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:48.193Z",
+    "extraction_date": "2025-10-09T14:46:56.753Z",
     "top_exemplar_score": 128.969813299576,
     "has_video_percentage": 0.9516129032258065,
     "common_structures": {
@@ -2973,7 +2973,7 @@
       "max": 71.3862943611199
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:48.220Z",
+    "extraction_date": "2025-10-09T14:46:56.784Z",
     "top_exemplar_score": 71.3862943611199,
     "has_video_percentage": 0.9587628865979382,
     "common_structures": {
@@ -3468,7 +3468,7 @@
       "max": 115.79579054559674
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:48.228Z",
+    "extraction_date": "2025-10-09T14:46:56.791Z",
     "top_exemplar_score": 115.79579054559674,
     "has_video_percentage": 0.1951219512195122,
     "common_structures": {
@@ -4178,7 +4178,7 @@
       "max": 130.11249161069662
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:48.248Z",
+    "extraction_date": "2025-10-09T14:46:56.815Z",
     "top_exemplar_score": 130.11249161069662,
     "has_video_percentage": 0.7735849056603774,
     "common_structures": {
@@ -4573,7 +4573,7 @@
       "max": 134.30658318899555
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:48.354Z",
+    "extraction_date": "2025-10-09T14:46:56.924Z",
     "top_exemplar_score": 134.30658318899555,
     "has_video_percentage": 0.8589743589743589,
     "common_structures": {
@@ -5169,7 +5169,7 @@
       "max": 122.2188758248682
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:48.588Z",
+    "extraction_date": "2025-10-09T14:46:57.071Z",
     "top_exemplar_score": 122.2188758248682,
     "has_video_percentage": 0.9468302658486708,
     "common_structures": {
@@ -5750,7 +5750,7 @@
       "max": 130.78074351579232
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:48.703Z",
+    "extraction_date": "2025-10-09T14:46:57.151Z",
     "top_exemplar_score": 130.78074351579232,
     "has_video_percentage": 0.5021834061135371,
     "common_structures": {
@@ -6461,7 +6461,7 @@
       "max": 120.89182029811063
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:48.754Z",
+    "extraction_date": "2025-10-09T14:46:57.188Z",
     "top_exemplar_score": 120.89182029811063,
     "has_video_percentage": 0.4444444444444444,
     "common_structures": {
@@ -7131,7 +7131,7 @@
       "max": 119.52535975408263
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:48.927Z",
+    "extraction_date": "2025-10-09T14:46:57.363Z",
     "top_exemplar_score": 119.52535975408263,
     "has_video_percentage": 0.9290220820189274,
     "common_structures": {
@@ -7822,7 +7822,7 @@
       "max": 121.15888308335967
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:48.957Z",
+    "extraction_date": "2025-10-09T14:46:57.394Z",
     "top_exemplar_score": 121.15888308335967,
     "has_video_percentage": 0.7698412698412699,
     "common_structures": {
@@ -8342,7 +8342,7 @@
       "max": 127.2188758248682
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:49.068Z",
+    "extraction_date": "2025-10-09T14:46:57.526Z",
     "top_exemplar_score": 127.2188758248682,
     "has_video_percentage": 0.662109375,
     "common_structures": {
@@ -8933,7 +8933,7 @@
       "max": 127.19722457733621
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:49.110Z",
+    "extraction_date": "2025-10-09T14:46:57.577Z",
     "top_exemplar_score": 127.19722457733621,
     "has_video_percentage": 0.9527027027027027,
     "common_structures": {
@@ -9292,7 +9292,7 @@
       "max": 130.24281130352827
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:49.302Z",
+    "extraction_date": "2025-10-09T14:46:57.788Z",
     "top_exemplar_score": 130.24281130352827,
     "has_video_percentage": 0.8951048951048951,
     "common_structures": {
@@ -9707,7 +9707,7 @@
       "max": 121.60517018598809
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:49.369Z",
+    "extraction_date": "2025-10-09T14:46:57.848Z",
     "top_exemplar_score": 121.60517018598809,
     "has_video_percentage": 0.4563106796116505,
     "common_structures": {
@@ -10162,7 +10162,7 @@
       "max": 138.30314374717946
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:49.395Z",
+    "extraction_date": "2025-10-09T14:46:57.869Z",
     "top_exemplar_score": 138.30314374717946,
     "has_video_percentage": 0.7674418604651163,
     "common_structures": {
@@ -10862,7 +10862,7 @@
       "max": 126.81434354292024
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:49.444Z",
+    "extraction_date": "2025-10-09T14:46:57.904Z",
     "top_exemplar_score": 126.81434354292024,
     "has_video_percentage": 0.9657534246575342,
     "common_structures": {
@@ -11427,7 +11427,7 @@
       "max": 130.78074351579232
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:49.631Z",
+    "extraction_date": "2025-10-09T14:46:58.123Z",
     "top_exemplar_score": 130.78074351579232,
     "has_video_percentage": 0.8875219683655536,
     "common_structures": {
@@ -12102,7 +12102,7 @@
       "max": 120.2188758248682
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:49.651Z",
+    "extraction_date": "2025-10-09T14:46:58.141Z",
     "top_exemplar_score": 120.2188758248682,
     "has_video_percentage": 0.734375,
     "common_structures": {
@@ -12632,7 +12632,7 @@
       "max": 124.39444915467244
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:49.729Z",
+    "extraction_date": "2025-10-09T14:46:58.212Z",
     "top_exemplar_score": 124.39444915467244,
     "has_video_percentage": 0.8571428571428571,
     "common_structures": {
@@ -13052,7 +13052,7 @@
       "max": 122.66642668811244
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:49.944Z",
+    "extraction_date": "2025-10-09T14:46:58.455Z",
     "top_exemplar_score": 122.66642668811244,
     "has_video_percentage": 0.8457516339869281,
     "common_structures": {
@@ -13628,7 +13628,7 @@
       "max": 120.58351893845611
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:50.162Z",
+    "extraction_date": "2025-10-09T14:46:58.698Z",
     "top_exemplar_score": 120.58351893845611,
     "has_video_percentage": 0.9321314952279958,
     "common_structures": {
@@ -14354,7 +14354,7 @@
       "max": 98.3862943611199
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:50.195Z",
+    "extraction_date": "2025-10-09T14:46:58.726Z",
     "top_exemplar_score": 98.3862943611199,
     "has_video_percentage": 0.8155339805825242,
     "common_structures": {
@@ -14729,7 +14729,7 @@
       "max": 128.14430806435553
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:50.230Z",
+    "extraction_date": "2025-10-09T14:46:58.754Z",
     "top_exemplar_score": 128.14430806435553,
     "has_video_percentage": 0.9032258064516129,
     "common_structures": {
@@ -15354,7 +15354,7 @@
       "max": 109.3862943611199
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:50.245Z",
+    "extraction_date": "2025-10-09T14:46:58.771Z",
     "top_exemplar_score": 109.3862943611199,
     "has_video_percentage": 0.484375,
     "common_structures": {
@@ -16054,7 +16054,7 @@
       "max": 126.0559158352451
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:50.269Z",
+    "extraction_date": "2025-10-09T14:46:58.793Z",
     "top_exemplar_score": 126.0559158352451,
     "has_video_percentage": 0.7,
     "common_structures": {
@@ -16474,7 +16474,7 @@
       "max": 134.55824698622305
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:50.435Z",
+    "extraction_date": "2025-10-09T14:46:58.994Z",
     "top_exemplar_score": 134.55824698622305,
     "has_video_percentage": 0.7161716171617162,
     "common_structures": {
@@ -16900,7 +16900,7 @@
       "max": 127.58351893845611
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:50.492Z",
+    "extraction_date": "2025-10-09T14:46:59.079Z",
     "top_exemplar_score": 127.58351893845611,
     "has_video_percentage": 0.99,
     "common_structures": {
@@ -17616,7 +17616,7 @@
       "max": 126.3862943611199
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:50.555Z",
+    "extraction_date": "2025-10-09T14:46:59.157Z",
     "top_exemplar_score": 126.3862943611199,
     "has_video_percentage": 0.9421965317919075,
     "common_structures": {
@@ -18006,7 +18006,7 @@
       "max": 118.77258872223977
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:50.703Z",
+    "extraction_date": "2025-10-09T14:46:59.305Z",
     "top_exemplar_score": 118.77258872223977,
     "has_video_percentage": 0.9806451612903225,
     "common_structures": {
@@ -18661,7 +18661,7 @@
       "max": 120.2188758248682
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:50.780Z",
+    "extraction_date": "2025-10-09T14:46:59.370Z",
     "top_exemplar_score": 120.2188758248682,
     "has_video_percentage": 0.8148148148148148,
     "common_structures": {
@@ -19227,7 +19227,7 @@
       "max": 123.60517018598809
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:50.854Z",
+    "extraction_date": "2025-10-09T14:46:59.434Z",
     "top_exemplar_score": 123.60517018598809,
     "has_video_percentage": 0.7540322580645161,
     "common_structures": {
@@ -19718,7 +19718,7 @@
       "max": 104.77258872223977
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:50.868Z",
+    "extraction_date": "2025-10-09T14:46:59.449Z",
     "top_exemplar_score": 104.77258872223977,
     "has_video_percentage": 0.6833333333333333,
     "common_structures": {
@@ -20244,7 +20244,7 @@
       "max": 88.22183582528845
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:50.899Z",
+    "extraction_date": "2025-10-09T14:46:59.486Z",
     "top_exemplar_score": 88.22183582528845,
     "has_video_percentage": 0.625,
     "common_structures": {
@@ -20729,7 +20729,7 @@
       "max": 122.58351893845611
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:50.953Z",
+    "extraction_date": "2025-10-09T14:46:59.538Z",
     "top_exemplar_score": 122.58351893845611,
     "has_video_percentage": 0.3288888888888889,
     "common_structures": {
@@ -21220,7 +21220,7 @@
       "max": 117.2188758248682
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:51.061Z",
+    "extraction_date": "2025-10-09T14:46:59.638Z",
     "top_exemplar_score": 117.2188758248682,
     "has_video_percentage": 0.9064327485380117,
     "common_structures": {
@@ -21755,7 +21755,7 @@
       "max": 119.58351893845611
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:51.070Z",
+    "extraction_date": "2025-10-09T14:46:59.649Z",
     "top_exemplar_score": 119.58351893845611,
     "has_video_percentage": 0.7948717948717948,
     "common_structures": {
@@ -22245,7 +22245,7 @@
       "max": 125.66642668811244
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:51.084Z",
+    "extraction_date": "2025-10-09T14:46:59.660Z",
     "top_exemplar_score": 125.66642668811244,
     "has_video_percentage": 0.782608695652174,
     "common_structures": {
@@ -22685,7 +22685,7 @@
       "max": 126.77258872223977
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:51.283Z",
+    "extraction_date": "2025-10-09T14:46:59.867Z",
     "top_exemplar_score": 126.77258872223977,
     "has_video_percentage": 0.5333333333333333,
     "common_structures": {
@@ -23110,7 +23110,7 @@
       "max": 112.3862943611199
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:51.317Z",
+    "extraction_date": "2025-10-09T14:46:59.913Z",
     "top_exemplar_score": 112.3862943611199,
     "has_video_percentage": 0.5454545454545454,
     "common_structures": {
@@ -23540,7 +23540,7 @@
       "max": 114.77258872223977
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:51.404Z",
+    "extraction_date": "2025-10-09T14:47:00.005Z",
     "top_exemplar_score": 114.77258872223977,
     "has_video_percentage": 0.5947368421052631,
     "common_structures": {
@@ -23959,7 +23959,7 @@
       "max": 97.3862943611199
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:51.425Z",
+    "extraction_date": "2025-10-09T14:47:00.036Z",
     "top_exemplar_score": 97.3862943611199,
     "has_video_percentage": 0.5,
     "common_structures": {
@@ -24435,7 +24435,7 @@
       "max": 122.58351893845611
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:51.477Z",
+    "extraction_date": "2025-10-09T14:47:00.120Z",
     "top_exemplar_score": 122.58351893845611,
     "has_video_percentage": 0.5904761904761905,
     "common_structures": {
@@ -24846,7 +24846,7 @@
       "max": 111.3862943611199
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:51.489Z",
+    "extraction_date": "2025-10-09T14:47:00.130Z",
     "top_exemplar_score": 111.3862943611199,
     "has_video_percentage": 0.6818181818181818,
     "common_structures": {
@@ -25270,7 +25270,7 @@
       "max": 119.40938523878194
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:51.507Z",
+    "extraction_date": "2025-10-09T14:47:00.164Z",
     "top_exemplar_score": 119.40938523878194,
     "has_video_percentage": 0.6724137931034483,
     "common_structures": {
@@ -25900,7 +25900,7 @@
       "max": 130.45486344970172
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:51.534Z",
+    "extraction_date": "2025-10-09T14:47:00.200Z",
     "top_exemplar_score": 130.45486344970172,
     "has_video_percentage": 0.8245614035087719,
     "common_structures": {
@@ -26289,7 +26289,7 @@
       "max": 63.27811465923052
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:51.542Z",
+    "extraction_date": "2025-10-09T14:47:00.209Z",
     "top_exemplar_score": 63.27811465923052,
     "has_video_percentage": 0.9512195121951219,
     "common_structures": {
@@ -27035,7 +27035,7 @@
       "max": 112.3862943611199
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:51.573Z",
+    "extraction_date": "2025-10-09T14:47:00.241Z",
     "top_exemplar_score": 112.3862943611199,
     "has_video_percentage": 0.8076923076923077,
     "common_structures": {
@@ -27721,7 +27721,7 @@
       "max": 117.3862943611199
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:51.578Z",
+    "extraction_date": "2025-10-09T14:47:00.246Z",
     "top_exemplar_score": 117.3862943611199,
     "has_video_percentage": 0.09090909090909091,
     "common_structures": {
@@ -28180,7 +28180,7 @@
       "max": 129.04204669869904
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:51.618Z",
+    "extraction_date": "2025-10-09T14:47:00.283Z",
     "top_exemplar_score": 129.04204669869904,
     "has_video_percentage": 0.9069767441860465,
     "common_structures": {
@@ -28522,7 +28522,7 @@
       "max": 129.78074351579232
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:51.689Z",
+    "extraction_date": "2025-10-09T14:47:00.351Z",
     "top_exemplar_score": 129.78074351579232,
     "has_video_percentage": 0.7619047619047619,
     "common_structures": {
@@ -29227,7 +29227,7 @@
       "max": 124.3862943611199
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:51.706Z",
+    "extraction_date": "2025-10-09T14:47:00.367Z",
     "top_exemplar_score": 124.3862943611199,
     "has_video_percentage": 0.7448979591836735,
     "common_structures": {
@@ -29907,7 +29907,7 @@
       "max": 141.26945797645928
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:51.735Z",
+    "extraction_date": "2025-10-09T14:47:00.393Z",
     "top_exemplar_score": 141.26945797645928,
     "has_video_percentage": 0.8,
     "common_structures": {
@@ -30333,7 +30333,7 @@
       "max": 120.3862943611199
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:51.761Z",
+    "extraction_date": "2025-10-09T14:47:00.419Z",
     "top_exemplar_score": 120.3862943611199,
     "has_video_percentage": 0.25471698113207547,
     "common_structures": {
@@ -31044,7 +31044,7 @@
       "max": 134.19722457733621
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:51.776Z",
+    "extraction_date": "2025-10-09T14:47:00.433Z",
     "top_exemplar_score": 134.19722457733621,
     "has_video_percentage": 0.26153846153846155,
     "common_structures": {
@@ -31714,7 +31714,7 @@
       "max": 121.96721324341667
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:51.814Z",
+    "extraction_date": "2025-10-09T14:47:00.479Z",
     "top_exemplar_score": 121.96721324341667,
     "has_video_percentage": 0.7938931297709924,
     "common_structures": {
@@ -32445,7 +32445,7 @@
       "max": 99.3862943611199
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:51.829Z",
+    "extraction_date": "2025-10-09T14:47:00.497Z",
     "top_exemplar_score": 99.3862943611199,
     "has_video_percentage": 0.851063829787234,
     "common_structures": {
@@ -33120,7 +33120,7 @@
       "max": 124.68761084370738
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:51.862Z",
+    "extraction_date": "2025-10-09T14:47:00.537Z",
     "top_exemplar_score": 124.68761084370738,
     "has_video_percentage": 0.7337662337662337,
     "common_structures": {
@@ -33500,7 +33500,7 @@
       "max": 108.2709884318583
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:51.930Z",
+    "extraction_date": "2025-10-09T14:47:00.617Z",
     "top_exemplar_score": 108.2709884318583,
     "has_video_percentage": 0.8504983388704319,
     "common_structures": {
@@ -33945,7 +33945,7 @@
       "max": 128.26945797645928
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:51.954Z",
+    "extraction_date": "2025-10-09T14:47:00.640Z",
     "top_exemplar_score": 128.26945797645928,
     "has_video_percentage": 0.8852459016393442,
     "common_structures": {
@@ -34375,7 +34375,7 @@
       "max": 133.3862943611199
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:51.986Z",
+    "extraction_date": "2025-10-09T14:47:00.670Z",
     "top_exemplar_score": 133.3862943611199,
     "has_video_percentage": 0.9333333333333333,
     "common_structures": {
@@ -35076,7 +35076,7 @@
       "max": 118.3862943611199
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:51.999Z",
+    "extraction_date": "2025-10-09T14:47:00.682Z",
     "top_exemplar_score": 118.3862943611199,
     "has_video_percentage": 0.7627118644067796,
     "common_structures": {
@@ -35460,7 +35460,7 @@
       "max": 136.47273918040742
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.068Z",
+    "extraction_date": "2025-10-09T14:47:00.752Z",
     "top_exemplar_score": 136.47273918040742,
     "has_video_percentage": 0.9361702127659575,
     "common_structures": {
@@ -36166,7 +36166,7 @@
       "max": 99.3862943611199
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.083Z",
+    "extraction_date": "2025-10-09T14:47:00.769Z",
     "top_exemplar_score": 99.3862943611199,
     "has_video_percentage": 0.8412698412698413,
     "common_structures": {
@@ -36731,7 +36731,7 @@
       "max": 120.2188758248682
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.113Z",
+    "extraction_date": "2025-10-09T14:47:00.805Z",
     "top_exemplar_score": 120.2188758248682,
     "has_video_percentage": 0.9397590361445783,
     "common_structures": {
@@ -37437,7 +37437,7 @@
       "max": 119.19722457733621
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.123Z",
+    "extraction_date": "2025-10-09T14:47:00.814Z",
     "top_exemplar_score": 119.19722457733621,
     "has_video_percentage": 0.15217391304347827,
     "common_structures": {
@@ -38128,7 +38128,7 @@
       "max": 121.39444915467244
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.150Z",
+    "extraction_date": "2025-10-09T14:47:00.844Z",
     "top_exemplar_score": 121.39444915467244,
     "has_video_percentage": 0.40298507462686567,
     "common_structures": {
@@ -38476,7 +38476,7 @@
       "max": 130.19974099842568
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.204Z",
+    "extraction_date": "2025-10-09T14:47:00.900Z",
     "top_exemplar_score": 130.19974099842568,
     "has_video_percentage": 0.9074074074074074,
     "common_structures": {
@@ -39167,7 +39167,7 @@
       "max": 115.88887795833288
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.213Z",
+    "extraction_date": "2025-10-09T14:47:00.911Z",
     "top_exemplar_score": 115.88887795833288,
     "has_video_percentage": 0.96,
     "common_structures": {
@@ -39817,7 +39817,7 @@
       "max": 126.3862943611199
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.228Z",
+    "extraction_date": "2025-10-09T14:47:00.927Z",
     "top_exemplar_score": 126.3862943611199,
     "has_video_percentage": 0.58,
     "common_structures": {
@@ -40513,7 +40513,7 @@
       "max": 103.3862943611199
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.244Z",
+    "extraction_date": "2025-10-09T14:47:00.942Z",
     "top_exemplar_score": 103.3862943611199,
     "has_video_percentage": 0.6744186046511628,
     "common_structures": {
@@ -41209,7 +41209,7 @@
       "max": 126.74240202181578
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.272Z",
+    "extraction_date": "2025-10-09T14:47:00.971Z",
     "top_exemplar_score": 126.74240202181578,
     "has_video_percentage": 0.6808510638297872,
     "common_structures": {
@@ -41910,7 +41910,7 @@
       "max": 118.3862943611199
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.286Z",
+    "extraction_date": "2025-10-09T14:47:00.986Z",
     "top_exemplar_score": 118.3862943611199,
     "has_video_percentage": 0.6304347826086957,
     "common_structures": {
@@ -42611,7 +42611,7 @@
       "max": 129.5835189384561
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.299Z",
+    "extraction_date": "2025-10-09T14:47:00.997Z",
     "top_exemplar_score": 129.5835189384561,
     "has_video_percentage": 0.3958333333333333,
     "common_structures": {
@@ -43312,7 +43312,7 @@
       "max": 105.3862943611199
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.311Z",
+    "extraction_date": "2025-10-09T14:47:01.009Z",
     "top_exemplar_score": 105.3862943611199,
     "has_video_percentage": 0.8,
     "common_structures": {
@@ -43660,7 +43660,7 @@
       "max": 74.60517018598809
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.332Z",
+    "extraction_date": "2025-10-09T14:47:01.034Z",
     "top_exemplar_score": 74.60517018598809,
     "has_video_percentage": 0.8156028368794326,
     "common_structures": {
@@ -44396,7 +44396,7 @@
       "max": 118.3862943611199
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.351Z",
+    "extraction_date": "2025-10-09T14:47:01.049Z",
     "top_exemplar_score": 118.3862943611199,
     "has_video_percentage": 0.6363636363636364,
     "common_structures": {
@@ -45111,7 +45111,7 @@
       "max": 106.60517018598809
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.362Z",
+    "extraction_date": "2025-10-09T14:47:01.059Z",
     "top_exemplar_score": 106.60517018598809,
     "has_video_percentage": 0.17391304347826086,
     "common_structures": {
@@ -45822,7 +45822,7 @@
       "max": 118.58351893845611
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.378Z",
+    "extraction_date": "2025-10-09T14:47:01.072Z",
     "top_exemplar_score": 118.58351893845611,
     "has_video_percentage": 0.9777777777777777,
     "common_structures": {
@@ -46297,7 +46297,7 @@
       "max": 68.2188758248682
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.407Z",
+    "extraction_date": "2025-10-09T14:47:01.101Z",
     "top_exemplar_score": 68.2188758248682,
     "has_video_percentage": 0.5222222222222223,
     "common_structures": {
@@ -46852,7 +46852,7 @@
       "max": 129.54517744447955
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.436Z",
+    "extraction_date": "2025-10-09T14:47:01.131Z",
     "top_exemplar_score": 129.54517744447955,
     "has_video_percentage": 0.8923076923076924,
     "common_structures": {
@@ -47508,7 +47508,7 @@
       "max": 106.3862943611199
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.448Z",
+    "extraction_date": "2025-10-09T14:47:01.144Z",
     "top_exemplar_score": 106.3862943611199,
     "has_video_percentage": 0.7714285714285715,
     "common_structures": {
@@ -48459,7 +48459,7 @@
       "max": 72.3862943611199
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.450Z",
+    "extraction_date": "2025-10-09T14:47:01.146Z",
     "top_exemplar_score": 72.3862943611199,
     "has_video_percentage": 0.8333333333333334,
     "common_structures": {
@@ -49134,7 +49134,7 @@
       "max": 98.19722457733621
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.458Z",
+    "extraction_date": "2025-10-09T14:47:01.154Z",
     "top_exemplar_score": 98.19722457733621,
     "has_video_percentage": 0.875,
     "common_structures": {
@@ -49865,7 +49865,7 @@
       "max": 120.60517018598809
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.468Z",
+    "extraction_date": "2025-10-09T14:47:01.166Z",
     "top_exemplar_score": 120.60517018598809,
     "has_video_percentage": 0.6571428571428571,
     "common_structures": {
@@ -50360,7 +50360,7 @@
       "max": 126.19722457733621
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.506Z",
+    "extraction_date": "2025-10-09T14:47:01.201Z",
     "top_exemplar_score": 126.19722457733621,
     "has_video_percentage": 0.7889908256880734,
     "common_structures": {
@@ -50971,7 +50971,7 @@
       "max": 97.3862943611199
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.514Z",
+    "extraction_date": "2025-10-09T14:47:01.210Z",
     "top_exemplar_score": 97.3862943611199,
     "has_video_percentage": 0.058823529411764705,
     "common_structures": {
@@ -51646,7 +51646,7 @@
       "max": 99.41610040220442
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.520Z",
+    "extraction_date": "2025-10-09T14:47:01.217Z",
     "top_exemplar_score": 99.41610040220442,
     "has_video_percentage": 0.6896551724137931,
     "common_structures": {
@@ -52316,7 +52316,7 @@
       "max": 106.3862943611199
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.530Z",
+    "extraction_date": "2025-10-09T14:47:01.226Z",
     "top_exemplar_score": 106.3862943611199,
     "has_video_percentage": 0.4444444444444444,
     "common_structures": {
@@ -52757,7 +52757,7 @@
       "max": 88.3862943611199
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.533Z",
+    "extraction_date": "2025-10-09T14:47:01.229Z",
     "top_exemplar_score": 88.3862943611199,
     "has_video_percentage": 0.19047619047619047,
     "common_structures": {
@@ -53468,7 +53468,7 @@
       "max": 118.3862943611199
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.545Z",
+    "extraction_date": "2025-10-09T14:47:01.244Z",
     "top_exemplar_score": 118.3862943611199,
     "has_video_percentage": 0.6326530612244898,
     "common_structures": {
@@ -54044,7 +54044,7 @@
       "max": 97.77258872223977
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.551Z",
+    "extraction_date": "2025-10-09T14:47:01.249Z",
     "top_exemplar_score": 97.77258872223977,
     "has_video_percentage": 0.2619047619047619,
     "common_structures": {
@@ -54629,7 +54629,7 @@
       "max": 134.04357715409807
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.585Z",
+    "extraction_date": "2025-10-09T14:47:01.279Z",
     "top_exemplar_score": 134.04357715409807,
     "has_video_percentage": 0.8904109589041096,
     "common_structures": {
@@ -55289,7 +55289,7 @@
       "max": 110.2709884318583
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.589Z",
+    "extraction_date": "2025-10-09T14:47:01.282Z",
     "top_exemplar_score": 110.2709884318583,
     "has_video_percentage": 0.2777777777777778,
     "common_structures": {
@@ -55664,7 +55664,7 @@
       "max": 112.3862943611199
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.595Z",
+    "extraction_date": "2025-10-09T14:47:01.290Z",
     "top_exemplar_score": 112.3862943611199,
     "has_video_percentage": 0.12195121951219512,
     "common_structures": {
@@ -56324,7 +56324,7 @@
       "max": 125.3862943611199
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.611Z",
+    "extraction_date": "2025-10-09T14:47:01.305Z",
     "top_exemplar_score": 125.3862943611199,
     "has_video_percentage": 0.6923076923076923,
     "common_structures": {
@@ -57000,7 +57000,7 @@
       "max": 112.3862943611199
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.618Z",
+    "extraction_date": "2025-10-09T14:47:01.313Z",
     "top_exemplar_score": 112.3862943611199,
     "has_video_percentage": 0.046511627906976744,
     "common_structures": {
@@ -57761,7 +57761,7 @@
       "max": 117.77258872223977
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.637Z",
+    "extraction_date": "2025-10-09T14:47:01.334Z",
     "top_exemplar_score": 117.77258872223977,
     "has_video_percentage": 0.9137931034482759,
     "common_structures": {
@@ -58452,7 +58452,7 @@
       "max": 94.3862943611199
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.641Z",
+    "extraction_date": "2025-10-09T14:47:01.339Z",
     "top_exemplar_score": 94.3862943611199,
     "has_video_percentage": 0.05714285714285714,
     "common_structures": {
@@ -59101,7 +59101,7 @@
       "max": 121.60517018598809
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.657Z",
+    "extraction_date": "2025-10-09T14:47:01.354Z",
     "top_exemplar_score": 121.60517018598809,
     "has_video_percentage": 0.6382978723404256,
     "common_structures": {
@@ -59787,7 +59787,7 @@
       "max": 98.3862943611199
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.667Z",
+    "extraction_date": "2025-10-09T14:47:01.365Z",
     "top_exemplar_score": 98.3862943611199,
     "has_video_percentage": 0.07692307692307693,
     "common_structures": {
@@ -60523,7 +60523,7 @@
       "max": 134.68837417291718
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.680Z",
+    "extraction_date": "2025-10-09T14:47:01.379Z",
     "top_exemplar_score": 134.68837417291718,
     "has_video_percentage": 0.5641025641025641,
     "common_structures": {
@@ -61284,7 +61284,7 @@
       "max": 94.77258872223977
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.686Z",
+    "extraction_date": "2025-10-09T14:47:01.385Z",
     "top_exemplar_score": 94.77258872223977,
     "has_video_percentage": 0,
     "common_structures": {
@@ -62085,7 +62085,7 @@
       "max": 124.66642668811244
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.695Z",
+    "extraction_date": "2025-10-09T14:47:01.394Z",
     "top_exemplar_score": 124.66642668811244,
     "has_video_percentage": 0.7083333333333334,
     "common_structures": {
@@ -62716,7 +62716,7 @@
       "max": 116.66642668811244
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.702Z",
+    "extraction_date": "2025-10-09T14:47:01.403Z",
     "top_exemplar_score": 116.66642668811244,
     "has_video_percentage": 0.4827586206896552,
     "common_structures": {
@@ -63391,7 +63391,7 @@
       "max": 139.22183582528845
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.725Z",
+    "extraction_date": "2025-10-09T14:47:01.428Z",
     "top_exemplar_score": 139.22183582528845,
     "has_video_percentage": 0.8333333333333334,
     "common_structures": {
@@ -64032,7 +64032,7 @@
       "max": 106.70371626695213
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.730Z",
+    "extraction_date": "2025-10-09T14:47:01.434Z",
     "top_exemplar_score": 106.70371626695213,
     "has_video_percentage": 0.5416666666666666,
     "common_structures": {
@@ -64543,7 +64543,7 @@
       "max": 123.42987151521797
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.748Z",
+    "extraction_date": "2025-10-09T14:47:01.454Z",
     "top_exemplar_score": 123.42987151521797,
     "has_video_percentage": 0.8431372549019608,
     "common_structures": {
@@ -65213,7 +65213,7 @@
       "max": 121.77258872223977
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.758Z",
+    "extraction_date": "2025-10-09T14:47:01.463Z",
     "top_exemplar_score": 121.77258872223977,
     "has_video_percentage": 0.16,
     "common_structures": {
@@ -65959,7 +65959,7 @@
       "max": 111.3862943611199
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.763Z",
+    "extraction_date": "2025-10-09T14:47:01.469Z",
     "top_exemplar_score": 111.3862943611199,
     "has_video_percentage": 0.5,
     "common_structures": {
@@ -66600,7 +66600,7 @@
       "max": 87.19722457733621
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.764Z",
+    "extraction_date": "2025-10-09T14:47:01.470Z",
     "top_exemplar_score": 87.19722457733621,
     "has_video_percentage": 1,
     "common_structures": {
@@ -67386,7 +67386,7 @@
       "max": 114.80535476374456
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.765Z",
+    "extraction_date": "2025-10-09T14:47:01.471Z",
     "top_exemplar_score": 114.80535476374456,
     "has_video_percentage": 1,
     "common_structures": {
@@ -67797,7 +67797,7 @@
       "max": 33.86797440897029
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.766Z",
+    "extraction_date": "2025-10-09T14:47:01.472Z",
     "top_exemplar_score": 33.86797440897029,
     "has_video_percentage": 0,
     "common_structures": {
@@ -68533,7 +68533,7 @@
       "max": 106.2188758248682
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.768Z",
+    "extraction_date": "2025-10-09T14:47:01.474Z",
     "top_exemplar_score": 106.2188758248682,
     "has_video_percentage": 1,
     "common_structures": {
@@ -69414,7 +69414,7 @@
       "max": 94.66642668811244
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.770Z",
+    "extraction_date": "2025-10-09T14:47:01.475Z",
     "top_exemplar_score": 94.66642668811244,
     "has_video_percentage": 0.2857142857142857,
     "common_structures": {
@@ -70220,7 +70220,7 @@
       "max": 119.5799203417945
     },
     "extracted_from": "exemplars",
-    "extraction_date": "2025-10-09T11:19:52.772Z",
+    "extraction_date": "2025-10-09T14:47:01.477Z",
     "top_exemplar_score": 119.5799203417945,
     "has_video_percentage": 0.75,
     "common_structures": {
