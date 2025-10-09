@@ -99,7 +99,7 @@ export class DynamicAssetGrader {
       const result = await grader.gradeAsset(asset, vocab);
       
       // Enhance result with dynamic rule information
-      const enhancedResult = this.enhanceGradeResult(result, asset, categoryRules);
+      const enhancedResult = this.enhanceGradeResult(result, asset, categoryRules, graderConfig);
       
       this.dynamicLogger.info('Asset graded with dynamic rules', {
         title: asset.title,
@@ -170,7 +170,8 @@ export class DynamicAssetGrader {
   private enhanceGradeResult(
     result: GradeResult, 
     asset: Asset, 
-    categoryRules: CategoryRules | null
+    categoryRules: CategoryRules | null,
+    graderConfig: GraderConfig
   ): GradeResult {
     const enhancedReasons = [...result.reasons];
     
@@ -231,7 +232,13 @@ export class DynamicAssetGrader {
     
     return {
       ...result,
-      reasons: enhancedReasons
+      reasons: enhancedReasons,
+      weights: {
+        content: graderConfig.weights.content,
+        media: graderConfig.weights.media,
+        trust: graderConfig.weights.trust,
+        find: graderConfig.weights.find
+      }
     };
   }
   

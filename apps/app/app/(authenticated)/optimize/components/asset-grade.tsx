@@ -27,6 +27,12 @@ interface GradeResult {
     trust?: number;
     findability?: number;
   };
+  weights?: {
+    content?: Record<string, number>;
+    media?: Record<string, number>;
+    trust?: Record<string, number>;
+    find?: Record<string, number>;
+  };
   [key: string]: any;
 }
 
@@ -128,6 +134,46 @@ export function AssetGrade({ assetData, onRefresh, isLoading = false, error = nu
     return Math.max(0, Math.min(100, score)); // Clamp between 0-100
   };
 
+  // Helper function to normalize breakdown scores to percentage based on their max possible scores
+  const getNormalizedBreakdownScore = (score: number | undefined | null, category: 'content' | 'media' | 'trust' | 'findability'): number => {
+    const safeScore = typeof score === 'number' && !isNaN(score) ? score : 0;
+    
+    // Get maximum possible scores from the API response weights, or fall back to defaults
+    let maxScore: number;
+    
+    if (gradeResult?.weights) {
+      // Calculate max score from actual weights used in grading
+      switch (category) {
+        case 'content':
+          maxScore = gradeResult.weights.content ? Object.values(gradeResult.weights.content).reduce((a, b) => a + b, 0) : 35;
+          break;
+        case 'media':
+          maxScore = gradeResult.weights.media ? Object.values(gradeResult.weights.media).reduce((a, b) => a + b, 0) : 20;
+          break;
+        case 'trust':
+          maxScore = gradeResult.weights.trust ? Object.values(gradeResult.weights.trust).reduce((a, b) => a + b, 0) : 19;
+          break;
+        case 'findability':
+          maxScore = gradeResult.weights.find ? Object.values(gradeResult.weights.find).reduce((a, b) => a + b, 0) : 15;
+          break;
+        default:
+          maxScore = 35;
+      }
+    } else {
+      // Fallback to default maximum scores if weights are not available
+      const defaultMaxScores = {
+        content: 35,    // title: 6, short: 6, long: 8, bullets: 7, cta: 3, uvp: 5
+        media: 20,      // images: 8, video: 8, gif: 4  
+        trust: 19,      // freshness: 6, documentation: 3, completeness: 2, publishNotes: 1, rating: 4, reviews: 3
+        findability: 15 // tagcov: 7, titlekw: 5, pricez: 3
+      };
+      maxScore = defaultMaxScores[category];
+    }
+
+    const normalizedScore = (safeScore / maxScore) * 100;
+    return Math.max(0, Math.min(100, normalizedScore));
+  };
+
   if (error) {
     return (
       <Card>
@@ -222,45 +268,59 @@ export function AssetGrade({ assetData, onRefresh, isLoading = false, error = nu
               <div className="space-y-3">
                 <h4 className="font-semibold text-sm">Score Breakdown</h4>
                 
-                <div className="space-y-1">
-                  <div className="flex justify-between text-sm">
-                    <span>Content</span>
-                    <span className={getScoreColor(getSafeScore(gradeResult.breakdown.content))}>
-                      {Math.round(getSafeScore(gradeResult.breakdown.content))}%
-                    </span>
-                  </div>
-                  <Progress value={getSafeScore(gradeResult.breakdown.content)} className="h-2" />
-                </div>
+                {(() => {
+                  // Calculate normalized scores once to avoid duplicate calls
+                  const normalizedScores = {
+                    content: getNormalizedBreakdownScore(gradeResult.breakdown.content, 'content'),
+                    media: getNormalizedBreakdownScore(gradeResult.breakdown.media, 'media'),
+                    trust: getNormalizedBreakdownScore(gradeResult.breakdown.trust, 'trust'),
+                    findability: getNormalizedBreakdownScore(gradeResult.breakdown.findability, 'findability')
+                  };
 
-                <div className="space-y-1">
-                  <div className="flex justify-between text-sm">
-                    <span>Media</span>
-                    <span className={getScoreColor(getSafeScore(gradeResult.breakdown.media))}>
-                      {Math.round(getSafeScore(gradeResult.breakdown.media))}%
-                    </span>
-                  </div>
-                  <Progress value={getSafeScore(gradeResult.breakdown.media)} className="h-2" />
-                </div>
+                  return (
+                    <>
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-sm">
+                          <span>Content</span>
+                          <span className={getScoreColor(normalizedScores.content)}>
+                            {Math.round(normalizedScores.content)}%
+                          </span>
+                        </div>
+                        <Progress value={normalizedScores.content} className="h-2" />
+                      </div>
 
-                <div className="space-y-1">
-                  <div className="flex justify-between text-sm">
-                    <span>Trust</span>
-                    <span className={getScoreColor(getSafeScore(gradeResult.breakdown.trust))}>
-                      {Math.round(getSafeScore(gradeResult.breakdown.trust))}%
-                    </span>
-                  </div>
-                  <Progress value={getSafeScore(gradeResult.breakdown.trust)} className="h-2" />
-                </div>
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-sm">
+                          <span>Media</span>
+                          <span className={getScoreColor(normalizedScores.media)}>
+                            {Math.round(normalizedScores.media)}%
+                          </span>
+                        </div>
+                        <Progress value={normalizedScores.media} className="h-2" />
+                      </div>
 
-                <div className="space-y-1">
-                  <div className="flex justify-between text-sm">
-                    <span>Findability</span>
-                    <span className={getScoreColor(getSafeScore(gradeResult.breakdown.findability))}>
-                      {Math.round(getSafeScore(gradeResult.breakdown.findability))}%
-                    </span>
-                  </div>
-                  <Progress value={getSafeScore(gradeResult.breakdown.findability)} className="h-2" />
-                </div>
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-sm">
+                          <span>Trust</span>
+                          <span className={getScoreColor(normalizedScores.trust)}>
+                            {Math.round(normalizedScores.trust)}%
+                          </span>
+                        </div>
+                        <Progress value={normalizedScores.trust} className="h-2" />
+                      </div>
+
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-sm">
+                          <span>Findability</span>
+                          <span className={getScoreColor(normalizedScores.findability)}>
+                            {Math.round(normalizedScores.findability)}%
+                          </span>
+                        </div>
+                        <Progress value={normalizedScores.findability} className="h-2" />
+                      </div>
+                    </>
+                  );
+                })()}
 
               </div>
             )}

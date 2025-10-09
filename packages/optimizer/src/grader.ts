@@ -84,6 +84,12 @@ export class AssetGrader {
           media: mediaScore.score,
           trust: trustScore.score,
           findability: findabilityScore.score
+        },
+        weights: {
+          content: this.weights.content,
+          media: this.weights.media,
+          trust: this.weights.trust,
+          find: this.weights.find
         }
       };
 

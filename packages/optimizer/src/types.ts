@@ -281,6 +281,12 @@ export interface GradeResult {
   letter: 'A' | 'B' | 'C' | 'D' | 'F';
   reasons: string[];
   breakdown: GradeBreakdown;
+  weights?: {
+    content: Record<string, number>;
+    media: Record<string, number>;
+    trust: Record<string, number>;
+    find: Record<string, number>;
+  };
 }
 
 /**
