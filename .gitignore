@@ -34,3 +34,6 @@ yarn-error.log*
 
 # ui
 dist/
+
+# large files
+packages/optimizer/data/results/exemplars.json
