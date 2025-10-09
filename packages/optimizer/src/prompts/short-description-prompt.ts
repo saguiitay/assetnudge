@@ -36,9 +36,9 @@ export function buildShortDescUserPrompt(
   asset: Asset,
   exemplars: any[] = [],
   vocab: any = {},
-  validCategories: string[] = []
 ): string {
-  const currentDesc = asset.short_description || '';
+  const currentShortDesc = asset.short_description || '';
+  const currentLongDesc = asset.long_description || '';
   const descWords = vocab.description_words?.slice(0, 10).map((w: any) => w.word).join(', ') || '';
   const exemplarDescs = exemplars.slice(0, 3).map(ex => 
     `"${ex.title}": "${ex.short_description || ''}"`
@@ -47,8 +47,12 @@ export function buildShortDescUserPrompt(
   return `CURRENT SHORT DESCRIPTION ANALYSIS:
 Title: "${asset.title}"
 Category: ${asset.category}
-Current Short Description (${currentDesc.length} chars): "${currentDesc}"
 Price: $${asset.price}
+Current Short Description (${currentShortDesc.length} chars): "${currentShortDesc}"
+Current Long Description (if any):
+\`\`\`
+${currentLongDesc}
+\'\'\'
 
 CATEGORY DESCRIPTION PATTERNS:
 High-Value Words: ${descWords}

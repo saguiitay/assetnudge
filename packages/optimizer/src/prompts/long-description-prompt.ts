@@ -37,8 +37,9 @@ export function buildLongDescUserPrompt(
   asset: Asset,
   exemplars: any[] = [],
   vocab: any = {},
-  validCategories: string[] = []
 ): string {
+  const currentShortDesc = asset.short_description || '';
+  const currentLongDesc = asset.long_description || '';
   const currentDesc = asset.long_description || '';
   const wordCount = currentDesc.split(/\s+/).length;
   const bulletCount = (currentDesc.match(/[•\-\*]/g) || []).length;
@@ -53,6 +54,11 @@ Category: ${asset.category}
 Current Word Count: ${wordCount}
 Current Bullet Points: ${bulletCount}
 Price: $${asset.price}
+Current Short Description (${currentShortDesc.length} chars): "${currentShortDesc}"
+Current Long Description (if any):
+\`\`\`
+${currentLongDesc}
+\'\'\'
 
 CURRENT DESCRIPTION:
 "${currentDesc}"

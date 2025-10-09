@@ -36,8 +36,9 @@ export function buildTagsUserPrompt(
   asset: Asset,
   exemplars: any[] = [],
   vocab: any = {},
-  validCategories: string[] = []
 ): string {
+  const currentShortDesc = asset.short_description || '';
+  const currentLongDesc = asset.long_description || '';
   const currentTags = asset.tags?.join(', ') || 'None';
   const topTags = vocab.common_tags?.slice(0, 15).map((t: any) => t.word).join(', ') || '';
   const exemplarTags = exemplars.slice(0, 3).map(ex => 
@@ -48,7 +49,11 @@ export function buildTagsUserPrompt(
 Title: "${asset.title}"
 Category: ${asset.category}
 Current Tags (${asset.tags?.length || 0}/12): ${currentTags}
-Short Description: "${asset.short_description || ''}"
+Current Short Description (${currentShortDesc.length} chars): "${currentShortDesc}"
+Current Long Description (if any):
+\`\`\`
+${currentLongDesc}
+\'\'\'
 
 CATEGORY TAG VOCABULARY:
 Most Effective Tags: ${topTags}

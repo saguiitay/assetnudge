@@ -263,7 +263,7 @@ function extractCategory(asset: Asset): string {
 /**
  * Identify exemplar assets from a corpus with optional best sellers
  * @param assets - Array of asset objects
- * @param topN - Number of exemplars per category (default: 20)
+ * @param topN - Number of exemplars per category (default: 20). When both topN and topPercent are provided, serves as minimum
  * @param topPercent - Percentage of exemplars per category
  * @param bestSellers - Array of best seller assets to always include
  * @param vocab - Vocabulary data for grading context (optional, uses default if not provided)
@@ -284,7 +284,16 @@ export async function identifyExemplars(
     const finalTopN = topN !== null ? topN : (topPercent !== null ? null : 20);
     const finalTopPercent = topPercent;
     
-    const selectionMethod = finalTopPercent !== null ? `top ${finalTopPercent}%` : `top ${finalTopN}`;
+    // Determine selection method description
+    let selectionMethod: string;
+    if (finalTopPercent !== null && finalTopN !== null) {
+        selectionMethod = `top ${finalTopPercent}% (minimum ${finalTopN})`;
+    } else if (finalTopPercent !== null) {
+        selectionMethod = `top ${finalTopPercent}%`;
+    } else {
+        selectionMethod = `top ${finalTopN}`;
+    }
+    
     logger.info(`Identifying exemplars from ${assets.length} assets using ${selectionMethod}, with ${bestSellers.length} best sellers`);
     
     // Create AssetGrader instance with custom or default config
@@ -366,7 +375,13 @@ export async function identifyExemplars(
         // Calculate how many regular assets to take
         let countToTake: number;
         if (finalTopPercent !== null) {
-            countToTake = Math.ceil(categoryAssets.length * (finalTopPercent / 100));
+            const percentageCount = Math.ceil(categoryAssets.length * (finalTopPercent / 100));
+            // If both topN and topPercent are provided, use topN as minimum
+            if (finalTopN !== null) {
+                countToTake = Math.max(percentageCount, finalTopN);
+            } else {
+                countToTake = percentageCount;
+            }
         } else {
             countToTake = Math.min(finalTopN!, categoryAssets.length);
         }

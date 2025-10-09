@@ -36,8 +36,9 @@ export function buildTitleUserPrompt(
   asset: Asset,
   exemplars: any[] = [],
   vocab: any = {},
-  validCategories: string[] = []
 ): string {
+  const currentShortDesc = asset.short_description || '';
+  const currentLongDesc = asset.long_description || '';
   const exemplarTitles = exemplars.slice(0, 5).map(ex => `"${ex.title}"`).join(', ');
   const topWords = vocab.title_words?.slice(0, 10).map((w: any) => w.word).join(', ') || '';
   const topBigrams = vocab.title_bigrams?.slice(0, 5).map((w: any) => w.word).join(', ') || '';
@@ -48,6 +49,11 @@ Category: ${asset.category}
 Current Character Count: ${asset.title?.length || 0}
 Price: $${asset.price}
 Tags: ${asset.tags?.join(', ') || 'None'}
+Current Short Description (${currentShortDesc.length} chars): "${currentShortDesc}"
+Current Long Description (if any):
+\`\`\`
+${currentLongDesc}
+\'\'\'
 
 CATEGORY VOCABULARY:
 Top Title Words: ${topWords}

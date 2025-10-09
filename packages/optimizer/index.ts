@@ -7,7 +7,7 @@ import path from 'path';
 import UnityAssetOptimizer from './src/optimizer';
 import Config from './src/config';
 import { scrapeAssetWithGraphQL } from './src/scrappers/graphql-scraper';
-import { Vocabulary as ValidatorVocabulary, FileValidator } from './src/utils/validation';
+import { FileValidator, ConfigValidator } from './src/utils/validation';
 import { Asset, GradeResult, Vocabulary as TypesVocabulary } from './src/types';
 import { DynamicAssetGrader } from './src/dynamic-asset-grader';
 import { findDataDirectory } from './src/utils/utils';
@@ -191,20 +191,6 @@ export async function generatePrompts(
     // Load context data from default file locations
     let categoryExemplars: any[] = [];
     let categoryVocab: any = {};
-    const validCategories: string[] = [
-      'Tools/Utilities',
-      'Templates/Systems',
-      '3D/Characters',
-      '3D/Environments',
-      '3D/Props',
-      '2D/Textures & Materials',
-      '2D/GUI',
-      '2D/Fonts',
-      'Audio/Music',
-      'Audio/Sound FX',
-      'VFX/Particles',
-      'VFX/Shaders'
-    ];
     
     // Try to load exemplars from default location
     try {
@@ -249,7 +235,7 @@ export async function generatePrompts(
         };
       }
 
-      const combinedPrompt = generateFieldPrompt(fieldType, asset, categoryExemplars, categoryVocab, validCategories);
+      const combinedPrompt = generateFieldPrompt(fieldType, asset, categoryExemplars, categoryVocab);
       
       return {
         success: true,
@@ -259,7 +245,7 @@ export async function generatePrompts(
     }
 
     // Return all prompts
-    const allPrompts = generateAllPrompts(asset, categoryExemplars, categoryVocab, validCategories);
+    const allPrompts = generateAllPrompts(asset, categoryExemplars, categoryVocab);
 
     return {
       success: true,
@@ -281,8 +267,7 @@ function generateFieldPrompt(
   fieldType: string, 
   asset: Asset, 
   exemplars: any[] = [], 
-  vocab: any = {}, 
-  validCategories: string[] = []
+  vocab: any = {}
 ): string {
   let systemPrompt: string;
   let userPrompt: string;
@@ -290,19 +275,19 @@ function generateFieldPrompt(
   switch (fieldType) {
     case 'title':
       systemPrompt = buildTitleSystemPrompt();
-      userPrompt = buildTitleUserPrompt(asset, exemplars, vocab, validCategories);
+      userPrompt = buildTitleUserPrompt(asset, exemplars, vocab);
       break;
     case 'tags':
       systemPrompt = buildTagsSystemPrompt();
-      userPrompt = buildTagsUserPrompt(asset, exemplars, vocab, validCategories);
+      userPrompt = buildTagsUserPrompt(asset, exemplars, vocab);
       break;
     case 'short_description':
       systemPrompt = buildShortDescSystemPrompt();
-      userPrompt = buildShortDescUserPrompt(asset, exemplars, vocab, validCategories);
+      userPrompt = buildShortDescUserPrompt(asset, exemplars, vocab);
       break;
     case 'long_description':
       systemPrompt = buildLongDescSystemPrompt();
-      userPrompt = buildLongDescUserPrompt(asset, exemplars, vocab, validCategories);
+      userPrompt = buildLongDescUserPrompt(asset, exemplars, vocab);
       break;
     default:
       throw new Error(`Unsupported field type: ${fieldType}`);
@@ -317,9 +302,9 @@ function generateFieldPrompt(
 function generateAllPrompts(
   asset: Asset, 
   exemplars: any[] = [], 
-  vocab: any = {}, 
-  validCategories: string[] = []
+  vocab: any = {}
 ): Record<string, string> {
+  const validCategories = ConfigValidator.getValidCategories();
   return {
     title: `${buildTitleSystemPrompt()}\n\n---\n\n${buildTitleUserPrompt(asset, exemplars, vocab, validCategories)}`,
     tags: `${buildTagsSystemPrompt()}\n\n---\n\n${buildTagsUserPrompt(asset, exemplars, vocab, validCategories)}`,

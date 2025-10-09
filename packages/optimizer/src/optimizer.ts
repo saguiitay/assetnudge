@@ -491,7 +491,6 @@ export class UnityAssetOptimizer {
       const playbookData = {
         playbooks,
         metadata: {
-          generatedAt: new Date().toISOString(),
           totalCategories: Object.keys(playbooks).length,
           sourceExemplars: exemplarsData.metadata.stats.totalExemplars
         }
