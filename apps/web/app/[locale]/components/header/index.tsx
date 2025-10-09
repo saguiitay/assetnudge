@@ -18,6 +18,7 @@ import type { Dictionary } from '@repo/internationalization';
 import Image from 'next/image';
 //import { LanguageSwitcher } from './language-switcher';
 import logoSmall from '@repo/design-system/images/logo-small.webp';
+import { env } from '@/env';
 
 type HeaderProps = {
   dictionary: Dictionary;
@@ -142,16 +143,16 @@ export const Header = ({ dictionary }: HeaderProps) => {
           <div className="hidden md:inline">
             <ModeToggle />
           </div>
-          {/* <Button variant="outline" asChild className="hidden md:inline">
-            <Link href={`${env.NEXT_PUBLIC_APP_URL}/sign-in`}>
+          <Button variant="outline" asChild className="hidden md:inline">
+            <Link href={`${env.NEXT_PUBLIC_APP_URL}${env.NEXT_PUBLIC_CLERK_SIGN_IN_URL}`}>
               {dictionary.web.header.signIn}
             </Link>
           </Button>
           <Button asChild>
-            <Link href={`${env.NEXT_PUBLIC_APP_URL}/sign-up`}>
+            <Link href={`${env.NEXT_PUBLIC_APP_URL}${env.NEXT_PUBLIC_CLERK_SIGN_UP_URL}`}>
               {dictionary.web.header.signUp}
             </Link>
-          </Button> */}
+          </Button>
         </div>
         <div className="flex w-12 shrink items-end justify-end lg:hidden">
           <Button variant="ghost" onClick={() => setOpen(!isOpen)}>
@@ -196,6 +197,22 @@ export const Header = ({ dictionary }: HeaderProps) => {
                   </div>
                 </div>
               ))}
+              <div className="flex flex-col gap-2 pt-4 border-t">
+                <Link
+                  href={`${env.NEXT_PUBLIC_APP_URL}${env.NEXT_PUBLIC_CLERK_SIGN_IN_URL}`}
+                  className="flex items-center justify-between"
+                >
+                  <span className="text-lg">{dictionary.web.header.signIn}</span>
+                  <MoveRight className="h-4 w-4 stroke-1 text-muted-foreground" />
+                </Link>
+                <Link
+                  href={`${env.NEXT_PUBLIC_APP_URL}${env.NEXT_PUBLIC_CLERK_SIGN_UP_URL}`}
+                  className="flex items-center justify-between"
+                >
+                  <span className="text-lg font-semibold">{dictionary.web.header.signUp}</span>
+                  <MoveRight className="h-4 w-4 stroke-1 text-muted-foreground" />
+                </Link>
+              </div>
             </div>
           )}
         </div>
