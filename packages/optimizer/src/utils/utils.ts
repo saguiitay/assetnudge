@@ -201,44 +201,111 @@ export const countBullets = (text: string): number => {
   
   let count = 0;
   
-  // Count HTML list items (<li> tags)
-  const htmlListItems = text.match(/<li[^>]*>/gi) || [];
-  count += htmlListItems.length;
+  // Track what we've already counted to avoid double-counting
+  const countedRanges: Array<{start: number, end: number}> = [];
   
-  // Count markdown-style bullets with enhanced pattern matching
-  // Look for common bullet characters at the start of lines or after whitespace
-  // Enhanced to better capture the ● character and other Unicode bullets
-  const bulletPattern = /(?:^|\n)\s*[●○•◦▪▫‣⁃◆◇■□▸▹►▻✓✔⚡*-]\s+/gm;
-  const markdownBullets = text.match(bulletPattern) || [];
-  count += markdownBullets.length;
+  // Helper function to check if a range overlaps with already counted ranges
+  const isAlreadyCounted = (start: number, end: number): boolean => {
+    return countedRanges.some(range => 
+      (start >= range.start && start <= range.end) ||
+      (end >= range.start && end <= range.end) ||
+      (start <= range.start && end >= range.end)
+    );
+  };
   
-  // Count HTML-style bullets: <p>- content</p> or similar patterns
-  // This handles cases where bullets are in HTML paragraphs without newlines
-  const htmlBulletPattern = /<(?:p|div)[^>]*>\s*[-●○•◦▪▫‣⁃◆◇■□▸▹►▻✓✔⚡*]\s+/gi;
-  const htmlBullets = text.match(htmlBulletPattern) || [];
-  count += htmlBullets.length;
+  // Helper function to add a range to counted ranges
+  const addCountedRange = (start: number, end: number) => {
+    countedRanges.push({start, end});
+  };
   
-  // Count HTML numbered bullets: <p>1. content</p>
-  const htmlNumberedPattern = /<(?:p|div)[^>]*>\s*\d+\.\s+/gi;
-  const htmlNumbered = text.match(htmlNumberedPattern) || [];
-  count += htmlNumbered.length;
-  
-  // Specifically look for the ● character (U+25CF BLACK CIRCLE) which is commonly used
-  const blackCircleBullets = text.match(/(?:^|\n)\s*●\s+/gm) || [];
-  // Don't double count if already caught by the general pattern
-  if (blackCircleBullets.length > 0 && markdownBullets.length === 0) {
-    count += blackCircleBullets.length;
+  // 1. Count complete HTML unordered lists first (highest priority)
+  const ulPattern = /<ul[^>]*>[\s\S]*?<\/ul>/gi;
+  let ulMatch;
+  while ((ulMatch = ulPattern.exec(text)) !== null) {
+    const ulContent = ulMatch[0];
+    const liInUl = ulContent.match(/<li[^>]*>/gi) || [];
+    count += liInUl.length;
+    addCountedRange(ulMatch.index, ulMatch.index + ulMatch[0].length);
   }
   
-  // Count numbered list items (1. 2. etc. at start of lines)
-  const numberedItems = text.match(/(?:^|\n)\s*\d+\.\s+/gm) || [];
-  count += numberedItems.length;
+  // 2. Count complete HTML ordered lists (highest priority)
+  const olPattern = /<ol[^>]*>[\s\S]*?<\/ol>/gi;
+  let olMatch;
+  while ((olMatch = olPattern.exec(text)) !== null) {
+    const olContent = olMatch[0];
+    const liInOl = olContent.match(/<li[^>]*>/gi) || [];
+    count += liInOl.length;
+    addCountedRange(olMatch.index, olMatch.index + olMatch[0].length);
+  }
   
-  // Additional pattern for spaced bullets like "• item" or "* item"
-  const spacedBullets = text.match(/(?:^|\n)\s*[•*]\s+\S/gm) || [];
-  // Only count these if not already captured by other patterns
-  if (spacedBullets.length > markdownBullets.length) {
-    count += (spacedBullets.length - markdownBullets.length);
+  // 3. Count standalone HTML list items (<li> tags) not in <ul>/<ol>
+  const liPattern = /<li[^>]*>/gi;
+  let liMatch;
+  while ((liMatch = liPattern.exec(text)) !== null) {
+    if (!isAlreadyCounted(liMatch.index, liMatch.index + liMatch[0].length)) {
+      count++;
+      addCountedRange(liMatch.index, liMatch.index + liMatch[0].length);
+    }
+  }
+  
+  // 4. Count HTML-style bullets: <p>- content</p> or similar patterns
+  const htmlBulletPattern = /<(?:p|div)[^>]*>\s*[-●○•◦▪▫‣⁃◆◇■□▸▹►▻✓✔⚡*]\s+/gi;
+  let htmlBulletMatch;
+  while ((htmlBulletMatch = htmlBulletPattern.exec(text)) !== null) {
+    if (!isAlreadyCounted(htmlBulletMatch.index, htmlBulletMatch.index + htmlBulletMatch[0].length)) {
+      count++;
+      addCountedRange(htmlBulletMatch.index, htmlBulletMatch.index + htmlBulletMatch[0].length);
+    }
+  }
+  
+  // 5. Count HTML numbered bullets: <p>1. content</p>
+  const htmlNumberedPattern = /<(?:p|div)[^>]*>\s*\d+\.\s+/gi;
+  let htmlNumberedMatch;
+  while ((htmlNumberedMatch = htmlNumberedPattern.exec(text)) !== null) {
+    if (!isAlreadyCounted(htmlNumberedMatch.index, htmlNumberedMatch.index + htmlNumberedMatch[0].length)) {
+      count++;
+      addCountedRange(htmlNumberedMatch.index, htmlNumberedMatch.index + htmlNumberedMatch[0].length);
+    }
+  }
+  
+  // 6. Count bullets in HTML emphasis tags: <strong>- content</strong> or <b>• item</b>
+  const emphasisBulletPattern = /<(?:strong|b|em|i)[^>]*>\s*[-●○•◦▪▫‣⁃◆◇■□▸▹►▻✓✔⚡*]\s+/gi;
+  let emphasisMatch;
+  while ((emphasisMatch = emphasisBulletPattern.exec(text)) !== null) {
+    if (!isAlreadyCounted(emphasisMatch.index, emphasisMatch.index + emphasisMatch[0].length)) {
+      count++;
+      addCountedRange(emphasisMatch.index, emphasisMatch.index + emphasisMatch[0].length);
+    }
+  }
+  
+  // 7. Count bullets after HTML breaks: <br>- item or <br />• item
+  const breakBulletPattern = /<br[^>]*>\s*[-●○•◦▪▫‣⁃◆◇■□▸▹►▻✓✔⚡*]\s+/gi;
+  let breakMatch;
+  while ((breakMatch = breakBulletPattern.exec(text)) !== null) {
+    if (!isAlreadyCounted(breakMatch.index, breakMatch.index + breakMatch[0].length)) {
+      count++;
+      addCountedRange(breakMatch.index, breakMatch.index + breakMatch[0].length);
+    }
+  }
+  
+  // 8. Count markdown-style bullets at line starts
+  const bulletPattern = /(?:^|\n)\s*[●○•◦▪▫‣⁃◆◇■□▸▹►▻✓✔⚡*-]\s+/gm;
+  let markdownMatch;
+  while ((markdownMatch = bulletPattern.exec(text)) !== null) {
+    if (!isAlreadyCounted(markdownMatch.index, markdownMatch.index + markdownMatch[0].length)) {
+      count++;
+      addCountedRange(markdownMatch.index, markdownMatch.index + markdownMatch[0].length);
+    }
+  }
+  
+  // 9. Count numbered list items (1. 2. etc. at start of lines)
+  const numberedPattern = /(?:^|\n)\s*\d+\.\s+/gm;
+  let numberedMatch;
+  while ((numberedMatch = numberedPattern.exec(text)) !== null) {
+    if (!isAlreadyCounted(numberedMatch.index, numberedMatch.index + numberedMatch[0].length)) {
+      count++;
+      addCountedRange(numberedMatch.index, numberedMatch.index + numberedMatch[0].length);
+    }
   }
   
   return count;
