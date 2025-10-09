@@ -127,13 +127,14 @@ export class AssetValidator {
       }
     }
 
-    // Validate date fields
+    // Validate date fields (warn but don't fail for invalid dates)
     const dateFields: (keyof Asset)[] = ['last_update'];
     for (const field of dateFields) {
-      if (asset[field] !== undefined && asset[field] !== null) {
+      if (asset[field] !== undefined && asset[field] !== null && asset[field] !== '') {
         const date = new Date(asset[field] as string | Date);
         if (isNaN(date.getTime())) {
-          errors.push(`${field} must be a valid date`);
+          // Log warning but don't add to errors - let the grader handle invalid dates gracefully
+          console.warn(`Warning: Asset ${asset.id || asset.title || 'unknown'} has invalid ${field}: ${asset[field]}`);
         }
       }
     }
