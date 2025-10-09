@@ -266,6 +266,7 @@ export interface PreparedContent {
   hasCTA: boolean;
   hasUVP: boolean;
   wordCount: number;
+  contentDensity: number; // Ratio of actual text to total characters (0-1)
   linkAnalysis: LinkAnalysis;
 }
 

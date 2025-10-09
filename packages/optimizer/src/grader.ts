@@ -116,6 +116,22 @@ export class AssetGrader {
     // Analyze links separately from CTA
     const linkAnalysis = this.analyzeLinks(description);
     
+    // Enhanced word counting with better text cleaning
+    const cleanText = description
+      .replace(/<[^>]*>/g, ' ')           // Remove HTML tags
+      .replace(/&[#\w]+;/g, ' ')          // Remove HTML entities (&nbsp;, &#123;, etc.)
+      .replace(/\s+/g, ' ')               // Normalize whitespace
+      .trim();
+    
+    const wordCount = cleanText
+      .split(/\s+/)
+      .filter(word => word.length > 0)
+      .length;
+    
+    // Calculate content density (text vs markup ratio)
+    const originalLength = description.length;
+    const contentDensity = originalLength > 0 ? (cleanText.length / originalLength) : 1;
+    
     return {
       title,
       shortDesc,
@@ -125,10 +141,9 @@ export class AssetGrader {
       bullets: countBullets(description),
       hasCTA: this.detectCTA(description),
       hasUVP: this.detectUVP(title, shortDesc, longDesc),
-      wordCount: description.replace(/<[^>]*>/g, ' ')
-        .split(/\s+/)
-        .filter(w => w.length > 0).length,
-      linkAnalysis // Add link analysis to prepared content
+      wordCount,
+      contentDensity, // Add content density metric
+      linkAnalysis
     };
   }
 
@@ -327,10 +342,19 @@ export class AssetGrader {
     if (longOK) {
       score.score += w.long;
     } else {
-      score.reasons.push(
-        `Long description under ${minWords} words ` +
-        `(category median: ${Math.round(vocab.word_count_long.median ?? 300)}) - only ${content.wordCount} words`
-      );
+      // Enhanced error message that considers content density
+      if (content.contentDensity < 0.6) {
+        score.reasons.push(
+          `Long description under ${minWords} words ` +
+          `(category median: ${Math.round(vocab.word_count_long.median ?? 300)}) - only ${content.wordCount} words. ` +
+          `Consider adding more actual content rather than HTML formatting (content density: ${Math.round(content.contentDensity * 100)}%)`
+        );
+      } else {
+        score.reasons.push(
+          `Long description under ${minWords} words ` +
+          `(category median: ${Math.round(vocab.word_count_long.median ?? 300)}) - only ${content.wordCount} words`
+        );
+      }
     }
 
     // Bullet points
