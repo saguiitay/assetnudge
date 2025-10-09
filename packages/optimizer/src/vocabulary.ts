@@ -166,7 +166,6 @@ interface ExtendedCategoryVocabulary extends CategoryVocabulary {
   price?: StatisticsObject;
   quality_score?: StatisticsObject;
   extracted_from?: string;
-  extraction_date?: string;
   top_exemplar_score?: number;
   has_video_percentage?: number;
   common_structures?: string[];
@@ -615,7 +614,6 @@ export class VocabularyBuilder {
           
           // Metadata
           extracted_from: 'exemplars',
-          extraction_date: patterns.metadata.extractedAt,
           top_exemplar_score: patterns.metadata.topExemplarScore,
           has_video_percentage: patterns.media.hasVideo,
           common_structures: patterns.structure.commonStructures,
