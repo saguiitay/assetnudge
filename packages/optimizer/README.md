@@ -40,7 +40,7 @@ npm run start build-all -- --corpus data/packages.json --out-dir data/ --top-n 1
 npm run start build-all -- --corpus "data/corpus1.json,data/corpus2.json,data/corpus3.json" --out-dir data/ --top-n 15
 
 # Optimize an asset
-npm run optimize -- --input asset.json --exemplars data/exemplars.json --vocab data/exemplar_vocab.json
+npm run optimize -- --input asset.json --exemplars data/results/exemplars.json --vocab data/results/exemplar_vocab.json
 ```
 
 ## � Features
@@ -112,10 +112,10 @@ npm run start build-all -- --corpus "data/part1.json,data/part2.json,data/part3.
 npm run scrape -- --url "https://assetstore.unity.com/packages/..." --out asset.json
 
 # Grade an asset
-npm run grade -- --input asset.json --vocab data/exemplar_vocab.json
+npm run grade -- --input asset.json --vocab data/results/exemplar_vocab.json
 
 # Optimize with exemplar coaching
-npm run optimize -- --input asset.json --exemplars data/exemplars.json --vocab data/exemplar_vocab.json --ai true
+npm run optimize -- --input asset.json --exemplars data/results/exemplars.json --vocab data/results/exemplar_vocab.json --ai true
 ```
 
 ### Programmatic API
@@ -131,13 +131,13 @@ await optimizer.validateSetup();
 const { success, asset } = await scrapeAsset('https://assetstore.unity.com/packages/...');
 
 // Grade an asset
-const { grade } = await gradeAsset(assetData, 'data/exemplar_vocab.json');
+const { grade } = await gradeAsset(assetData, 'data/results/exemplar_vocab.json');
 
 // Full optimization
 const result = await optimizeAsset({
   input: 'asset.json',
-  exemplars: 'data/exemplars.json',
-  vocab: 'data/exemplar_vocab.json',
+  exemplars: 'data/results/exemplars.json',
+  vocab: 'data/results/exemplar_vocab.json',
   useAI: true
 });
 ```
@@ -178,21 +178,21 @@ The optimizer uses a comprehensive 100-point scoring system:
 ### 1. Build Exemplar Database
 ```bash
 # Single corpus file
-npm run start build-exemplars -- --corpus data/packages.json --out data/exemplars.json --top-n 15
+npm run start build-exemplars -- --corpus data/packages.json --out data/results/exemplars.json --top-n 15
 
 # Multiple corpus files (for large datasets)
-npm run start build-exemplars -- --corpus "data/corpus1.json,data/corpus2.json,data/corpus3.json" --out data/exemplars.json --top-n 15
+npm run start build-exemplars -- --corpus "data/corpus1.json,data/corpus2.json,data/corpus3.json" --out data/results/exemplars.json --top-n 15
 ```
 
 ### 2. Build Quality-Focused Vocabulary
 ```bash
 # Build exemplar-based vocabulary (recommended)
-npm run start build-exemplar-vocab -- --exemplars data/exemplars.json --out data/exemplar_vocab.json
+npm run start build-exemplar-vocab -- --exemplars data/results/exemplars.json --out data/results/exemplar_vocab.json
 ```
 
 ### 3. Generate Category Playbooks
 ```bash
-npm run start generate-playbooks -- --exemplars data/exemplars.json --out data/playbooks.json
+npm run start generate-playbooks -- --exemplars data/results/exemplars.json --out data/results/playbooks.json
 ```
 
 ### 4. One-Command Setup (Recommended)

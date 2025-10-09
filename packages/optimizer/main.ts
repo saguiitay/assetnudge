@@ -238,14 +238,14 @@ Examples:
   # �🚀 RECOMMENDED: One-stop exemplar ecosystem creation (single pass)
   node main.mjs build-all --corpus data/packages.json --out-dir data/ --top-n 15
   node main.mjs build-all --corpus data/corpus-folder/ --out-dir data/ --top-n 15 --best-sellers data/unity_best_sellers.json
-  node main.mjs optimize --input asset.json --exemplars data/exemplars.json --vocab data/exemplar_vocab.json
+  node main.mjs optimize --input asset.json --exemplars data/results/exemplars.json --vocab data/results/exemplar_vocab.json
   
   # Build exemplars with best sellers list
-  node main.mjs build-exemplars --corpus data/corpus.json --out data/exemplars.json --top-n 25 --best-sellers data/unity_best_sellers.json
-  node main.mjs build-exemplars --corpus data/corpus-folder/ --out data/exemplars.json --top-n 25
+  node main.mjs build-exemplars --corpus data/corpus.json --out data/results/exemplars.json --top-n 25 --best-sellers data/unity_best_sellers.json
+  node main.mjs build-exemplars --corpus data/corpus-folder/ --out data/results/exemplars.json --top-n 25
   
   # Generate dynamic grading rules from exemplars
-  node main.mjs build-grading-rules --exemplars data/exemplars.json --out data/grading-rules.json
+  node main.mjs build-grading-rules --exemplars data/results/exemplars.json --out data/results/grading-rules.json
   
   # Grade with dynamic rules
   node main.mjs grade --input asset.json --vocab vocab.json --rules grading-rules.json
@@ -256,8 +256,8 @@ Examples:
   
   # Traditional approach (individual commands for granular control)
   node main.mjs scrape --url "https://assetstore.unity.com/packages/..." --out asset.json
-  node main.mjs build-exemplars --corpus data/corpus.json --out data/exemplars.json --top-n 25
-  node main.mjs build-exemplars --corpus "data/part1.json,data/part2.json,data/folder/" --out data/exemplars.json --top-percent 15
+  node main.mjs build-exemplars --corpus data/corpus.json --out data/eresults/xemplars.json --top-n 25
+  node main.mjs build-exemplars --corpus "data/part1.json,data/part2.json,data/folder/" --out data/results/exemplars.json --top-percent 15
   
   # Best sellers format example (data/unity_best_sellers.json):
   # [

@@ -1,16 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import type { Asset, Vocabulary } from '@repo/optimizer/src/types';
-import { FileValidator } from '@repo/optimizer/src/utils/validation';
-import { 
-  buildTitleSystemPrompt,
-  buildTitleUserPrompt,
-  buildTagsSystemPrompt,
-  buildTagsUserPrompt,
-  buildShortDescSystemPrompt,
-  buildShortDescUserPrompt,
-  buildLongDescSystemPrompt,
-  buildLongDescUserPrompt
-} from '@repo/optimizer/src/prompts/index';
+import type { Asset } from '@repo/optimizer/src/types';
+import { generatePrompts } from '@repo/optimizer';
 
 /**
  * POST /api/prompts
@@ -18,68 +8,20 @@ import {
  * Development/Debug endpoint to retrieve the actual AI prompts used by the system.
  * This allows the frontend to display the real prompts being sent to the AI.
  * 
- * Loads exemplars and vocabulary data from default file locations based on the asset category.
- * Returns only the combined prompts for each suggestion type.
+ * Uses the optimizer package's generatePrompts function which handles:
+ * - Loading exemplars and vocabulary data from default file locations
+ * - Building system and user prompts for each field type
+ * - Returning combined prompts ready for AI consumption
  * 
  * Request body format: {
  *   "asset": { ... }              // Required: Asset data with title and category
  * }
  * 
+ * Query parameters:
+ *   type: (optional) Specific field type to get prompt for (title, tags, short_description, long_description)
+ * 
  * Only available in development/debug mode for security reasons.
  */
-/**
- * Helper function to generate combined prompt for a specific field type
- */
-function generateFieldPrompt(
-  fieldType: string, 
-  asset: Asset, 
-  exemplars: any[] = [], 
-  vocab: any = {}, 
-  validCategories: string[] = []
-): string {
-  let systemPrompt: string;
-  let userPrompt: string;
-  
-  switch (fieldType) {
-    case 'title':
-      systemPrompt = buildTitleSystemPrompt();
-      userPrompt = buildTitleUserPrompt(asset, exemplars, vocab, validCategories);
-      break;
-    case 'tags':
-      systemPrompt = buildTagsSystemPrompt();
-      userPrompt = buildTagsUserPrompt(asset, exemplars, vocab, validCategories);
-      break;
-    case 'short_description':
-      systemPrompt = buildShortDescSystemPrompt();
-      userPrompt = buildShortDescUserPrompt(asset, exemplars, vocab, validCategories);
-      break;
-    case 'long_description':
-      systemPrompt = buildLongDescSystemPrompt();
-      userPrompt = buildLongDescUserPrompt(asset, exemplars, vocab, validCategories);
-      break;
-    default:
-      throw new Error(`Unsupported field type: ${fieldType}`);
-  }
-  
-  return `${systemPrompt}\n\n---\n\n${userPrompt}`;
-}
-
-/**
- * Helper function to generate all combined prompts for an asset
- */
-function generateAllPrompts(
-  asset: Asset, 
-  exemplars: any[] = [], 
-  vocab: any = {}, 
-  validCategories: string[] = []
-): Record<string, string> {
-  return {
-    title: `${buildTitleSystemPrompt()}\n\n---\n\n${buildTitleUserPrompt(asset, exemplars, vocab, validCategories)}`,
-    tags: `${buildTagsSystemPrompt()}\n\n---\n\n${buildTagsUserPrompt(asset, exemplars, vocab, validCategories)}`,
-    short_description: `${buildShortDescSystemPrompt()}\n\n---\n\n${buildShortDescUserPrompt(asset, exemplars, vocab, validCategories)}`,
-    long_description: `${buildLongDescSystemPrompt()}\n\n---\n\n${buildLongDescUserPrompt(asset, exemplars, vocab, validCategories)}`
-  };
-}
 
 // Add CORS headers
 const corsHeaders = {
@@ -131,87 +73,38 @@ export async function POST(request: NextRequest) {
 
     const asset = requestBody.asset as Asset;
     
-    // Validate asset has required fields
-    if (!asset.title || !asset.category) {
+    // Get field type from query params
+    const { searchParams } = new URL(request.url);
+    const fieldType = searchParams.get('type');
+
+    // Use the optimizer package's generatePrompts function
+    const result = await generatePrompts(asset, fieldType || undefined, { debug: true });
+
+    if (!result.success) {
       return NextResponse.json(
-        { success: false, error: 'Asset must have at least title and category fields' },
+        { success: false, error: result.error },
         { status: 400 }
       );
     }
 
-    // Load context data from default file locations (like optimizer.ts)
-    let categoryExemplars: any[] = [];
-    let categoryVocab: any = {};
-    const validCategories: string[] = [
-      'Tools/Utilities',
-      'Templates/Systems',
-      '3D/Characters',
-      '3D/Environments',
-      '3D/Props',
-      '2D/Textures & Materials',
-      '2D/GUI',
-      '2D/Fonts',
-      'Audio/Music',
-      'Audio/Sound FX',
-      'VFX/Particles',
-      'VFX/Shaders'
-    ];
-    
-    // Try to load exemplars from default location
-    try {
-      const exemplarsData = await FileValidator.validateJSONFile('data/exemplars.json');
-      categoryExemplars = exemplarsData?.exemplars?.[asset.category] || [];
-    } catch (error) {
-      console.warn('Failed to load exemplars from data/exemplars.json:', (error as Error).message);
-      // Continue without exemplars
+    // Return the result from the optimizer
+    if (fieldType && result.prompt) {
+      return NextResponse.json({
+        success: true,
+        fieldType: result.fieldType,
+        prompt: result.prompt
+      });
+    } else if (result.prompts) {
+      return NextResponse.json({
+        success: true,
+        prompts: result.prompts
+      });
+    } else {
+      return NextResponse.json(
+        { success: false, error: 'Unexpected response format from optimizer' },
+        { status: 500 }
+      );
     }
-    
-    // Try to load vocabulary from default location
-    try {
-      const vocabulary: Vocabulary = await FileValidator.validateJSONFile('data/vocabulary.json') as Vocabulary;
-      categoryVocab = vocabulary[asset.category] || {};
-    } catch (error) {
-      console.warn('Failed to load vocabulary from data/vocabulary.json:', (error as Error).message);
-      // Continue without vocabulary
-    }
-
-    const { searchParams } = new URL(request.url);
-    const fieldType = searchParams.get('type');
-
-    // If specific field type requested, return that prompt only
-    if (fieldType) {
-      const validTypes = ['title', 'tags', 'short_description', 'long_description'];
-      
-      if (!validTypes.includes(fieldType)) {
-        return NextResponse.json(
-          { success: false, error: `Invalid field type. Must be one of: ${validTypes.join(', ')}` },
-          { status: 400 }
-        );
-      }
-
-      try {
-        const combinedPrompt = generateFieldPrompt(fieldType, asset, categoryExemplars, categoryVocab, validCategories);
-        
-        return NextResponse.json({
-          success: true,
-          fieldType,
-          prompt: combinedPrompt
-        });
-      } catch (error) {
-        return NextResponse.json(
-          { success: false, error: (error as Error).message },
-          { status: 400 }
-        );
-      }
-    }
-
-    // Return all prompts
-    const allPrompts = generateAllPrompts(asset, categoryExemplars, categoryVocab, validCategories);
-
-    return NextResponse.json({
-      success: true,
-      prompts: allPrompts
-    });
 
   } catch (error) {
     console.error('Error processing POST /api/prompts:', error);

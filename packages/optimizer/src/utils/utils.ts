@@ -310,3 +310,40 @@ export const countBullets = (text: string): number => {
   
   return count;
 };
+
+/**
+ * Utility function to find the correct data directory by testing for file existence
+ * Handles path resolution across different execution contexts (Next.js API, CLI, etc.)
+ */
+export async function findDataDirectory(testFileName: string = 'exemplars.json'): Promise<string> {
+  // Import path and FileValidator dynamically to avoid circular dependencies
+  const path = await import('path');
+  const { FileValidator } = await import('./validation');
+  
+  // Try multiple possible locations for the data files
+  const possibleDataDirs = [
+    path.join(process.cwd(), '..', '..', 'packages', 'optimizer', 'data', 'results'), // From API app to monorepo root
+    path.join(process.cwd(), '..', '..', 'packages', 'optimizer', 'data', 'results-multi-pass'), // Multi-pass results from API app
+    path.join(process.cwd(), 'packages', 'optimizer', 'data', 'results'), // Direct from process.cwd() if it's monorepo root
+    path.join(process.cwd(), 'packages', 'optimizer', 'data', 'results-multi-pass'), // Multi-pass results from monorepo root
+    path.join(__dirname, 'data', 'results'), // Same directory as index.ts
+    path.join(__dirname, '..', 'optimizer', 'data', 'results'), // Relative to packages dir
+    path.join(process.cwd(), 'data', 'results'), // From current working directory
+    'data/results' // Relative path fallback
+  ];
+
+  // Find the correct data directory
+  let dataDir: string = possibleDataDirs[0] || 'data/results';
+  for (const dir of possibleDataDirs) {
+    try {
+      const testPath = path.join(dir, testFileName);
+      await FileValidator.validateJSONFile(testPath);
+      dataDir = dir;
+      break;
+    } catch {
+      // Continue to next possible location
+    }
+  }
+
+  return dataDir;
+}

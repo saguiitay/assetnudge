@@ -10,6 +10,17 @@ import { scrapeAssetWithGraphQL } from './src/scrappers/graphql-scraper';
 import { Vocabulary as ValidatorVocabulary, FileValidator } from './src/utils/validation';
 import { Asset, GradeResult, Vocabulary as TypesVocabulary } from './src/types';
 import { DynamicAssetGrader } from './src/dynamic-asset-grader';
+import { findDataDirectory } from './src/utils/utils';
+import { 
+  buildTitleSystemPrompt,
+  buildTitleUserPrompt,
+  buildTagsSystemPrompt,
+  buildTagsUserPrompt,
+  buildShortDescSystemPrompt,
+  buildShortDescUserPrompt,
+  buildLongDescSystemPrompt,
+  buildLongDescUserPrompt
+} from './src/prompts/index';
 
 /**
  * Export Config class as OptimizerConfig for compatibility
@@ -78,27 +89,8 @@ export async function gradeAsset(assetData: Asset, vocabPath: string | null = nu
   const args: string[] = [];
   if (config && config.debug) args.push('--debug', 'true');
   
-  // Try multiple possible locations for the data files
-  const possibleDataDirs = [
-    path.join(__dirname, 'data', 'results'), // Same directory as index.ts
-    path.join(__dirname, '..', 'optimizer', 'data', 'results'), // Relative to packages dir
-    path.join(process.cwd(), 'packages', 'optimizer', 'data', 'results'), // From monorepo root
-    path.join(process.cwd(), 'data', 'results'), // From current working directory
-    'data/results' // Relative path fallback
-  ];
-  
   // Find the correct data directory
-  let dataDir: string = possibleDataDirs[0] || 'data/results'; // Default to first option or fallback
-  for (const dir of possibleDataDirs) {
-    try {
-      const testPath = path.join(dir, 'grading-rules.json');
-      await FileValidator.validateJSONFile(testPath);
-      dataDir = dir;
-      break;
-    } catch {
-      // Continue to next possible location
-    }
-  }
+  const dataDir = await findDataDirectory('grading-rules.json');
   
   const defaultVocabPath = vocabPath || path.join(dataDir, 'exemplar_vocab.json');
   const defaultRulesPath = path.join(dataDir, 'grading-rules.json');
@@ -151,10 +143,189 @@ export async function optimizeAsset(options: any, config: { debug?: boolean } | 
   const args: string[] = [];
   if (config && config.debug) args.push('--debug', 'true');
   
+  // If no explicit file paths provided, try to resolve default locations
+  if (!options.vocabPath || !options.exemplarsPath) {
+    // Find the correct data directory
+    const dataDir = await findDataDirectory('exemplars.json');
+
+    // Set default paths if not provided
+    if (!options.vocabPath) {
+      options.vocabPath = path.join(dataDir, 'exemplar_vocab.json');
+    }
+    if (!options.exemplarsPath) {
+      options.exemplarsPath = path.join(dataDir, 'exemplars.json');
+    }
+    
+    if (config?.debug) {
+      console.log(`Using default file paths: vocab=${options.vocabPath}, exemplars=${options.exemplarsPath}`);
+    }
+  }
+  
   const optimizer = new UnityAssetOptimizer(args);
   await optimizer.validateSetup();
   
   return optimizer.optimizeAsset(options);
+}
+
+/**
+ * Generate AI prompts for asset optimization fields
+ * Loads context data (exemplars and vocabulary) from default file locations
+ */
+export async function generatePrompts(
+  asset: Asset, 
+  fieldType?: string,
+  config: { debug?: boolean } | null = null
+): Promise<{ success: true; prompts?: Record<string, string>; prompt?: string; fieldType?: string } | { success: false; error: string }> {
+  try {
+    // Validate asset has required fields
+    if (!asset.title || !asset.category) {
+      return {
+        success: false,
+        error: 'Asset must have at least title and category fields'
+      };
+    }
+
+    // Find the correct data directory
+    const dataDir = await findDataDirectory('exemplars.json');
+
+    // Load context data from default file locations
+    let categoryExemplars: any[] = [];
+    let categoryVocab: any = {};
+    const validCategories: string[] = [
+      'Tools/Utilities',
+      'Templates/Systems',
+      '3D/Characters',
+      '3D/Environments',
+      '3D/Props',
+      '2D/Textures & Materials',
+      '2D/GUI',
+      '2D/Fonts',
+      'Audio/Music',
+      'Audio/Sound FX',
+      'VFX/Particles',
+      'VFX/Shaders'
+    ];
+    
+    // Try to load exemplars from default location
+    try {
+      const exemplarsPath = path.join(dataDir, 'exemplars.json');
+      const exemplarsData = await FileValidator.validateJSONFile(exemplarsPath);
+      categoryExemplars = exemplarsData?.exemplars?.[asset.category] || [];
+      
+      if (config?.debug) {
+        console.log(`Loaded exemplars from ${exemplarsPath} for category ${asset.category}: ${categoryExemplars.length} items`);
+      }
+    } catch (error) {
+      if (config?.debug) {
+        console.warn('Failed to load exemplars:', (error as Error).message);
+      }
+      // Continue without exemplars
+    }
+    
+    // Try to load vocabulary from default location
+    try {
+      const vocabularyPath = path.join(dataDir, 'exemplar_vocab.json');
+      const vocabulary: TypesVocabulary = await FileValidator.validateJSONFile(vocabularyPath) as TypesVocabulary;
+      categoryVocab = vocabulary[asset.category] || {};
+      
+      if (config?.debug) {
+        console.log(`Loaded vocabulary from ${vocabularyPath} for category ${asset.category}: ${Object.keys(categoryVocab).length} terms`);
+      }
+    } catch (error) {
+      if (config?.debug) {
+        console.warn('Failed to load vocabulary:', (error as Error).message);
+      }
+      // Continue without vocabulary
+    }
+
+    // If specific field type requested, return that prompt only
+    if (fieldType) {
+      const validTypes = ['title', 'tags', 'short_description', 'long_description'];
+      
+      if (!validTypes.includes(fieldType)) {
+        return {
+          success: false,
+          error: `Invalid field type. Must be one of: ${validTypes.join(', ')}`
+        };
+      }
+
+      const combinedPrompt = generateFieldPrompt(fieldType, asset, categoryExemplars, categoryVocab, validCategories);
+      
+      return {
+        success: true,
+        fieldType,
+        prompt: combinedPrompt
+      };
+    }
+
+    // Return all prompts
+    const allPrompts = generateAllPrompts(asset, categoryExemplars, categoryVocab, validCategories);
+
+    return {
+      success: true,
+      prompts: allPrompts
+    };
+
+  } catch (error) {
+    return {
+      success: false,
+      error: `Failed to generate prompts: ${(error as Error).message}`
+    };
+  }
+}
+
+/**
+ * Helper function to generate combined prompt for a specific field type
+ */
+function generateFieldPrompt(
+  fieldType: string, 
+  asset: Asset, 
+  exemplars: any[] = [], 
+  vocab: any = {}, 
+  validCategories: string[] = []
+): string {
+  let systemPrompt: string;
+  let userPrompt: string;
+  
+  switch (fieldType) {
+    case 'title':
+      systemPrompt = buildTitleSystemPrompt();
+      userPrompt = buildTitleUserPrompt(asset, exemplars, vocab, validCategories);
+      break;
+    case 'tags':
+      systemPrompt = buildTagsSystemPrompt();
+      userPrompt = buildTagsUserPrompt(asset, exemplars, vocab, validCategories);
+      break;
+    case 'short_description':
+      systemPrompt = buildShortDescSystemPrompt();
+      userPrompt = buildShortDescUserPrompt(asset, exemplars, vocab, validCategories);
+      break;
+    case 'long_description':
+      systemPrompt = buildLongDescSystemPrompt();
+      userPrompt = buildLongDescUserPrompt(asset, exemplars, vocab, validCategories);
+      break;
+    default:
+      throw new Error(`Unsupported field type: ${fieldType}`);
+  }
+  
+  return `${systemPrompt}\n\n---\n\n${userPrompt}`;
+}
+
+/**
+ * Helper function to generate all combined prompts for an asset
+ */
+function generateAllPrompts(
+  asset: Asset, 
+  exemplars: any[] = [], 
+  vocab: any = {}, 
+  validCategories: string[] = []
+): Record<string, string> {
+  return {
+    title: `${buildTitleSystemPrompt()}\n\n---\n\n${buildTitleUserPrompt(asset, exemplars, vocab, validCategories)}`,
+    tags: `${buildTagsSystemPrompt()}\n\n---\n\n${buildTagsUserPrompt(asset, exemplars, vocab, validCategories)}`,
+    short_description: `${buildShortDescSystemPrompt()}\n\n---\n\n${buildShortDescUserPrompt(asset, exemplars, vocab, validCategories)}`,
+    long_description: `${buildLongDescSystemPrompt()}\n\n---\n\n${buildLongDescUserPrompt(asset, exemplars, vocab, validCategories)}`
+  };
 }
 
 // Export the main class as default
