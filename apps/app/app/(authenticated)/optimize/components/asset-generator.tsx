@@ -6,19 +6,15 @@ import { Button } from '@workspace/ui/components/button';
 import { Alert, AlertDescription } from '@workspace/ui/components/alert';
 import { Badge } from '@workspace/ui/components/badge';
 import { Separator } from '@workspace/ui/components/separator';
-import { Checkbox } from '@workspace/ui/components/checkbox';
 import { 
   Sparkles, 
-  Wand2, 
   RefreshCw, 
   AlertCircle, 
   CheckCircle, 
   Zap,
   FileText,
   Tag,
-  Hash,
-  DollarSign,
-  Archive
+  Hash
 } from 'lucide-react';
 import { Asset } from '@repo/optimizer/src/types';
 
@@ -27,19 +23,25 @@ interface AssetGeneratorProps {
   onGeneratedDataUpdate?: (generatedData: Partial<Asset>) => void;
 }
 
-interface GenerationOption {
+interface GenerationField {
   key: keyof Asset;
   label: string;
   description: string;
   icon: React.ReactNode;
 }
 
-const generationOptions: GenerationOption[] = [
+const generationFields: GenerationField[] = [
   {
     key: 'title',
     label: 'Title',
     description: 'Generate an engaging and descriptive title',
     icon: <FileText className="h-4 w-4" />
+  },
+  {
+    key: 'tags',
+    label: 'Tags',
+    description: 'Generate relevant keywords and tags',
+    icon: <Tag className="h-4 w-4" />
   },
   {
     key: 'short_description',
@@ -52,73 +54,101 @@ const generationOptions: GenerationOption[] = [
     label: 'Long Description',
     description: 'Generate detailed educational content',
     icon: <FileText className="h-4 w-4" />
-  },
-  {
-    key: 'tags',
-    label: 'Tags',
-    description: 'Generate relevant keywords and tags',
-    icon: <Tag className="h-4 w-4" />
-  },
-  {
-    key: 'category',
-    label: 'Category',
-    description: 'Suggest the most appropriate category',
-    icon: <Archive className="h-4 w-4" />
-  },
-  {
-    key: 'price',
-    label: 'Price',
-    description: 'Recommend optimal pricing',
-    icon: <DollarSign className="h-4 w-4" />
   }
 ];
 
 export function AssetGenerator({ currentAssetData, onGeneratedDataUpdate }: AssetGeneratorProps) {
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [isGenerating, setIsGenerating] = useState<Record<string, boolean>>({});
   const [generationError, setGenerationError] = useState<string | null>(null);
   const [generationSuccess, setGenerationSuccess] = useState<string | null>(null);
-  const [selectedFields, setSelectedFields] = useState<Set<keyof Asset>>(new Set());
   const [lastGenerated, setLastGenerated] = useState<Partial<Asset> | null>(null);
 
-  const toggleField = (field: keyof Asset) => {
-    const newSelected = new Set(selectedFields);
-    if (newSelected.has(field)) {
-      newSelected.delete(field);
-    } else {
-      newSelected.add(field);
-    }
-    setSelectedFields(newSelected);
-  };
+  // Check if we're in development/debug mode
+  const isDevelopment = process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_DEBUG === 'true';
 
-  const selectAllFields = () => {
-    setSelectedFields(new Set(generationOptions.map(opt => opt.key)));
-  };
-
-  const clearSelection = () => {
-    setSelectedFields(new Set());
-  };
-
-  const generateAssetDetails = async (generateAll: boolean = false) => {
+  const generateField = async (fieldKey: keyof Asset) => {
     if (!currentAssetData) {
       setGenerationError('No asset data available. Please import or create an asset first.');
       return;
     }
 
-    if (!generateAll && selectedFields.size === 0) {
-      setGenerationError('Please select at least one field to generate.');
+    setIsGenerating(prev => ({ ...prev, [fieldKey]: true }));
+    setGenerationError(null);
+    setGenerationSuccess(null);
+
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
+
+      const response = await fetch(`${apiUrl}/optimize`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          assetData: currentAssetData,
+          generateFields: [fieldKey],
+          generateAll: false,
+          debug: isDevelopment
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        setGenerationError(result.error || `Failed to generate ${fieldKey}`);
+        return;
+      }
+
+      const generatedData = result.optimizedAsset || result.generated || {};
+      
+      // Validate and sanitize the generated data
+      const sanitizedData: Partial<Asset> = {};
+      
+      if (generatedData[fieldKey]) {
+        if (fieldKey === 'title' && typeof generatedData.title === 'string') {
+          sanitizedData.title = generatedData.title.slice(0, 100);
+        } else if (fieldKey === 'short_description' && typeof generatedData.short_description === 'string') {
+          sanitizedData.short_description = generatedData.short_description.slice(0, 200);
+        } else if (fieldKey === 'long_description' && typeof generatedData.long_description === 'string') {
+          sanitizedData.long_description = generatedData.long_description.slice(0, 5000);
+        } else if (fieldKey === 'tags' && Array.isArray(generatedData.tags)) {
+          sanitizedData.tags = generatedData.tags
+            .filter((tag: any) => typeof tag === 'string')
+            .slice(0, 20);
+        }
+      }
+
+      console.log('Generated data received:', result);
+      console.log('Sanitized data:', sanitizedData);
+
+      setLastGenerated(sanitizedData);
+      setGenerationSuccess(`Successfully generated ${fieldKey}!`);
+      
+      // Update the parent component with generated data
+      onGeneratedDataUpdate?.(sanitizedData);
+      
+    } catch (error) {
+      console.error('Generation error:', error);
+      setGenerationError(`Failed to generate ${fieldKey}. Please check your connection and try again.`);
+    } finally {
+      setIsGenerating(prev => ({ ...prev, [fieldKey]: false }));
+    }
+  };
+
+  const generateAllFields = async () => {
+    if (!currentAssetData) {
+      setGenerationError('No asset data available. Please import or create an asset first.');
       return;
     }
 
-    setIsGenerating(true);
+    setIsGenerating(prev => ({ ...prev, all: true }));
     setGenerationError(null);
     setGenerationSuccess(null);
     setLastGenerated(null);
 
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
-      const fieldsToGenerate = generateAll ? 
-        generationOptions.map(opt => opt.key) : 
-        Array.from(selectedFields);
+      const fieldsToGenerate = generationFields.map(field => field.key);
 
       const response = await fetch(`${apiUrl}/optimize`, {
         method: 'POST',
@@ -128,8 +158,8 @@ export function AssetGenerator({ currentAssetData, onGeneratedDataUpdate }: Asse
         body: JSON.stringify({
           assetData: currentAssetData,
           generateFields: fieldsToGenerate,
-          generateAll,
-          debug: false
+          generateAll: true,
+          debug: isDevelopment
         }),
       });
 
@@ -157,18 +187,10 @@ export function AssetGenerator({ currentAssetData, onGeneratedDataUpdate }: Asse
         sanitizedData.long_description = generatedData.long_description.slice(0, 5000);
       }
       
-      if (generatedData.category && typeof generatedData.category === 'string') {
-        sanitizedData.category = generatedData.category;
-      }
-      
       if (generatedData.tags && Array.isArray(generatedData.tags)) {
         sanitizedData.tags = generatedData.tags
           .filter((tag: any) => typeof tag === 'string')
           .slice(0, 20);
-      }
-      
-      if (typeof generatedData.price === 'number' && !isNaN(generatedData.price)) {
-        sanitizedData.price = Math.max(0, generatedData.price);
       }
 
       console.log('Generated data received:', result);
@@ -180,16 +202,11 @@ export function AssetGenerator({ currentAssetData, onGeneratedDataUpdate }: Asse
       // Update the parent component with generated data
       onGeneratedDataUpdate?.(sanitizedData);
       
-      // Clear selection after successful generation
-      if (!generateAll) {
-        setSelectedFields(new Set());
-      }
-      
     } catch (error) {
       console.error('Generation error:', error);
       setGenerationError('Failed to generate asset details. Please check your connection and try again.');
     } finally {
-      setIsGenerating(false);
+      setIsGenerating(prev => ({ ...prev, all: false }));
     }
   };
 
@@ -227,103 +244,70 @@ export function AssetGenerator({ currentAssetData, onGeneratedDataUpdate }: Asse
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Quick Actions */}
-        <div className="flex flex-col sm:flex-row gap-3">
+        {/* Generate All Fields Option */}
+        <div className="space-y-3">
+          <h4 className="font-semibold text-sm">Option 1: Generate All Fields</h4>
+          <p className="text-xs text-muted-foreground">
+            Generate all asset details at once using AI optimization
+          </p>
           <Button 
-            onClick={() => generateAssetDetails(true)}
-            disabled={isGenerating}
-            className="flex-1 gap-2"
+            onClick={() => generateAllFields()}
+            disabled={Object.values(isGenerating).some(Boolean)}
+            className="w-full gap-2"
           >
-            {isGenerating ? (
+            {isGenerating.all ? (
               <RefreshCw className="h-4 w-4 animate-spin" />
             ) : (
               <Zap className="h-4 w-4" />
             )}
             Generate All Details
           </Button>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              onClick={selectAllFields}
-              size="sm"
-              disabled={isGenerating}
-            >
-              Select All
-            </Button>
-            <Button
-              variant="outline"
-              onClick={clearSelection}
-              size="sm"
-              disabled={isGenerating}
-            >
-              Clear
-            </Button>
-          </div>
         </div>
 
         <Separator />
 
-        {/* Field Selection */}
+        {/* Generate Individual Fields Option */}
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h4 className="font-semibold text-sm">Generate Specific Fields</h4>
-            <Badge variant="outline">
-              {selectedFields.size} selected
-            </Badge>
+          <div>
+            <h4 className="font-semibold text-sm">Option 2: Generate Individual Fields</h4>
+            <p className="text-xs text-muted-foreground">
+              Generate specific fields one at a time for more control
+            </p>
           </div>
           
           <div className="grid grid-cols-1 gap-3">
-            {generationOptions.map((option) => (
+            {generationFields.map((field) => (
               <div
-                key={option.key}
-                className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-muted/50 transition-colors"
+                key={field.key}
+                className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors"
               >
-                <Checkbox
-                  id={`generate-${option.key}`}
-                  checked={selectedFields.has(option.key)}
-                  onCheckedChange={() => toggleField(option.key)}
-                  disabled={isGenerating}
-                />
-                <div className="flex items-center gap-2 flex-1">
-                  {option.icon}
+                <div className="flex items-center gap-3 flex-1">
+                  {field.icon}
                   <div className="flex-1">
-                    <label
-                      htmlFor={`generate-${option.key}`}
-                      className="text-sm font-medium cursor-pointer"
-                    >
-                      {option.label}
-                    </label>
+                    <span className="text-sm font-medium">{field.label}</span>
                     <p className="text-xs text-muted-foreground">
-                      {option.description}
+                      {field.description}
                     </p>
                   </div>
                 </div>
-                {currentAssetData[option.key] && (
-                  <Badge variant="secondary" className="text-xs">
-                    Has data
-                  </Badge>
-                )}
+                <Button
+                  onClick={() => generateField(field.key)}
+                  disabled={Object.values(isGenerating).some(Boolean)}
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                >
+                  {isGenerating[field.key] ? (
+                    <RefreshCw className="h-3 w-3 animate-spin" />
+                  ) : (
+                    <Sparkles className="h-3 w-3" />
+                  )}
+                  Generate
+                </Button>
               </div>
             ))}
           </div>
         </div>
-
-        {/* Generate Selected Button */}
-        {selectedFields.size > 0 && (
-          <Button 
-            onClick={() => generateAssetDetails(false)}
-            disabled={isGenerating}
-            variant="outline"
-            className="w-full gap-2"
-          >
-            {isGenerating ? (
-              <RefreshCw className="h-4 w-4 animate-spin" />
-            ) : (
-              <Wand2 className="h-4 w-4" />
-            )}
-            Generate Selected Fields ({selectedFields.size})
-          </Button>
-        )}
 
         {/* Status Messages */}
         {generationError && (
@@ -368,7 +352,7 @@ export function AssetGenerator({ currentAssetData, onGeneratedDataUpdate }: Asse
         )}
 
         {/* Loading State */}
-        {isGenerating && (
+        {Object.values(isGenerating).some(Boolean) && (
           <div className="text-center py-4">
             <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-2 text-primary" />
             <p className="text-sm text-muted-foreground">

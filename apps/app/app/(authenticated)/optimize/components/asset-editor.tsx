@@ -21,8 +21,9 @@ import { Badge } from '@workspace/ui/components/badge';
 import { Alert, AlertDescription } from '@workspace/ui/components/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@workspace/ui/components/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@workspace/ui/components/dialog';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@workspace/ui/components/hover-card';
 import { AssetMediaGallery } from './media-gallery';
-import { X, Download, AlertCircle, CheckCircle, ShoppingCart } from 'lucide-react';
+import { X, Download, AlertCircle, CheckCircle, ShoppingCart, Sparkles, RefreshCw, Info, Copy } from 'lucide-react';
 import { EditorProvider, EditorBubbleMenu, EditorFormatBold, EditorFormatItalic, EditorLinkSelector, EditorNodeBulletList, EditorNodeOrderedList, type JSONContent, type Editor } from '@workspace/ui/components/kibo-ui/editor';
 import { Asset, AssetImage, AssetMainImage, AssetVideo } from '@repo/optimizer/src/types';
 
@@ -113,6 +114,30 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
   const [importSuccess, setImportSuccess] = useState(false);
   const [importedData, setImportedData] = useState<Asset | undefined>(undefined);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  
+  // Asset generation state
+  const [isGenerating, setIsGenerating] = useState<Record<string, boolean>>({});
+  const [generationError, setGenerationError] = useState<string | null>(null);
+  const [generationSuccess, setGenerationSuccess] = useState<string | null>(null);
+
+  // Check if we're in development/debug mode
+  const isDevelopment = process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_DEBUG === 'true';
+
+  // AI prompts for different fields (for development tooltips)
+  const fieldPrompts = {
+    title: 'Generate a compelling and descriptive title for this digital asset. The title should be clear, engaging, and accurately represent the content. Keep it under 60 characters for optimal SEO. Consider the target audience and the asset\'s unique value proposition.',
+    short_description: 'Create a compelling short description for this digital asset. This should be a concise summary that hooks the reader and clearly communicates the value proposition. Keep it under 160 characters, focus on benefits, and include a call-to-action mindset. This will be used in previews and search results.',
+    long_description: 'Generate a comprehensive long description for this digital asset. Include detailed information about what\'s included, how it can be used, the target audience, technical specifications if relevant, and the benefits/value it provides. Structure it with clear sections, use bullet points where appropriate, and maintain an engaging, professional tone. Aim for 300-800 words.',
+    tags: 'Generate relevant tags and keywords for this digital asset. Include primary keywords, secondary keywords, style descriptors, and category tags. Focus on terms that potential buyers would search for. Return 10-15 tags maximum, prioritizing discoverability and relevance.'
+  };
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch (err) {
+      console.error('Failed to copy text:', err);
+    }
+  };
 
   const form = useForm<AssetFormData>({
     resolver: zodResolver(assetSchema),
@@ -189,6 +214,158 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
   const onSubmit = (data: AssetFormData) => {
     console.log('Asset data:', data);
     // Note: Automatic updates are now handled by useEffect above
+  };
+
+  // Asset generation functions
+  const generateField = async (fieldKey: keyof Asset) => {
+    const currentAssetData = {
+      ...importedData,
+      title: form.getValues('title'),
+      short_description: form.getValues('short_description'),
+      long_description: form.getValues('long_description'),
+      tags: form.getValues('tags'),
+      category: form.getValues('category')
+    } as Asset;
+
+    if (!currentAssetData.title) {
+      setGenerationError('Please enter a title first to generate other fields.');
+      return;
+    }
+
+    setIsGenerating(prev => ({ ...prev, [fieldKey]: true }));
+    setGenerationError(null);
+    setGenerationSuccess(null);
+
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
+      const isDevelopment = process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_DEBUG === 'true';
+
+      const response = await fetch(`${apiUrl}/optimize`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          assetData: currentAssetData,
+          generateFields: [fieldKey],
+          generateAll: false,
+          debug: isDevelopment
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        setGenerationError(result.error || `Failed to generate ${fieldKey}`);
+        return;
+      }
+
+      const generatedData = result.optimizedAsset || result.generated || {};
+      
+      // Update the form with generated data
+      if (generatedData[fieldKey]) {
+        if (fieldKey === 'title' && typeof generatedData.title === 'string') {
+          form.setValue('title', generatedData.title.slice(0, 100));
+        } else if (fieldKey === 'short_description' && typeof generatedData.short_description === 'string') {
+          form.setValue('short_description', generatedData.short_description.slice(0, 200));
+        } else if (fieldKey === 'long_description' && typeof generatedData.long_description === 'string') {
+          form.setValue('long_description', generatedData.long_description.slice(0, 5000));
+        } else if (fieldKey === 'tags' && Array.isArray(generatedData.tags)) {
+          const validTags = generatedData.tags
+            .filter((tag: any) => typeof tag === 'string')
+            .slice(0, 20);
+          form.setValue('tags', validTags);
+        }
+      }
+
+      setGenerationSuccess(`Successfully generated ${fieldKey}!`);
+      
+    } catch (error) {
+      console.error('Generation error:', error);
+      setGenerationError(`Failed to generate ${fieldKey}. Please check your connection and try again.`);
+    } finally {
+      setIsGenerating(prev => ({ ...prev, [fieldKey]: false }));
+    }
+  };
+
+  const generateAllFields = async () => {
+    const currentAssetData = {
+      ...importedData,
+      title: form.getValues('title'),
+      short_description: form.getValues('short_description'),
+      long_description: form.getValues('long_description'),
+      tags: form.getValues('tags'),
+      category: form.getValues('category')
+    } as Asset;
+
+    if (!currentAssetData.title) {
+      setGenerationError('Please enter a title first to generate other fields.');
+      return;
+    }
+
+    setIsGenerating(prev => ({ ...prev, all: true }));
+    setGenerationError(null);
+    setGenerationSuccess(null);
+
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
+      const isDevelopment = process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_DEBUG === 'true';
+      const fieldsToGenerate = ['title', 'tags', 'short_description', 'long_description'];
+
+      const response = await fetch(`${apiUrl}/optimize`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          assetData: currentAssetData,
+          generateFields: fieldsToGenerate,
+          generateAll: true,
+          debug: isDevelopment
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        setGenerationError(result.error || 'Failed to generate asset details');
+        return;
+      }
+
+      const generatedData = result.optimizedAsset || result.generated || {};
+      
+      // Update form with all generated data
+      setIsBatchUpdating(true);
+      
+      if (generatedData.title && typeof generatedData.title === 'string') {
+        form.setValue('title', generatedData.title.slice(0, 100));
+      }
+      
+      if (generatedData.short_description && typeof generatedData.short_description === 'string') {
+        form.setValue('short_description', generatedData.short_description.slice(0, 200));
+      }
+      
+      if (generatedData.long_description && typeof generatedData.long_description === 'string') {
+        form.setValue('long_description', generatedData.long_description.slice(0, 5000));
+      }
+      
+      if (generatedData.tags && Array.isArray(generatedData.tags)) {
+        const validTags = generatedData.tags
+          .filter((tag: any) => typeof tag === 'string')
+          .slice(0, 20);
+        form.setValue('tags', validTags);
+      }
+
+      setIsBatchUpdating(false);
+      setGenerationSuccess(`Successfully generated ${Object.keys(generatedData).length} field(s)!`);
+      
+    } catch (error) {
+      console.error('Generation error:', error);
+      setGenerationError('Failed to generate asset details. Please check your connection and try again.');
+    } finally {
+      setIsGenerating(prev => ({ ...prev, all: false }));
+      setIsBatchUpdating(false);
+    }
   };
 
   const clearImportedData = () => {
@@ -502,9 +679,52 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
                 name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Title</FormLabel>
+                    <FormLabel className="flex items-center gap-2">
+                      Title
+                      {isDevelopment && (
+                        <HoverCard>
+                          <HoverCardTrigger asChild>
+                            <button type="button" className="text-muted-foreground hover:text-foreground" aria-label="Show AI prompt for title generation">
+                              <Info className="h-3 w-3" />
+                            </button>
+                          </HoverCardTrigger>
+                          <HoverCardContent className="w-80">
+                            <div className="space-y-2">
+                              <h4 className="text-sm font-semibold">AI Prompt for Title</h4>
+                              <p className="text-xs text-muted-foreground">{fieldPrompts.title}</p>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => copyToClipboard(fieldPrompts.title)}
+                                className="w-full gap-2 h-6 text-xs"
+                              >
+                                <Copy className="h-3 w-3" />
+                                Copy Prompt
+                              </Button>
+                            </div>
+                          </HoverCardContent>
+                        </HoverCard>
+                      )}
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter asset title" {...field} />
+                      <div className="flex gap-2">
+                        <Input placeholder="Enter asset title" {...field} className="flex-1" />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => generateField('title')}
+                          disabled={Object.values(isGenerating).some(Boolean)}
+                          className="gap-2 whitespace-nowrap"
+                        >
+                          {isGenerating.title ? (
+                            <RefreshCw className="h-3 w-3 animate-spin" />
+                          ) : (
+                            <Sparkles className="h-3 w-3" />
+                          )}
+                          Generate
+                        </Button>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -531,7 +751,50 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
               name="short_description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Short Description</FormLabel>
+                  <FormLabel className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      Short Description
+                      {isDevelopment && (
+                        <HoverCard>
+                          <HoverCardTrigger asChild>
+                            <button type="button" className="text-muted-foreground hover:text-foreground" aria-label="Show AI prompt for short description generation">
+                              <Info className="h-3 w-3" />
+                            </button>
+                          </HoverCardTrigger>
+                          <HoverCardContent className="w-80">
+                            <div className="space-y-2">
+                              <h4 className="text-sm font-semibold">AI Prompt for Short Description</h4>
+                              <p className="text-xs text-muted-foreground">{fieldPrompts.short_description}</p>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => copyToClipboard(fieldPrompts.short_description)}
+                                className="w-full gap-2 h-6 text-xs"
+                              >
+                                <Copy className="h-3 w-3" />
+                                Copy Prompt
+                              </Button>
+                            </div>
+                          </HoverCardContent>
+                        </HoverCard>
+                      )}
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => generateField('short_description')}
+                      disabled={Object.values(isGenerating).some(Boolean) || !form.watch('title')}
+                      className="gap-2 h-6 text-xs"
+                    >
+                      {isGenerating.short_description ? (
+                        <RefreshCw className="h-3 w-3 animate-spin" />
+                      ) : (
+                        <Sparkles className="h-3 w-3" />
+                      )}
+                      Generate
+                    </Button>
+                  </FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Enter a brief description"
@@ -552,7 +815,50 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
               name="long_description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Long Description</FormLabel>
+                  <FormLabel className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      Long Description
+                      {isDevelopment && (
+                        <HoverCard>
+                          <HoverCardTrigger asChild>
+                            <button type="button" className="text-muted-foreground hover:text-foreground" aria-label="Show AI prompt for long description generation">
+                              <Info className="h-3 w-3" />
+                            </button>
+                          </HoverCardTrigger>
+                          <HoverCardContent className="w-80">
+                            <div className="space-y-2">
+                              <h4 className="text-sm font-semibold">AI Prompt for Long Description</h4>
+                              <p className="text-xs text-muted-foreground">{fieldPrompts.long_description}</p>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => copyToClipboard(fieldPrompts.long_description)}
+                                className="w-full gap-2 h-6 text-xs"
+                              >
+                                <Copy className="h-3 w-3" />
+                                Copy Prompt
+                              </Button>
+                            </div>
+                          </HoverCardContent>
+                        </HoverCard>
+                      )}
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => generateField('long_description')}
+                      disabled={Object.values(isGenerating).some(Boolean) || !form.watch('title')}
+                      className="gap-2 h-6 text-xs"
+                    >
+                      {isGenerating.long_description ? (
+                        <RefreshCw className="h-3 w-3 animate-spin" />
+                      ) : (
+                        <Sparkles className="h-3 w-3" />
+                      )}
+                      Generate
+                    </Button>
+                  </FormLabel>
                   <FormControl>
                     <div className="space-y-2">
                       <EditorProvider
@@ -596,7 +902,50 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
             />
 
             <div className="space-y-4">
-              <FormLabel>Tags</FormLabel>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <FormLabel>Tags</FormLabel>
+                  {isDevelopment && (
+                    <HoverCard>
+                      <HoverCardTrigger asChild>
+                        <button type="button" className="text-muted-foreground hover:text-foreground" aria-label="Show AI prompt for tags generation">
+                          <Info className="h-3 w-3" />
+                        </button>
+                      </HoverCardTrigger>
+                      <HoverCardContent className="w-80">
+                        <div className="space-y-2">
+                          <h4 className="text-sm font-semibold">AI Prompt for Tags</h4>
+                          <p className="text-xs text-muted-foreground">{fieldPrompts.tags}</p>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => copyToClipboard(fieldPrompts.tags)}
+                            className="w-full gap-2 h-6 text-xs"
+                          >
+                            <Copy className="h-3 w-3" />
+                            Copy Prompt
+                          </Button>
+                        </div>
+                      </HoverCardContent>
+                    </HoverCard>
+                  )}
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => generateField('tags')}
+                  disabled={Object.values(isGenerating).some(Boolean) || !form.watch('title')}
+                  className="gap-2 h-6 text-xs"
+                >
+                  {isGenerating.tags ? (
+                    <RefreshCw className="h-3 w-3 animate-spin" />
+                  ) : (
+                    <Sparkles className="h-3 w-3" />
+                  )}
+                  Generate
+                </Button>
+              </div>
               <div className="flex gap-2">
                 <Input
                   placeholder="Add a tag"
@@ -639,6 +988,46 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
               )}
             </div>
 
+            {/* AI Generation Section */}
+            <div className="space-y-4 border-t pt-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-semibold text-sm">AI Enhancement</h4>
+                  <p className="text-xs text-muted-foreground">
+                    Generate all asset details at once using AI optimization
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  onClick={generateAllFields}
+                  disabled={Object.values(isGenerating).some(Boolean) || !form.watch('title')}
+                  className="gap-2"
+                >
+                  {isGenerating.all ? (
+                    <RefreshCw className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Sparkles className="h-4 w-4" />
+                  )}
+                  Generate All Fields
+                </Button>
+              </div>
+
+              {/* Status Messages */}
+              {generationError && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{generationError}</AlertDescription>
+                </Alert>
+              )}
+
+              {generationSuccess && (
+                <Alert>
+                  <CheckCircle className="h-4 w-4" />
+                  <AlertDescription>{generationSuccess}</AlertDescription>
+                </Alert>
+              )}
+            </div>
+
             {/* Asset Statistics */}
             <div className="space-y-4">
               <FormLabel>Asset Statistics</FormLabel>
@@ -675,7 +1064,7 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
                 </div>
               </div>
             </div>
-
+            
             {/* Asset Media Gallery */}
             <AssetMediaGallery 
               key={`media-${form.watch('title')}-${form.watch('mainImage')?.big || ''}-${form.watch('images')?.length || 0}`}

@@ -4,12 +4,10 @@ import { useState, useEffect } from 'react';
 import { Header } from '../components/header';
 import { AssetEditor } from './components/asset-editor';
 import { AssetGrade } from './components/asset-grade';
-import { AssetGenerator } from './components/asset-generator';
 import { SimilarAssets } from './components/similar-assets';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@workspace/ui/components/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@workspace/ui/components/card';
-import { Separator } from '@workspace/ui/components/separator';
-import { FileText, Sparkles, Search, BarChart3 } from 'lucide-react';
+import { FileText, Search, BarChart3 } from 'lucide-react';
 import { Asset } from '@repo/optimizer/src/types';
 
 const App = () => {
@@ -29,14 +27,6 @@ const App = () => {
     setCurrentAssetData(null);
     setShowGrade(false);
     setGradeKey(prev => prev + 1); // Force re-render when clearing
-  };
-
-  const handleGeneratedDataUpdate = (generatedData: Partial<Asset>) => {
-    if (currentAssetData) {
-      const updatedData = { ...currentAssetData, ...generatedData };
-      setCurrentAssetData(updatedData);
-      // Let the AssetGrade component handle re-grading based on assetData changes
-    }
   };
 
   // Auto-switch to results tab when asset data is available
@@ -67,14 +57,10 @@ const App = () => {
         {/* Mobile/Tablet Layout - Tabbed Interface */}
         <div className="xl:hidden">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="input" className="flex items-center gap-2">
                 <FileText className="h-4 w-4" />
                 <span className="hidden sm:inline">Input</span>
-              </TabsTrigger>
-              <TabsTrigger value="generate" className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4" />
-                <span className="hidden sm:inline">Generate</span>
               </TabsTrigger>
               <TabsTrigger value="results" className="flex items-center gap-2">
                 <BarChart3 className="h-4 w-4" />
@@ -90,13 +76,6 @@ const App = () => {
               <AssetEditor 
                 onAssetUpdate={handleAssetUpdate}
                 onAssetClear={handleAssetClear}
-              />
-            </TabsContent>
-            
-            <TabsContent value="generate" className="mt-6">
-              <AssetGenerator 
-                currentAssetData={currentAssetData}
-                onGeneratedDataUpdate={handleGeneratedDataUpdate}
               />
             </TabsContent>
             
@@ -119,19 +98,12 @@ const App = () => {
 
         {/* Desktop Layout - Two Column */}
         <div className="hidden xl:grid xl:grid-cols-2 xl:gap-8">
-          {/* Left Column - Input & Generation */}
+          {/* Left Column - Input */}
           <div className="space-y-6">
             <AssetEditor 
               onAssetUpdate={handleAssetUpdate}
               onAssetClear={handleAssetClear}
             />
-            
-            <Separator />
-            
-            {/* <AssetGenerator 
-              currentAssetData={currentAssetData}
-              onGeneratedDataUpdate={handleGeneratedDataUpdate}
-            /> */}
           </div>
           
           {/* Right Column - Results & Analysis */}
@@ -144,8 +116,6 @@ const App = () => {
                   onRefresh={() => setGradeKey(prev => prev + 1)}
                   autoGrade={true}
                 />
-                
-                <Separator />
                 
                 {/* <SimilarAssets 
                   currentAssetData={currentAssetData}
