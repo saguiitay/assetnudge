@@ -243,6 +243,19 @@ export interface Vocabulary {
 /**
  * Prepared content for analysis
  */
+/**
+ * Link analysis result
+ */
+export interface LinkAnalysis {
+  hasLinks: boolean;
+  linkCount: number;
+  hasQualityLinks: boolean;
+  linkTypes: string[];
+}
+
+/**
+ * Prepared content for analysis
+ */
 export interface PreparedContent {
   title: string;
   shortDesc: string;
@@ -253,6 +266,7 @@ export interface PreparedContent {
   hasCTA: boolean;
   hasUVP: boolean;
   wordCount: number;
+  linkAnalysis: LinkAnalysis;
 }
 
 /**
