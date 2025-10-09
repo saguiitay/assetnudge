@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Logger } from './utils/logger';
 import { calculateDetailedRating, DetailedRatingResult } from './utils/rating-analysis';
-import { Asset, BestSellerAsset, Vocabulary } from './types';
+import { Asset, BestSellerAsset, Vocabulary, WeightConfig, ThresholdConfig } from './types';
 import { OFFICIAL_CATEGORIES, DEFAULT_WEIGHTS, DEFAULT_THRESHOLDS } from './config';
 import { AssetGrader } from './grader';
 
@@ -267,6 +267,8 @@ function extractCategory(asset: Asset): string {
  * @param topPercent - Percentage of exemplars per category
  * @param bestSellers - Array of best seller assets to always include
  * @param vocab - Vocabulary data for grading context (optional, uses default if not provided)
+ * @param weights - Custom scoring weights (optional, uses DEFAULT_WEIGHTS if not provided)
+ * @param thresholds - Custom scoring thresholds (optional, uses DEFAULT_THRESHOLDS if not provided)
  * @returns Exemplars grouped by category
  */
 export async function identifyExemplars(
@@ -274,7 +276,9 @@ export async function identifyExemplars(
     topN: number | null = null, 
     topPercent: number | null = null, 
     bestSellers: BestSellerAsset[] = [],
-    vocab?: Vocabulary
+    vocab?: Vocabulary,
+    weights?: WeightConfig,
+    thresholds?: ThresholdConfig
 ): Promise<ExemplarsByCategory> {
     // Default to topN = 20 if neither is specified
     const finalTopN = topN !== null ? topN : (topPercent !== null ? null : 20);
@@ -283,12 +287,20 @@ export async function identifyExemplars(
     const selectionMethod = finalTopPercent !== null ? `top ${finalTopPercent}%` : `top ${finalTopN}`;
     logger.info(`Identifying exemplars from ${assets.length} assets using ${selectionMethod}, with ${bestSellers.length} best sellers`);
     
-    // Create AssetGrader instance with default config
+    // Create AssetGrader instance with custom or default config
     const graderConfig = {
-        weights: DEFAULT_WEIGHTS,
-        thresholds: DEFAULT_THRESHOLDS
+        weights: weights || DEFAULT_WEIGHTS,
+        thresholds: thresholds || DEFAULT_THRESHOLDS
     };
     const grader = new AssetGrader(graderConfig);
+    
+    // Log configuration being used
+    if (weights || thresholds) {
+        logger.debug('Using custom grader configuration', {
+            customWeights: !!weights,
+            customThresholds: !!thresholds
+        });
+    }
     
     // Use provided vocab or create minimal default
     const defaultVocab: Vocabulary = vocab || {};
