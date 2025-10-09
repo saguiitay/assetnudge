@@ -197,32 +197,32 @@ export interface DedicatedSuggestionParams {
  * Title suggestion response
  */
 export interface TitleSuggestionResponse {
-  suggested_titles: TitleSuggestion[];
   rationale?: string;
+  suggested_titles: TitleSuggestion[];
 }
 
 /**
  * Tags suggestion response
  */
 export interface TagsSuggestionResponse {
-  suggested_tags: TagSuggestion[];
   rationale?: string;
+  suggested_tags: TagSuggestion[];
 }
 
 /**
  * Short description suggestion response
  */
 export interface ShortDescriptionResponse {
-  suggested_short_description: string;
   rationale?: string;
+  suggested_short_description: string;
 }
 
 /**
  * Long description suggestion response
  */
 export interface LongDescriptionResponse {
-  suggested_long_description: string;
   rationale?: string;
+  suggested_long_description: string;
 }
 
 /**
