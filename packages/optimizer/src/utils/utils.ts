@@ -212,6 +212,17 @@ export const countBullets = (text: string): number => {
   const markdownBullets = text.match(bulletPattern) || [];
   count += markdownBullets.length;
   
+  // Count HTML-style bullets: <p>- content</p> or similar patterns
+  // This handles cases where bullets are in HTML paragraphs without newlines
+  const htmlBulletPattern = /<(?:p|div)[^>]*>\s*[-●○•◦▪▫‣⁃◆◇■□▸▹►▻✓✔⚡*]\s+/gi;
+  const htmlBullets = text.match(htmlBulletPattern) || [];
+  count += htmlBullets.length;
+  
+  // Count HTML numbered bullets: <p>1. content</p>
+  const htmlNumberedPattern = /<(?:p|div)[^>]*>\s*\d+\.\s+/gi;
+  const htmlNumbered = text.match(htmlNumberedPattern) || [];
+  count += htmlNumbered.length;
+  
   // Specifically look for the ● character (U+25CF BLACK CIRCLE) which is commonly used
   const blackCircleBullets = text.match(/(?:^|\n)\s*●\s+/gm) || [];
   // Don't double count if already caught by the general pattern
