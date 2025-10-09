@@ -3,7 +3,8 @@
  * Exports all prompt building functions for AI suggestions
  */
 
-export { buildSystemPrompt } from './system-prompt';
-export { buildDetailedUserPrompt } from './detailed-user-prompt';
-export { buildFocusedSystemPrompt } from './focused-system-prompt';
-export { buildFocusedUserPrompt, buildBaseAssetContext } from './focused-user-prompt';
+// Dedicated prompts for specific suggestion types
+export { buildTitleSystemPrompt, buildTitleUserPrompt } from './title-prompt';
+export { buildTagsSystemPrompt, buildTagsUserPrompt } from './tags-prompt';
+export { buildShortDescSystemPrompt, buildShortDescUserPrompt } from './short-description-prompt';
+export { buildLongDescSystemPrompt, buildLongDescUserPrompt } from './long-description-prompt';

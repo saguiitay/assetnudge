@@ -734,16 +734,34 @@ export class UnityAssetOptimizer {
       let aiSuggestions: any = null;
       if (useAI && this.config.hasAI()) {
         try {
-          // For exemplar-based coaching, provide exemplar context to AI
-          const aiContext = {
-            asset,
-            exemplars: { exemplars: {} },
-            exemplarVocab: {},
-            playbooks: {}
-          } as any;
+          // Load exemplars data if path provided
+          let categoryExemplars: any[] = [];
+          let categoryVocab: any = {};
           
-          aiSuggestions = await this.aiEngine.generateSuggestions(aiContext);
-          this.logger.info('AI suggestions generated');
+          if (exemplarsPath) {
+            try {
+              const exemplarsData = await FileValidator.validateJSONFile(exemplarsPath);
+              categoryExemplars = exemplarsData?.exemplars?.[asset.category] || [];
+            } catch (error) {
+              this.logger.warn('Failed to load exemplars for AI suggestions', { error: (error as Error).message });
+            }
+          }
+          
+          // Use category vocabulary if available
+          if (vocabulary[asset.category]) {
+            categoryVocab = vocabulary[asset.category];
+          }
+          
+          // Use new dedicated AI methods for better results
+          const aiParams = {
+            asset,
+            exemplars: categoryExemplars,
+            vocab: categoryVocab
+          };
+          
+          // Generate all suggestions using the new suggestAll method
+          aiSuggestions = await this.aiEngine.suggestAll(aiParams);
+          this.logger.info('AI suggestions generated using new dedicated methods');
         } catch (error) {
           this.logger.warn('AI suggestions failed', { error: (error as Error).message });
         }
