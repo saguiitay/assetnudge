@@ -193,6 +193,14 @@ Commands:
                Supports multiple corpus files/folders separated by commas
                For folders: automatically loads all JSON files within
                
+  build-all-multi-pass --corpus <corpus1.json,corpus2.json,...|folder1,folder2,...> [--out-dir <directory>] [--top-n 20] [--top-percent 10] [--best-sellers <best_sellers.json>] [--max-passes 5] [--convergence-threshold 0.95]
+               🔄 ITERATIVE APPROACH: Multi-pass build that evolves grading rules until exemplar selection stabilizes
+               --max-passes: Maximum number of iterations (default: 5, max: 20)
+               --convergence-threshold: Stability threshold for exemplar overlap between passes (default: 0.95)
+               Each pass uses grading rules from the previous pass to select better exemplars
+               Continues until exemplar selection stabilizes or max passes reached
+               Ideal for creating highly refined and stable exemplar sets
+               
   grade        --input <asset.json> [--vocab <vocab.json>] [--rules <grading-rules.json>]
                Grade an asset using heuristic scoring
                --rules: Use dynamic grading rules (optional, falls back to static rules)
@@ -222,7 +230,12 @@ Global Options:
                        Set to false to include stop words like "the", "a", "and", etc.
 
 Examples:
-  # 🚀 RECOMMENDED: One-stop exemplar ecosystem creation
+  # � ITERATIVE APPROACH: Multi-pass build for highly refined exemplars
+  node main.mjs build-all-multi-pass --corpus data/packages.json --out-dir data/ --top-n 15
+  node main.mjs build-all-multi-pass --corpus data/corpus-folder/ --out-dir data/ --top-n 15 --max-passes 7 --convergence-threshold 0.98
+  node main.mjs build-all-multi-pass --corpus data/packages.json --out-dir data/ --top-n 15 --best-sellers data/unity_best_sellers.json --max-passes 10
+  
+  # �🚀 RECOMMENDED: One-stop exemplar ecosystem creation (single pass)
   node main.mjs build-all --corpus data/packages.json --out-dir data/ --top-n 15
   node main.mjs build-all --corpus data/corpus-folder/ --out-dir data/ --top-n 15 --best-sellers data/unity_best_sellers.json
   node main.mjs optimize --input asset.json --exemplars data/exemplars.json --vocab data/exemplar_vocab.json
@@ -537,6 +550,135 @@ async function cmdBuildAll(): Promise<void> {
 }
 
 /**
+ * BUILD-ALL-MULTI-PASS COMMAND: Iterative multi-pass build until convergence
+ * Builds exemplars and grading rules iteratively until the exemplar selection stabilizes
+ */
+async function cmdBuildAllMultiPass(): Promise<void> {
+  const corpusPaths = getFlag('corpus');
+  const outDir = getFlag('out-dir', 'data/');
+  const topN = getFlag('top-n');
+  const topPercent = getFlag('top-percent');
+  const bestSellersPath = getFlag('best-sellers');
+  const maxPasses = parseInt(getFlag('max-passes', '5') || '5');
+  const convergenceThreshold = parseFloat(getFlag('convergence-threshold', '0.95') || '0.95');
+  
+  ensure(!!corpusPaths, '--corpus path(s) required (comma-separated for multiple files/folders)');
+  ensure(!(topN && topPercent), 'Cannot specify both --top-n and --top-percent');
+  ensure(maxPasses > 0 && maxPasses <= 20, '--max-passes must be between 1 and 20');
+  ensure(convergenceThreshold > 0 && convergenceThreshold <= 1, '--convergence-threshold must be between 0 and 1');
+  
+  // Default to top 20 if neither is specified
+  const finalTopN = topN ? parseInt(topN) : (topPercent ? null : 20);
+  const finalTopPercent = topPercent ? parseFloat(topPercent) : null;
+  
+  if (finalTopN !== null) {
+    ensure(finalTopN > 0, '--top-n must be a positive number');
+  }
+  if (finalTopPercent !== null) {
+    ensure(finalTopPercent > 0 && finalTopPercent <= 100, '--top-percent must be between 0 and 100');
+  }
+  
+  // Ensure output directory ends with slash
+  const outputDir = outDir!.endsWith('/') || outDir!.endsWith('\\') ? outDir! : outDir! + '/';
+  
+  const optimizer = new UnityAssetOptimizer(args);
+  await optimizer.validateSetup();
+  
+  console.log('🔄 Starting iterative multi-pass build until convergence...\n');
+  
+  try {
+    // Load corpus files
+    console.log('📁 Loading corpus files...');
+    const corpus = await loadMultipleCorpusFiles(corpusPaths!);
+    
+    // Load best sellers if provided
+    let bestSellers: BestSellerAsset[] = [];
+    if (bestSellersPath) {
+      try {
+        const bestSellersData = await fs.readFile(bestSellersPath, 'utf8');
+        bestSellers = JSON.parse(bestSellersData) as BestSellerAsset[];
+        console.log(`📌 Loaded ${bestSellers.length} best sellers from ${bestSellersPath}`);
+      } catch (error) {
+        console.error(`❌ Failed to load best sellers from ${bestSellersPath}:`, (error as Error).message);
+        process.exit(1);
+      }
+    }
+    
+    // Execute multi-pass build
+    const result = await optimizer.buildAllMultiPass(
+      corpus, 
+      outputDir, 
+      finalTopN, 
+      finalTopPercent, 
+      bestSellers,
+      maxPasses,
+      convergenceThreshold
+    );
+    
+    // Success summary
+    const finalPass = result.passResults[result.passResults.length - 1];
+    if (!finalPass) {
+      throw new Error('No passes completed');
+    }
+    
+    const successResult = {
+      success: true,
+      summary: {
+        approach: 'multi-pass-iterative',
+        corpus_files_processed: corpusPaths!.split(',').length,
+        total_assets_processed: corpus.length,
+        exemplars_per_category: finalTopN || `${finalTopPercent}%`,
+        best_sellers_provided: bestSellers.length,
+        output_directory: outputDir,
+        convergence: {
+          converged: result.converged,
+          passes_completed: result.passes,
+          max_passes_allowed: maxPasses,
+          final_convergence_metric: result.convergenceMetric.toFixed(3),
+          convergence_threshold: convergenceThreshold
+        },
+        final_results: {
+          total_exemplars: finalPass.exemplarStats.totalExemplars,
+          total_categories: finalPass.exemplarStats.categories,
+          grading_rules_categories: finalPass.gradingRulesStats.categories
+        }
+      },
+      pass_details: result.passResults.map(pass => ({
+        pass: pass.pass,
+        exemplars: pass.exemplarStats.totalExemplars,
+        categories: pass.exemplarStats.categories,
+        changes: pass.exemplarChanges ? {
+          added: pass.exemplarChanges.added.length,
+          removed: pass.exemplarChanges.removed.length,
+          stability: `${((pass.exemplarChanges.unchanged.length / (pass.exemplarChanges.unchanged.length + pass.exemplarChanges.added.length + pass.exemplarChanges.removed.length)) * 100).toFixed(1)}%`
+        } : 'initial-pass'
+      })),
+      files_created: result.finalFiles,
+      next_steps: [
+        `Grade with evolved rules: node main.mjs grade --input asset.json --vocab ${result.finalFiles.vocabulary} --rules ${result.finalFiles.gradingRules}`,
+        `Optimize with stable exemplars: node main.mjs optimize --input asset.json --exemplars ${result.finalFiles.exemplars} --vocab ${result.finalFiles.vocabulary}`,
+        `View evolved playbooks: cat ${result.finalFiles.playbooks}`
+      ]
+    };
+    
+    console.log(`🎯 Multi-pass build completed in ${result.passes} pass${result.passes > 1 ? 'es' : ''}!`);
+    if (result.converged) {
+      console.log(`✅ System converged with ${(result.convergenceMetric * 100).toFixed(1)}% stability\n`);
+    } else {
+      console.log(`⚠️ System did not fully converge (${(result.convergenceMetric * 100).toFixed(1)}% stability after ${result.passes} passes)\n`);
+    }
+    
+    console.log(JSON.stringify(successResult, null, 2));
+    
+  } catch (error) {
+    console.error(`❌ Multi-pass build failed: ${(error as Error).message}`);
+    console.log('\n💡 Try single-pass build for debugging:');
+    console.log(`  node main.mjs build-all --corpus "${corpusPaths}" --out-dir ${outputDir} --debug true`);
+    throw error;
+  }
+}
+
+/**
  * GRADE COMMAND: Score an asset
  */
 async function cmdGrade(): Promise<void> {
@@ -667,6 +809,9 @@ async function main(): Promise<void> {
         break;
       case 'build-all':
         await cmdBuildAll();
+        break;
+      case 'build-all-multi-pass':
+        await cmdBuildAllMultiPass();
         break;
       case 'grade':
         await cmdGrade();

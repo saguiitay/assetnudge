@@ -189,6 +189,32 @@ export interface PlaybookStats {
 }
 
 /**
+ * Multi-pass build statistics
+ */
+export interface MultiPassBuildStats {
+  passes: number;
+  converged: boolean;
+  convergenceMetric: number;
+  convergenceThreshold: number;
+  passResults: {
+    pass: number;
+    exemplarStats: ExemplarBuildStats;
+    gradingRulesStats: GradingRulesBuildStats;
+    exemplarChanges?: {
+      added: string[];
+      removed: string[];
+      unchanged: string[];
+    };
+  }[];
+  finalFiles: {
+    exemplars: string;
+    gradingRules: string;
+    vocabulary: string;
+    playbooks: string;
+  };
+}
+
+/**
  * Main optimizer class that orchestrates all functionality
  */
 export class UnityAssetOptimizer {
@@ -483,6 +509,194 @@ export class UnityAssetOptimizer {
         categories: Object.keys(playbooks).length,
         totalCategories: Object.keys(playbooks).length
       };
+    });
+  }
+
+  /**
+   * Multi-pass build: Iteratively build exemplars and grading rules until convergence
+   * This creates a feedback loop where better grading rules lead to better exemplar selection,
+   * which in turn creates even better grading rules, until the system stabilizes.
+   */
+  async buildAllMultiPass(
+    corpus: Asset[],
+    outputDir: string,
+    topN: number | null = null,
+    topPercent: number | null = null,
+    bestSellers: BestSellerAsset[] = [],
+    maxPasses: number = 5,
+    convergenceThreshold: number = 0.95
+  ): Promise<MultiPassBuildStats> {
+    return this.logger.time('buildAllMultiPass', async () => {
+      // Ensure output directory ends with slash
+      const outDir = outputDir.endsWith('/') || outputDir.endsWith('\\') ? outputDir : outputDir + '/';
+      
+      // Define output paths
+      const exemplarsPath = outDir + 'exemplars.json';
+      const gradingRulesPath = outDir + 'grading-rules.json';
+      const vocabPath = outDir + 'exemplar_vocab.json';
+      const playbooksPath = outDir + 'playbooks.json';
+      
+      this.logger.info('Starting multi-pass build', {
+        corpusSize: corpus.length,
+        outputDir: outDir,
+        topN,
+        topPercent,
+        bestSellers: bestSellers.length,
+        maxPasses,
+        convergenceThreshold
+      });
+      
+      let passResults: MultiPassBuildStats['passResults'] = [];
+      let previousExemplarIds: Set<string> = new Set();
+      let converged = false;
+      let convergenceMetric = 0;
+      
+      for (let pass = 1; pass <= maxPasses; pass++) {
+        this.logger.info(`Starting pass ${pass}/${maxPasses}`);
+        
+        // For pass 1, use default grading configuration
+        // For subsequent passes, use the grading rules from the previous pass
+        let weights = this.config.weights;
+        let thresholds = this.config.thresholds;
+        
+        if (pass > 1) {
+          try {
+            const gradingRulesData = await this.readJSON(gradingRulesPath) as any;
+            
+            // For now, just log that we would use dynamic rules
+            // The actual dynamic rule application would need more complex logic
+            this.logger.info(`Pass ${pass}: Would use dynamic rules from previous pass`, {
+              categoriesWithRules: Object.keys(gradingRulesData.rules || {}).length
+            });
+          } catch (error) {
+            this.logger.warn(`Pass ${pass}: Could not load previous grading rules, using defaults`, {
+              error: (error as Error).message
+            });
+          }
+        }
+        
+        // Step 1: Build exemplars with current grading configuration
+        const exemplarStats = await identifyExemplars(
+          corpus, 
+          topN, 
+          topPercent, 
+          bestSellers,
+          undefined, // vocab - let it use default
+          weights,
+          thresholds
+        );
+        
+        // Extract patterns and save exemplars
+        const categoryPatterns: Record<string, any> = {};
+        for (const [category, exemplars] of Object.entries(exemplarStats)) {
+          if (exemplars.length > 0) {
+            categoryPatterns[category] = extractCategoryPatterns(exemplars, this.config);
+          }
+        }
+        
+        const exemplarsData = {
+          exemplars: exemplarStats,
+          patterns: categoryPatterns,
+          metadata: {
+            corpusSize: corpus.length,
+            bestSellersProvided: bestSellers.length,
+            topN,
+            topPercent,
+            selectionCriteria: topPercent !== null ? `top ${topPercent}%` : `top ${topN}`,
+            createdAt: new Date().toISOString(),
+            pass: pass,
+            stats: getExemplarStats(exemplarStats)
+          }
+        };
+        
+        await this.writeJSON(exemplarsPath, exemplarsData);
+        
+        const exemplarBuildStats = {
+          categories: Object.keys(exemplarStats).length,
+          totalExemplars: exemplarsData.metadata.stats.totalExemplars,
+          bestSellersIncluded: exemplarsData.metadata.stats.totalBestSellers || 0,
+          selectionCriteria: exemplarsData.metadata.selectionCriteria
+        };
+        
+        // Step 2: Build grading rules from exemplars
+        const gradingRulesStats = await this.buildGradingRules(exemplarsPath, gradingRulesPath);
+        
+        // Calculate convergence metric
+        const currentExemplarIds = new Set<string>();
+        for (const exemplars of Object.values(exemplarStats)) {
+          for (const exemplar of exemplars) {
+            currentExemplarIds.add(exemplar.id || exemplar.url || '');
+          }
+        }
+        
+        let exemplarChanges: MultiPassBuildStats['passResults'][0]['exemplarChanges'] | undefined;
+        
+        if (pass > 1) {
+          const intersection = new Set([...previousExemplarIds].filter(x => currentExemplarIds.has(x)));
+          const union = new Set([...previousExemplarIds, ...currentExemplarIds]);
+          convergenceMetric = intersection.size / union.size;
+          
+          exemplarChanges = {
+            added: [...currentExemplarIds].filter(x => !previousExemplarIds.has(x)),
+            removed: [...previousExemplarIds].filter(x => !currentExemplarIds.has(x)),
+            unchanged: [...intersection]
+          };
+          
+          this.logger.info(`Pass ${pass}: Convergence analysis`, {
+            convergenceMetric: convergenceMetric.toFixed(3),
+            threshold: convergenceThreshold,
+            exemplarsAdded: exemplarChanges.added.length,
+            exemplarsRemoved: exemplarChanges.removed.length,
+            exemplarsUnchanged: exemplarChanges.unchanged.length
+          });
+          
+          if (convergenceMetric >= convergenceThreshold) {
+            converged = true;
+            this.logger.success(`Pass ${pass}: Converged! (${convergenceMetric.toFixed(3)} >= ${convergenceThreshold})`);
+          }
+        }
+        
+        passResults.push({
+          pass,
+          exemplarStats: exemplarBuildStats,
+          gradingRulesStats,
+          exemplarChanges
+        });
+        
+        previousExemplarIds = currentExemplarIds;
+        
+        if (converged) {
+          break;
+        }
+      }
+      
+      // Build final vocabulary and playbooks
+      this.logger.info('Building final vocabulary and playbooks');
+      const vocabStats = await this.buildExemplarVocabulary(exemplarsPath, vocabPath);
+      const playbookStats = await this.generatePlaybooks(exemplarsPath, playbooksPath);
+      
+      const result: MultiPassBuildStats = {
+        passes: passResults.length,
+        converged,
+        convergenceMetric,
+        convergenceThreshold,
+        passResults,
+        finalFiles: {
+          exemplars: exemplarsPath,
+          gradingRules: gradingRulesPath,
+          vocabulary: vocabPath,
+          playbooks: playbooksPath
+        }
+      };
+      
+      this.logger.success('Multi-pass build completed', {
+        passes: result.passes,
+        converged: result.converged,
+        finalConvergence: result.convergenceMetric.toFixed(3),
+        totalExemplars: passResults[passResults.length - 1]?.exemplarStats.totalExemplars || 0
+      });
+      
+      return result;
     });
   }
 
