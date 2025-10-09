@@ -1,3 +1,6 @@
+import path from 'path';
+import { FileValidator } from './validation';
+
 /**
  * Calculate the number of days between a given date and now
  * @param d - Date string or Date object
@@ -316,10 +319,6 @@ export const countBullets = (text: string): number => {
  * Handles path resolution across different execution contexts (Next.js API, CLI, etc.)
  */
 export async function findDataDirectory(testFileName: string = 'exemplars.json'): Promise<string> {
-  // Import path and FileValidator dynamically to avoid circular dependencies
-  const path = await import('path');
-  const { FileValidator } = await import('./validation');
-  
   // Try multiple possible locations for the data files
   const possibleDataDirs = [
     path.join(process.cwd(), '..', '..', 'packages', 'optimizer', 'data', 'results'), // From API app to monorepo root
