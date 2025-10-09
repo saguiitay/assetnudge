@@ -1,0 +1,883 @@
+
+> @repo/optimizer@2.0.0 build-all-multi-pass
+> npx tsx main.ts build-all-multi-pass --corpus data/corpus/ --out-dir data/results-multi-pass/ --top-percent 15 --best-sellers data/best_seller_assets_full.json
+
+{"timestamp":"2025-10-09T12:43:03.516Z","level":"INFO","context":"optimizer","message":"Unity Asset Optimizer initialized","data":{"hasAI":false,"debug":false}}
+{"timestamp":"2025-10-09T12:43:03.518Z","level":"INFO","context":"optimizer","message":"Validating setup..."}
+≡ƒöä Starting iterative multi-pass build until convergence...
+
+≡ƒôü Loading corpus files...
+{"timestamp":"2025-10-09T12:43:03.519Z","level":"INFO","context":"optimizer","message":"Unity Asset Optimizer initialized","data":{"hasAI":false,"debug":false}}
+Processing corpus folder: data/corpus/
+  Loading corpus file: data/corpus/packages.json
+  Loaded 5000 assets from data/corpus/packages.json
+  Loading corpus file: data/corpus/packages_part10.json
+  Loaded 5000 assets from data/corpus/packages_part10.json
+  Loading corpus file: data/corpus/packages_part11.json
+  Loaded 5000 assets from data/corpus/packages_part11.json
+  Loading corpus file: data/corpus/packages_part12.json
+  Loaded 5000 assets from data/corpus/packages_part12.json
+  Loading corpus file: data/corpus/packages_part13.json
+  Loaded 2441 assets from data/corpus/packages_part13.json
+  Loading corpus file: data/corpus/packages_part14_2025-10-06.json
+  Loaded 5000 assets from data/corpus/packages_part14_2025-10-06.json
+  Loading corpus file: data/corpus/packages_part15_2025-10-06.json
+  Loaded 5000 assets from data/corpus/packages_part15_2025-10-06.json
+  Loading corpus file: data/corpus/packages_part16_2025-10-06.json
+  Loaded 5000 assets from data/corpus/packages_part16_2025-10-06.json
+  Loading corpus file: data/corpus/packages_part17_2025-10-06.json
+  Loaded 5000 assets from data/corpus/packages_part17_2025-10-06.json
+  Loading corpus file: data/corpus/packages_part18_2025-10-06.json
+  Loaded 5000 assets from data/corpus/packages_part18_2025-10-06.json
+  Loading corpus file: data/corpus/packages_part19_2025-10-06.json
+  Loaded 5000 assets from data/corpus/packages_part19_2025-10-06.json
+  Loading corpus file: data/corpus/packages_part2.json
+  Loaded 5000 assets from data/corpus/packages_part2.json
+  Loading corpus file: data/corpus/packages_part20_2025-10-06.json
+  Loaded 5000 assets from data/corpus/packages_part20_2025-10-06.json
+  Loading corpus file: data/corpus/packages_part21_2025-10-06.json
+  Loaded 1214 assets from data/corpus/packages_part21_2025-10-06.json
+  Loading corpus file: data/corpus/packages_part22_2025-10-06.json
+  Loaded 300 assets from data/corpus/packages_part22_2025-10-06.json
+  Loading corpus file: data/corpus/packages_part23_2025-10-06.json
+  Loaded 100 assets from data/corpus/packages_part23_2025-10-06.json
+  Loading corpus file: data/corpus/packages_part24_2025-10-06.json
+  Loaded 1335 assets from data/corpus/packages_part24_2025-10-06.json
+  Loading corpus file: data/corpus/packages_part25_2025-10-06.json
+  Loaded 266 assets from data/corpus/packages_part25_2025-10-06.json
+  Loading corpus file: data/corpus/packages_part3.json
+  Loaded 5000 assets from data/corpus/packages_part3.json
+  Loading corpus file: data/corpus/packages_part4.json
+  Loaded 5000 assets from data/corpus/packages_part4.json
+  Loading corpus file: data/corpus/packages_part5.json
+  Loaded 5000 assets from data/corpus/packages_part5.json
+  Loading corpus file: data/corpus/packages_part6.json
+  Loaded 4072 assets from data/corpus/packages_part6.json
+  Loading corpus file: data/corpus/packages_part7.json
+  Loaded 5000 assets from data/corpus/packages_part7.json
+  Loading corpus file: data/corpus/packages_part8.json
+  Loaded 5000 assets from data/corpus/packages_part8.json
+  Loading corpus file: data/corpus/packages_part9.json
+  Loaded 5000 assets from data/corpus/packages_part9.json
+Processed 25 files from folder data/corpus/
+Total corpus size: 99728 assets from 25 files
+≡ƒôî Loaded 5581 best sellers from data/best_seller_assets_full.json
+{"timestamp":"2025-10-09T12:43:07.848Z","level":"INFO","context":"optimizer","message":"Starting multi-pass build","data":{"corpusSize":99728,"outputDir":"data/results-multi-pass/","topN":null,"topPercent":15,"bestSellers":5581,"maxPasses":5,"convergenceThreshold":0.95}}
+{"timestamp":"2025-10-09T12:43:07.848Z","level":"INFO","context":"optimizer","message":"Starting pass 1/5"}
+{"timestamp":"2025-10-09T12:43:07.848Z","level":"INFO","context":"exemplars","message":"Identifying exemplars from 99728 assets using top 15%, with 5581 best sellers"}
+{"timestamp":"2025-10-09T12:43:07.864Z","level":"INFO","context":"grader:scorer","message":"Asset graded","data":{"title":"Fantasy Survival Icon Pack","score":16,"letter":"F","issueCount":12}}
+{"timestamp":"2025-10-09T12:43:07.865Z","level":"INFO","context":"grader:scorer","message":"Asset graded","data":{"title":"Enemy Zombie","score":25,"letter":"F","issueCount":11}}
+{"timestamp":"2025-10-09T12:43:07.867Z","level":"INFO","context":"grader:scorer","message":"Asset graded","data":{"title":"LowPoly Pine Forest Asset Pack by Inspired Notion","score":26,"letter":"F","issueCount":10}}
+{"timestamp":"2025-10-09T12:43:28.070Z","level":"INFO","context":"grader:scorer","message":"Completed gradeAsset","data":{"duration_ms":20201}}
+{"timestamp":"2025-10-09T12:43:28.070Z","level":"INFO","context":"grader:scorer","message":"Completed gradeAsset","data":{"duration_ms":20200}}
+{"timestamp":"2025-10-09T12:43:28.070Z","level":"INFO","context":"grader:scorer","message":"Completed gradeAsset","data":{"duration_ms":20200}}
+{"timestamp":"2025-10-09T12:43:29.457Z","level":"INFO","context":"grader:scorer","message":"Completed gradeAsset","data":{"duration_ms":1393}}
+{"timestamp":"2025-10-09T12:43:29.457Z","level":"INFO","context":"grader:scorer","message":"Completed gradeAsset","data":{"duration_ms":1393}}
+{"timestamp":"2025-10-09T12:43:29.847Z","level":"INFO","context":"exemplars","message":"Category \"2D/GUI/Icons\": 3033 total assets, selected 455 exemplars (15.0%) - 38 best sellers, 417 regular"}
+{"timestamp":"2025-10-09T12:43:29.849Z","level":"INFO","context":"exemplars","message":"Category \"3D/Characters/Humanoids\": 1725 total assets, selected 259 exemplars (15.0%) - 17 best sellers, 242 regular"}
+{"timestamp":"2025-10-09T12:43:29.850Z","level":"INFO","context":"exemplars","message":"Category \"3D/Vegetation/Trees\": 611 total assets, selected 92 exemplars (15.1%) - 48 best sellers, 44 regular"}
+{"timestamp":"2025-10-09T12:43:29.851Z","level":"INFO","context":"exemplars","message":"Category \"Templates/Packs\": 1647 total assets, selected 248 exemplars (15.1%) - 47 best sellers, 201 regular"}
+{"timestamp":"2025-10-09T12:43:29.851Z","level":"INFO","context":"exemplars","message":"Category \"3D/Characters/Humanoids/Robots\": 644 total assets, selected 97 exemplars (15.1%) - 0 best sellers, 97 regular"}
+{"timestamp":"2025-10-09T12:43:29.851Z","level":"INFO","context":"exemplars","message":"Category \"2D/Textures & Materials/Tiles\": 131 total assets, selected 41 exemplars (31.3%) - 41 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.851Z","level":"INFO","context":"exemplars","message":"Category \"3D/Vegetation\": 350 total assets, selected 53 exemplars (15.1%) - 19 best sellers, 34 regular"}
+{"timestamp":"2025-10-09T12:43:29.853Z","level":"INFO","context":"exemplars","message":"Category \"VFX/Shaders\": 2075 total assets, selected 312 exemplars (15.0%) - 36 best sellers, 276 regular"}
+{"timestamp":"2025-10-09T12:43:29.855Z","level":"INFO","context":"exemplars","message":"Category \"Audio/Music\": 3259 total assets, selected 489 exemplars (15.0%) - 27 best sellers, 462 regular"}
+{"timestamp":"2025-10-09T12:43:29.856Z","level":"INFO","context":"exemplars","message":"Category \"3D/Props/Interior\": 1523 total assets, selected 229 exemplars (15.0%) - 50 best sellers, 179 regular"}
+{"timestamp":"2025-10-09T12:43:29.856Z","level":"INFO","context":"exemplars","message":"Category \"3D/Props/Guns\": 959 total assets, selected 144 exemplars (15.0%) - 40 best sellers, 104 regular"}
+{"timestamp":"2025-10-09T12:43:29.859Z","level":"INFO","context":"exemplars","message":"Category \"3D/Characters/Creatures\": 4223 total assets, selected 634 exemplars (15.0%) - 85 best sellers, 549 regular"}
+{"timestamp":"2025-10-09T12:43:29.860Z","level":"INFO","context":"exemplars","message":"Category \"3D/Characters/Animals/Mammals\": 838 total assets, selected 126 exemplars (15.0%) - 42 best sellers, 84 regular"}
+{"timestamp":"2025-10-09T12:43:29.862Z","level":"INFO","context":"exemplars","message":"Category \"3D/Props/Weapons\": 3409 total assets, selected 512 exemplars (15.0%) - 85 best sellers, 427 regular"}
+{"timestamp":"2025-10-09T12:43:29.863Z","level":"INFO","context":"exemplars","message":"Category \"Audio/Music/Electronic\": 982 total assets, selected 148 exemplars (15.1%) - 53 best sellers, 95 regular"}
+{"timestamp":"2025-10-09T12:43:29.865Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Utilities\": 2854 total assets, selected 429 exemplars (15.0%) - 40 best sellers, 389 regular"}
+{"timestamp":"2025-10-09T12:43:29.866Z","level":"INFO","context":"exemplars","message":"Category \"3D/Props/Exterior\": 1367 total assets, selected 206 exemplars (15.1%) - 44 best sellers, 162 regular"}
+{"timestamp":"2025-10-09T12:43:29.866Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Visual Scripting\": 153 total assets, selected 43 exemplars (28.1%) - 43 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.867Z","level":"INFO","context":"exemplars","message":"Category \"VFX/Particles\": 971 total assets, selected 146 exemplars (15.0%) - 17 best sellers, 129 regular"}
+{"timestamp":"2025-10-09T12:43:29.869Z","level":"INFO","context":"exemplars","message":"Category \"3D/Characters/Humanoids/Fantasy\": 3792 total assets, selected 569 exemplars (15.0%) - 93 best sellers, 476 regular"}
+{"timestamp":"2025-10-09T12:43:29.869Z","level":"INFO","context":"exemplars","message":"Category \"3D/Environments/Dungeons\": 422 total assets, selected 64 exemplars (15.2%) - 43 best sellers, 21 regular"}
+{"timestamp":"2025-10-09T12:43:29.871Z","level":"INFO","context":"exemplars","message":"Category \"3D/Characters/Humanoids/Sci-Fi\": 1726 total assets, selected 259 exemplars (15.0%) - 97 best sellers, 162 regular"}
+{"timestamp":"2025-10-09T12:43:29.874Z","level":"INFO","context":"exemplars","message":"Category \"2D/Environments\": 5095 total assets, selected 765 exemplars (15.0%) - 47 best sellers, 718 regular"}
+{"timestamp":"2025-10-09T12:43:29.879Z","level":"INFO","context":"exemplars","message":"Category \"2D/Characters\": 6285 total assets, selected 943 exemplars (15.0%) - 36 best sellers, 907 regular"}
+{"timestamp":"2025-10-09T12:43:29.879Z","level":"INFO","context":"exemplars","message":"Category \"3D/Vehicles/Air\": 686 total assets, selected 103 exemplars (15.0%) - 45 best sellers, 58 regular"}
+{"timestamp":"2025-10-09T12:43:29.879Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Modeling\": 407 total assets, selected 62 exemplars (15.2%) - 46 best sellers, 16 regular"}
+{"timestamp":"2025-10-09T12:43:29.880Z","level":"INFO","context":"exemplars","message":"Category \"3D/Vehicles/Sea\": 426 total assets, selected 64 exemplars (15.0%) - 45 best sellers, 19 regular"}
+{"timestamp":"2025-10-09T12:43:29.880Z","level":"INFO","context":"exemplars","message":"Category \"Audio\": 333 total assets, selected 50 exemplars (15.0%) - 40 best sellers, 10 regular"}
+{"timestamp":"2025-10-09T12:43:29.882Z","level":"INFO","context":"exemplars","message":"Category \"2D/GUI\": 4040 total assets, selected 606 exemplars (15.0%) - 108 best sellers, 498 regular"}
+{"timestamp":"2025-10-09T12:43:29.887Z","level":"INFO","context":"exemplars","message":"Category \"3D/Animations\": 1330 total assets, selected 200 exemplars (15.0%) - 49 best sellers, 151 regular"}
+{"timestamp":"2025-10-09T12:43:29.888Z","level":"INFO","context":"exemplars","message":"Category \"Audio/Music/Orchestral\": 1149 total assets, selected 173 exemplars (15.1%) - 45 best sellers, 128 regular"}
+{"timestamp":"2025-10-09T12:43:29.889Z","level":"INFO","context":"exemplars","message":"Category \"3D/Characters/Humanoids/Humans\": 2062 total assets, selected 310 exemplars (15.0%) - 48 best sellers, 262 regular"}
+{"timestamp":"2025-10-09T12:43:29.889Z","level":"INFO","context":"exemplars","message":"Category \"3D/Environments/Landscapes\": 900 total assets, selected 135 exemplars (15.0%) - 46 best sellers, 89 regular"}
+{"timestamp":"2025-10-09T12:43:29.891Z","level":"INFO","context":"exemplars","message":"Category \"3D/Environments/Urban\": 1652 total assets, selected 248 exemplars (15.0%) - 41 best sellers, 207 regular"}
+{"timestamp":"2025-10-09T12:43:29.891Z","level":"INFO","context":"exemplars","message":"Category \"Audio/Sound FX/Foley\": 400 total assets, selected 60 exemplars (15.0%) - 37 best sellers, 23 regular"}
+{"timestamp":"2025-10-09T12:43:29.891Z","level":"INFO","context":"exemplars","message":"Category \"3D/Vehicles\": 795 total assets, selected 120 exemplars (15.1%) - 1 best sellers, 119 regular"}
+{"timestamp":"2025-10-09T12:43:29.892Z","level":"INFO","context":"exemplars","message":"Category \"3D/Props/Furniture\": 1497 total assets, selected 225 exemplars (15.0%) - 43 best sellers, 182 regular"}
+{"timestamp":"2025-10-09T12:43:29.894Z","level":"INFO","context":"exemplars","message":"Category \"Audio/Sound FX\": 2276 total assets, selected 342 exemplars (15.0%) - 29 best sellers, 313 regular"}
+{"timestamp":"2025-10-09T12:43:29.894Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Sprite Management\": 167 total assets, selected 39 exemplars (23.4%) - 39 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.894Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Camera\": 278 total assets, selected 46 exemplars (16.5%) - 46 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.897Z","level":"INFO","context":"exemplars","message":"Category \"3D/Props\": 4695 total assets, selected 705 exemplars (15.0%) - 17 best sellers, 688 regular"}
+{"timestamp":"2025-10-09T12:43:29.898Z","level":"INFO","context":"exemplars","message":"Category \"Tools\": 1024 total assets, selected 154 exemplars (15.0%) - 52 best sellers, 102 regular"}
+{"timestamp":"2025-10-09T12:43:29.899Z","level":"INFO","context":"exemplars","message":"Category \"3D/Vehicles/Land\": 2527 total assets, selected 380 exemplars (15.0%) - 44 best sellers, 336 regular"}
+{"timestamp":"2025-10-09T12:43:29.900Z","level":"INFO","context":"exemplars","message":"Category \"3D/Props/Electronics\": 731 total assets, selected 110 exemplars (15.0%) - 39 best sellers, 71 regular"}
+{"timestamp":"2025-10-09T12:43:29.901Z","level":"INFO","context":"exemplars","message":"Category \"3D/Environments/Industrial\": 1397 total assets, selected 210 exemplars (15.0%) - 90 best sellers, 120 regular"}
+{"timestamp":"2025-10-09T12:43:29.901Z","level":"INFO","context":"exemplars","message":"Category \"Audio/Music/Pop\": 142 total assets, selected 44 exemplars (31.0%) - 44 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.901Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Input Management\": 384 total assets, selected 58 exemplars (15.1%) - 44 best sellers, 14 regular"}
+{"timestamp":"2025-10-09T12:43:29.902Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Behavior AI\": 376 total assets, selected 57 exemplars (15.2%) - 41 best sellers, 16 regular"}
+{"timestamp":"2025-10-09T12:43:29.902Z","level":"INFO","context":"exemplars","message":"Category \"Templates\": 267 total assets, selected 41 exemplars (15.4%) - 0 best sellers, 41 regular"}
+{"timestamp":"2025-10-09T12:43:29.902Z","level":"INFO","context":"exemplars","message":"Category \"Audio/Sound FX/Voices\": 516 total assets, selected 78 exemplars (15.1%) - 45 best sellers, 33 regular"}
+{"timestamp":"2025-10-09T12:43:29.902Z","level":"INFO","context":"exemplars","message":"Category \"2D/Textures & Materials/Stone\": 120 total assets, selected 44 exemplars (36.7%) - 44 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.902Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Particles & Effects\": 571 total assets, selected 86 exemplars (15.1%) - 45 best sellers, 41 regular"}
+{"timestamp":"2025-10-09T12:43:29.903Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Integration\": 1115 total assets, selected 168 exemplars (15.1%) - 48 best sellers, 120 regular"}
+{"timestamp":"2025-10-09T12:43:29.903Z","level":"INFO","context":"exemplars","message":"Category \"2D/Textures & Materials/Sky\": 648 total assets, selected 98 exemplars (15.1%) - 46 best sellers, 52 regular"}
+{"timestamp":"2025-10-09T12:43:29.904Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Terrain\": 364 total assets, selected 55 exemplars (15.1%) - 52 best sellers, 3 regular"}
+{"timestamp":"2025-10-09T12:43:29.904Z","level":"INFO","context":"exemplars","message":"Category \"2D/Textures & Materials/Food\": 705 total assets, selected 106 exemplars (15.0%) - 78 best sellers, 28 regular"}
+{"timestamp":"2025-10-09T12:43:29.904Z","level":"INFO","context":"exemplars","message":"Category \"2D/Textures & Materials/Nature\": 429 total assets, selected 65 exemplars (15.2%) - 65 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.905Z","level":"INFO","context":"exemplars","message":"Category \"3D/Characters/Animals\": 868 total assets, selected 131 exemplars (15.1%) - 57 best sellers, 74 regular"}
+{"timestamp":"2025-10-09T12:43:29.905Z","level":"INFO","context":"exemplars","message":"Category \"3D/Props/Clothing\": 311 total assets, selected 47 exemplars (15.1%) - 17 best sellers, 30 regular"}
+{"timestamp":"2025-10-09T12:43:29.905Z","level":"INFO","context":"exemplars","message":"Category \"3D/Vehicles/Space\": 1022 total assets, selected 154 exemplars (15.1%) - 45 best sellers, 109 regular"}
+{"timestamp":"2025-10-09T12:43:29.907Z","level":"INFO","context":"exemplars","message":"Category \"2D/Textures & Materials\": 2005 total assets, selected 301 exemplars (15.0%) - 13 best sellers, 288 regular"}
+{"timestamp":"2025-10-09T12:43:29.907Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Animation\": 403 total assets, selected 61 exemplars (15.1%) - 42 best sellers, 19 regular"}
+{"timestamp":"2025-10-09T12:43:29.907Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Level Design\": 398 total assets, selected 60 exemplars (15.1%) - 45 best sellers, 15 regular"}
+{"timestamp":"2025-10-09T12:43:29.907Z","level":"INFO","context":"exemplars","message":"Category \"3D/Characters/Animals/Birds\": 387 total assets, selected 59 exemplars (15.2%) - 45 best sellers, 14 regular"}
+{"timestamp":"2025-10-09T12:43:29.908Z","level":"INFO","context":"exemplars","message":"Category \"Templates/Systems\": 938 total assets, selected 141 exemplars (15.0%) - 44 best sellers, 97 regular"}
+{"timestamp":"2025-10-09T12:43:29.908Z","level":"INFO","context":"exemplars","message":"Category \"Audio/Ambient\": 420 total assets, selected 63 exemplars (15.0%) - 17 best sellers, 46 regular"}
+{"timestamp":"2025-10-09T12:43:29.908Z","level":"INFO","context":"exemplars","message":"Category \"VFX\": 549 total assets, selected 83 exemplars (15.1%) - 5 best sellers, 78 regular"}
+{"timestamp":"2025-10-09T12:43:29.909Z","level":"INFO","context":"exemplars","message":"Category \"2D/Textures & Materials/Floors\": 261 total assets, selected 46 exemplars (17.6%) - 46 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.909Z","level":"INFO","context":"exemplars","message":"Category \"Templates/Tutorials\": 446 total assets, selected 67 exemplars (15.0%) - 49 best sellers, 18 regular"}
+{"timestamp":"2025-10-09T12:43:29.909Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Game Toolkits\": 718 total assets, selected 108 exemplars (15.0%) - 49 best sellers, 59 regular"}
+{"timestamp":"2025-10-09T12:43:29.909Z","level":"INFO","context":"exemplars","message":"Category \"VFX/Environment\": 165 total assets, selected 25 exemplars (15.2%) - 2 best sellers, 23 regular"}
+{"timestamp":"2025-10-09T12:43:29.909Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Localization\": 115 total assets, selected 50 exemplars (43.5%) - 50 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.910Z","level":"INFO","context":"exemplars","message":"Category \"3D/Environments/Roadways\": 221 total assets, selected 43 exemplars (19.5%) - 43 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.910Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Network\": 268 total assets, selected 47 exemplars (17.5%) - 47 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.910Z","level":"INFO","context":"exemplars","message":"Category \"3D/Characters/Animals/Fish\": 306 total assets, selected 46 exemplars (15.0%) - 46 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.910Z","level":"INFO","context":"exemplars","message":"Category \"3D/Vegetation/Plants\": 268 total assets, selected 48 exemplars (17.9%) - 48 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.910Z","level":"INFO","context":"exemplars","message":"Category \"3D/Characters/Animals/Reptiles\": 300 total assets, selected 45 exemplars (15.0%) - 40 best sellers, 5 regular"}
+{"timestamp":"2025-10-09T12:43:29.911Z","level":"INFO","context":"exemplars","message":"Category \"3D\": 939 total assets, selected 141 exemplars (15.0%) - 1 best sellers, 140 regular"}
+{"timestamp":"2025-10-09T12:43:29.911Z","level":"INFO","context":"exemplars","message":"Category \"Audio/Sound FX/Transportation\": 182 total assets, selected 44 exemplars (24.2%) - 44 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.911Z","level":"INFO","context":"exemplars","message":"Category \"2D/Fonts\": 57 total assets, selected 46 exemplars (80.7%) - 46 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.911Z","level":"INFO","context":"exemplars","message":"Category \"VFX/Fire & Explosions\": 300 total assets, selected 45 exemplars (15.0%) - 5 best sellers, 40 regular"}
+{"timestamp":"2025-10-09T12:43:29.911Z","level":"INFO","context":"exemplars","message":"Category \"2D\": 598 total assets, selected 90 exemplars (15.1%) - 0 best sellers, 90 regular"}
+{"timestamp":"2025-10-09T12:43:29.911Z","level":"INFO","context":"exemplars","message":"Category \"VFX/Shaders/Fullscreen & Camera Effects\": 428 total assets, selected 65 exemplars (15.2%) - 39 best sellers, 26 regular"}
+{"timestamp":"2025-10-09T12:43:29.912Z","level":"INFO","context":"exemplars","message":"Category \"Audio/Music/World\": 177 total assets, selected 35 exemplars (19.8%) - 35 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.912Z","level":"INFO","context":"exemplars","message":"Category \"Audio/Noise\": 35 total assets, selected 6 exemplars (17.1%) - 2 best sellers, 4 regular"}
+{"timestamp":"2025-10-09T12:43:29.912Z","level":"INFO","context":"exemplars","message":"Category \"3D/Characters/Animals/Insects\": 258 total assets, selected 40 exemplars (15.5%) - 40 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.912Z","level":"INFO","context":"exemplars","message":"Category \"3D/Props/Accessories\": 230 total assets, selected 35 exemplars (15.2%) - 18 best sellers, 17 regular"}
+{"timestamp":"2025-10-09T12:43:29.912Z","level":"INFO","context":"exemplars","message":"Category \"3D/Environments/Historic\": 724 total assets, selected 109 exemplars (15.1%) - 38 best sellers, 71 regular"}
+{"timestamp":"2025-10-09T12:43:29.912Z","level":"INFO","context":"exemplars","message":"Category \"2D/Textures & Materials/Wood\": 126 total assets, selected 51 exemplars (40.5%) - 51 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.912Z","level":"INFO","context":"exemplars","message":"Category \"2D/Textures & Materials/Water\": 29 total assets, selected 29 exemplars (100.0%) - 29 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.913Z","level":"INFO","context":"exemplars","message":"Category \"VFX/Shaders/Substances\": 69 total assets, selected 45 exemplars (65.2%) - 45 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.913Z","level":"INFO","context":"exemplars","message":"Category \"2D/Textures & Materials/Roofing\": 21 total assets, selected 21 exemplars (100.0%) - 21 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.913Z","level":"INFO","context":"exemplars","message":"Category \"Audio/Music/Rock\": 322 total assets, selected 49 exemplars (15.2%) - 42 best sellers, 7 regular"}
+{"timestamp":"2025-10-09T12:43:29.913Z","level":"INFO","context":"exemplars","message":"Category \"3D/Vegetation/Flowers\": 189 total assets, selected 42 exemplars (22.2%) - 42 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.913Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Physics\": 483 total assets, selected 73 exemplars (15.1%) - 43 best sellers, 30 regular"}
+{"timestamp":"2025-10-09T12:43:29.913Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Version Control\": 18 total assets, selected 18 exemplars (100.0%) - 18 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.913Z","level":"INFO","context":"exemplars","message":"Category \"2D/Textures & Materials/Building\": 54 total assets, selected 41 exemplars (75.9%) - 41 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.914Z","level":"INFO","context":"exemplars","message":"Category \"Add-Ons\": 143 total assets, selected 39 exemplars (27.3%) - 39 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.914Z","level":"INFO","context":"exemplars","message":"Category \"2D/Textures & Materials/Metals\": 204 total assets, selected 43 exemplars (21.1%) - 43 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.914Z","level":"INFO","context":"exemplars","message":"Category \"VFX/Spells\": 382 total assets, selected 58 exemplars (15.2%) - 17 best sellers, 41 regular"}
+{"timestamp":"2025-10-09T12:43:29.914Z","level":"INFO","context":"exemplars","message":"Category \"2D/Textures & Materials/Concrete\": 35 total assets, selected 35 exemplars (100.0%) - 35 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.914Z","level":"INFO","context":"exemplars","message":"Category \"Tools/AI-ML Integration\": 65 total assets, selected 47 exemplars (72.3%) - 47 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.914Z","level":"INFO","context":"exemplars","message":"Category \"2D/Textures & Materials/Fabric\": 76 total assets, selected 39 exemplars (51.3%) - 39 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.914Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Video\": 77 total assets, selected 39 exemplars (50.6%) - 39 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.914Z","level":"INFO","context":"exemplars","message":"Category \"2D/Textures & Materials/Brick\": 141 total assets, selected 25 exemplars (17.7%) - 25 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.914Z","level":"INFO","context":"exemplars","message":"Category \"3D/Props/Armor\": 155 total assets, selected 24 exemplars (15.5%) - 8 best sellers, 16 regular"}
+{"timestamp":"2025-10-09T12:43:29.914Z","level":"INFO","context":"exemplars","message":"Category \"Essentials/Tutorial Projects\": 43 total assets, selected 29 exemplars (67.4%) - 29 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.914Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Generative AI\": 64 total assets, selected 48 exemplars (75.0%) - 48 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.914Z","level":"INFO","context":"exemplars","message":"Category \"VFX/Shaders/DirectX 11\": 24 total assets, selected 24 exemplars (100.0%) - 24 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.915Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Painting\": 107 total assets, selected 51 exemplars (47.7%) - 51 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.915Z","level":"INFO","context":"exemplars","message":"Category \"2D/Textures & Materials/Roads\": 61 total assets, selected 50 exemplars (82.0%) - 50 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.915Z","level":"INFO","context":"exemplars","message":"Category \"2D/Textures & Materials/Abstract\": 30 total assets, selected 30 exemplars (100.0%) - 30 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.915Z","level":"INFO","context":"exemplars","message":"Category \"Decentralization/Infrastructure\": 1 total assets, selected 1 exemplars (100.0%) - 1 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.915Z","level":"INFO","context":"exemplars","message":"Category \"Add-Ons/Services/Billing\": 7 total assets, selected 2 exemplars (28.6%) - 2 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.915Z","level":"INFO","context":"exemplars","message":"Category \"Add-Ons/Services\": 1 total assets, selected 1 exemplars (100.0%) - 0 best sellers, 1 regular"}
+{"timestamp":"2025-10-09T12:43:29.915Z","level":"INFO","context":"exemplars","message":"Category \"Add-Ons/Machine Learning\": 10 total assets, selected 3 exemplars (30.0%) - 3 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.915Z","level":"INFO","context":"exemplars","message":"Category \"2D/Textures & Materials/Glass\": 7 total assets, selected 7 exemplars (100.0%) - 7 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.915Z","level":"INFO","context":"exemplars","message":"Category \"Essentials\": 4 total assets, selected 4 exemplars (100.0%) - 4 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:43:29.915Z","level":"INFO","context":"patterns","message":"Extracting patterns from 455 exemplars"}
+{"timestamp":"2025-10-09T12:43:34.598Z","level":"INFO","context":"patterns","message":"Extracting patterns from 7 exemplars"}
+{"timestamp":"2025-10-09T12:43:34.599Z","level":"INFO","context":"patterns","message":"Extracting patterns from 4 exemplars"}
+{"timestamp":"2025-10-09T12:43:35.667Z","level":"INFO","context":"optimizer","message":"Building dynamic grading rules","data":{"exemplarsPath":"data/results-multi-pass/exemplars.json","outputPath":"data/results-multi-pass/grading-rules.json"}}
+{"timestamp":"2025-10-09T12:43:36.685Z","level":"INFO","context":"dynamic-rules","message":"Extracting dynamic grading rules from exemplars"}
+{"timestamp":"2025-10-09T12:43:36.685Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 2D/GUI/Icons","data":{"exemplarCount":455}}
+{"timestamp":"2025-10-09T12:43:36.701Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 2D/GUI/Icons","data":{"confidence":"high","sampleSize":455}}
+{"timestamp":"2025-10-09T12:43:36.852Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Essentials","data":{"exemplarCount":4}}
+{"timestamp":"2025-10-09T12:43:36.852Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Essentials","data":{"confidence":"low","sampleSize":4}}
+{"timestamp":"2025-10-09T12:43:36.852Z","level":"SUCCESS","context":"dynamic-rules","message":"Dynamic grading rules extraction completed","data":{"categories":118,"highConfidence":103,"mediumConfidence":8,"lowConfidence":7}}
+{"timestamp":"2025-10-09T12:43:36.858Z","level":"SUCCESS","context":"optimizer","message":"Dynamic grading rules built successfully","data":{"categories":118,"highConfidence":103,"mediumConfidence":8,"lowConfidence":7,"outputPath":"data/results-multi-pass/grading-rules.json"}}
+{"timestamp":"2025-10-09T12:43:36.858Z","level":"INFO","context":"optimizer","message":"Completed buildGradingRules","data":{"duration_ms":1191}}
+{"timestamp":"2025-10-09T12:43:36.867Z","level":"INFO","context":"optimizer","message":"Starting pass 2/5"}
+{"timestamp":"2025-10-09T12:43:36.872Z","level":"INFO","context":"optimizer","message":"Pass 2: Would use dynamic rules from previous pass","data":{"categoriesWithRules":118}}
+{"timestamp":"2025-10-09T12:43:36.872Z","level":"INFO","context":"exemplars","message":"Identifying exemplars from 99728 assets using top 15%, with 5581 best sellers"}
+{"timestamp":"2025-10-09T12:43:36.886Z","level":"INFO","context":"grader:scorer","message":"Asset graded","data":{"title":"Fantasy Survival Icon Pack","score":16,"letter":"F","issueCount":12}}
+{"timestamp":"2025-10-09T12:43:36.887Z","level":"INFO","context":"grader:scorer","message":"Asset graded","data":{"title":"Enemy Zombie","score":25,"letter":"F","issueCount":11}}
+{"timestamp":"2025-10-09T12:44:10.621Z","level":"INFO","context":"grader:scorer","message":"Completed gradeAsset","data":{"duration_ms":33234}}
+{"timestamp":"2025-10-09T12:44:10.621Z","level":"INFO","context":"grader:scorer","message":"Completed gradeAsset","data":{"duration_ms":33233}}
+{"timestamp":"2025-10-09T12:44:10.621Z","level":"INFO","context":"grader:scorer","message":"Completed gradeAsset","data":{"duration_ms":33233}}
+{"timestamp":"2025-10-09T12:44:16.767Z","level":"INFO","context":"grader:scorer","message":"Completed gradeAsset","data":{"duration_ms":6282}}
+{"timestamp":"2025-10-09T12:44:16.767Z","level":"INFO","context":"grader:scorer","message":"Completed gradeAsset","data":{"duration_ms":6278}}
+{"timestamp":"2025-10-09T12:44:16.767Z","level":"INFO","context":"grader:scorer","message":"Completed gradeAsset","data":{"duration_ms":6277}}
+{"timestamp":"2025-10-09T12:44:18.034Z","level":"INFO","context":"exemplars","message":"Category \"2D/GUI/Icons\": 3033 total assets, selected 455 exemplars (15.0%) - 38 best sellers, 417 regular"}
+{"timestamp":"2025-10-09T12:44:18.044Z","level":"INFO","context":"exemplars","message":"Category \"3D/Characters/Humanoids\": 1725 total assets, selected 259 exemplars (15.0%) - 17 best sellers, 242 regular"}
+{"timestamp":"2025-10-09T12:44:18.047Z","level":"INFO","context":"exemplars","message":"Category \"3D/Vegetation/Trees\": 611 total assets, selected 92 exemplars (15.1%) - 48 best sellers, 44 regular"}
+{"timestamp":"2025-10-09T12:44:18.052Z","level":"INFO","context":"exemplars","message":"Category \"Templates/Packs\": 1647 total assets, selected 248 exemplars (15.1%) - 47 best sellers, 201 regular"}
+{"timestamp":"2025-10-09T12:44:18.054Z","level":"INFO","context":"exemplars","message":"Category \"3D/Characters/Humanoids/Robots\": 644 total assets, selected 97 exemplars (15.1%) - 0 best sellers, 97 regular"}
+{"timestamp":"2025-10-09T12:44:18.054Z","level":"INFO","context":"exemplars","message":"Category \"2D/Textures & Materials/Tiles\": 131 total assets, selected 41 exemplars (31.3%) - 41 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.054Z","level":"INFO","context":"exemplars","message":"Category \"3D/Vegetation\": 350 total assets, selected 53 exemplars (15.1%) - 19 best sellers, 34 regular"}
+{"timestamp":"2025-10-09T12:44:18.063Z","level":"INFO","context":"exemplars","message":"Category \"VFX/Shaders\": 2075 total assets, selected 312 exemplars (15.0%) - 36 best sellers, 276 regular"}
+{"timestamp":"2025-10-09T12:44:18.070Z","level":"INFO","context":"exemplars","message":"Category \"Audio/Music\": 3259 total assets, selected 489 exemplars (15.0%) - 27 best sellers, 462 regular"}
+{"timestamp":"2025-10-09T12:44:18.073Z","level":"INFO","context":"exemplars","message":"Category \"3D/Props/Interior\": 1523 total assets, selected 229 exemplars (15.0%) - 50 best sellers, 179 regular"}
+{"timestamp":"2025-10-09T12:44:18.074Z","level":"INFO","context":"exemplars","message":"Category \"3D/Props/Guns\": 959 total assets, selected 144 exemplars (15.0%) - 40 best sellers, 104 regular"}
+{"timestamp":"2025-10-09T12:44:18.092Z","level":"INFO","context":"exemplars","message":"Category \"3D/Characters/Creatures\": 4223 total assets, selected 634 exemplars (15.0%) - 85 best sellers, 549 regular"}
+{"timestamp":"2025-10-09T12:44:18.094Z","level":"INFO","context":"exemplars","message":"Category \"3D/Characters/Animals/Mammals\": 838 total assets, selected 126 exemplars (15.0%) - 42 best sellers, 84 regular"}
+{"timestamp":"2025-10-09T12:44:18.098Z","level":"INFO","context":"exemplars","message":"Category \"3D/Props/Weapons\": 3409 total assets, selected 512 exemplars (15.0%) - 85 best sellers, 427 regular"}
+{"timestamp":"2025-10-09T12:44:18.100Z","level":"INFO","context":"exemplars","message":"Category \"Audio/Music/Electronic\": 982 total assets, selected 148 exemplars (15.1%) - 53 best sellers, 95 regular"}
+{"timestamp":"2025-10-09T12:44:18.107Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Utilities\": 2854 total assets, selected 429 exemplars (15.0%) - 40 best sellers, 389 regular"}
+{"timestamp":"2025-10-09T12:44:18.109Z","level":"INFO","context":"exemplars","message":"Category \"3D/Props/Exterior\": 1367 total assets, selected 206 exemplars (15.1%) - 44 best sellers, 162 regular"}
+{"timestamp":"2025-10-09T12:44:18.109Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Visual Scripting\": 153 total assets, selected 43 exemplars (28.1%) - 43 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.110Z","level":"INFO","context":"exemplars","message":"Category \"VFX/Particles\": 971 total assets, selected 146 exemplars (15.0%) - 17 best sellers, 129 regular"}
+{"timestamp":"2025-10-09T12:44:18.115Z","level":"INFO","context":"exemplars","message":"Category \"3D/Characters/Humanoids/Fantasy\": 3792 total assets, selected 569 exemplars (15.0%) - 93 best sellers, 476 regular"}
+{"timestamp":"2025-10-09T12:44:18.116Z","level":"INFO","context":"exemplars","message":"Category \"3D/Environments/Dungeons\": 422 total assets, selected 64 exemplars (15.2%) - 43 best sellers, 21 regular"}
+{"timestamp":"2025-10-09T12:44:18.125Z","level":"INFO","context":"exemplars","message":"Category \"3D/Characters/Humanoids/Sci-Fi\": 1726 total assets, selected 259 exemplars (15.0%) - 97 best sellers, 162 regular"}
+{"timestamp":"2025-10-09T12:44:18.155Z","level":"INFO","context":"exemplars","message":"Category \"2D/Environments\": 5095 total assets, selected 765 exemplars (15.0%) - 47 best sellers, 718 regular"}
+{"timestamp":"2025-10-09T12:44:18.177Z","level":"INFO","context":"exemplars","message":"Category \"2D/Characters\": 6285 total assets, selected 943 exemplars (15.0%) - 36 best sellers, 907 regular"}
+{"timestamp":"2025-10-09T12:44:18.181Z","level":"INFO","context":"exemplars","message":"Category \"3D/Vehicles/Air\": 686 total assets, selected 103 exemplars (15.0%) - 45 best sellers, 58 regular"}
+{"timestamp":"2025-10-09T12:44:18.182Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Modeling\": 407 total assets, selected 62 exemplars (15.2%) - 46 best sellers, 16 regular"}
+{"timestamp":"2025-10-09T12:44:18.183Z","level":"INFO","context":"exemplars","message":"Category \"3D/Vehicles/Sea\": 426 total assets, selected 64 exemplars (15.0%) - 45 best sellers, 19 regular"}
+{"timestamp":"2025-10-09T12:44:18.184Z","level":"INFO","context":"exemplars","message":"Category \"Audio\": 333 total assets, selected 50 exemplars (15.0%) - 40 best sellers, 10 regular"}
+{"timestamp":"2025-10-09T12:44:18.200Z","level":"INFO","context":"exemplars","message":"Category \"2D/GUI\": 4040 total assets, selected 606 exemplars (15.0%) - 108 best sellers, 498 regular"}
+{"timestamp":"2025-10-09T12:44:18.210Z","level":"INFO","context":"exemplars","message":"Category \"3D/Animations\": 1330 total assets, selected 200 exemplars (15.0%) - 49 best sellers, 151 regular"}
+{"timestamp":"2025-10-09T12:44:18.219Z","level":"INFO","context":"exemplars","message":"Category \"Audio/Music/Orchestral\": 1149 total assets, selected 173 exemplars (15.1%) - 45 best sellers, 128 regular"}
+{"timestamp":"2025-10-09T12:44:18.231Z","level":"INFO","context":"exemplars","message":"Category \"3D/Characters/Humanoids/Humans\": 2062 total assets, selected 310 exemplars (15.0%) - 48 best sellers, 262 regular"}
+{"timestamp":"2025-10-09T12:44:18.232Z","level":"INFO","context":"exemplars","message":"Category \"3D/Environments/Landscapes\": 900 total assets, selected 135 exemplars (15.0%) - 46 best sellers, 89 regular"}
+{"timestamp":"2025-10-09T12:44:18.234Z","level":"INFO","context":"exemplars","message":"Category \"3D/Environments/Urban\": 1652 total assets, selected 248 exemplars (15.0%) - 41 best sellers, 207 regular"}
+{"timestamp":"2025-10-09T12:44:18.237Z","level":"INFO","context":"exemplars","message":"Category \"Audio/Sound FX/Foley\": 400 total assets, selected 60 exemplars (15.0%) - 37 best sellers, 23 regular"}
+{"timestamp":"2025-10-09T12:44:18.237Z","level":"INFO","context":"exemplars","message":"Category \"3D/Vehicles\": 795 total assets, selected 120 exemplars (15.1%) - 1 best sellers, 119 regular"}
+{"timestamp":"2025-10-09T12:44:18.240Z","level":"INFO","context":"exemplars","message":"Category \"3D/Props/Furniture\": 1497 total assets, selected 225 exemplars (15.0%) - 43 best sellers, 182 regular"}
+{"timestamp":"2025-10-09T12:44:18.242Z","level":"INFO","context":"exemplars","message":"Category \"Audio/Sound FX\": 2276 total assets, selected 342 exemplars (15.0%) - 29 best sellers, 313 regular"}
+{"timestamp":"2025-10-09T12:44:18.242Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Sprite Management\": 167 total assets, selected 39 exemplars (23.4%) - 39 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.243Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Camera\": 278 total assets, selected 46 exemplars (16.5%) - 46 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.253Z","level":"INFO","context":"exemplars","message":"Category \"3D/Props\": 4695 total assets, selected 705 exemplars (15.0%) - 17 best sellers, 688 regular"}
+{"timestamp":"2025-10-09T12:44:18.264Z","level":"INFO","context":"exemplars","message":"Category \"Tools\": 1024 total assets, selected 154 exemplars (15.0%) - 52 best sellers, 102 regular"}
+{"timestamp":"2025-10-09T12:44:18.282Z","level":"INFO","context":"exemplars","message":"Category \"3D/Vehicles/Land\": 2527 total assets, selected 380 exemplars (15.0%) - 44 best sellers, 336 regular"}
+{"timestamp":"2025-10-09T12:44:18.283Z","level":"INFO","context":"exemplars","message":"Category \"3D/Props/Electronics\": 731 total assets, selected 110 exemplars (15.0%) - 39 best sellers, 71 regular"}
+{"timestamp":"2025-10-09T12:44:18.289Z","level":"INFO","context":"exemplars","message":"Category \"3D/Environments/Industrial\": 1397 total assets, selected 210 exemplars (15.0%) - 90 best sellers, 120 regular"}
+{"timestamp":"2025-10-09T12:44:18.289Z","level":"INFO","context":"exemplars","message":"Category \"Audio/Music/Pop\": 142 total assets, selected 44 exemplars (31.0%) - 44 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.290Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Input Management\": 384 total assets, selected 58 exemplars (15.1%) - 44 best sellers, 14 regular"}
+{"timestamp":"2025-10-09T12:44:18.291Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Behavior AI\": 376 total assets, selected 57 exemplars (15.2%) - 41 best sellers, 16 regular"}
+{"timestamp":"2025-10-09T12:44:18.291Z","level":"INFO","context":"exemplars","message":"Category \"Templates\": 267 total assets, selected 41 exemplars (15.4%) - 0 best sellers, 41 regular"}
+{"timestamp":"2025-10-09T12:44:18.292Z","level":"INFO","context":"exemplars","message":"Category \"Audio/Sound FX/Voices\": 516 total assets, selected 78 exemplars (15.1%) - 45 best sellers, 33 regular"}
+{"timestamp":"2025-10-09T12:44:18.292Z","level":"INFO","context":"exemplars","message":"Category \"2D/Textures & Materials/Stone\": 120 total assets, selected 44 exemplars (36.7%) - 44 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.292Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Particles & Effects\": 571 total assets, selected 86 exemplars (15.1%) - 45 best sellers, 41 regular"}
+{"timestamp":"2025-10-09T12:44:18.294Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Integration\": 1115 total assets, selected 168 exemplars (15.1%) - 48 best sellers, 120 regular"}
+{"timestamp":"2025-10-09T12:44:18.294Z","level":"INFO","context":"exemplars","message":"Category \"2D/Textures & Materials/Sky\": 648 total assets, selected 98 exemplars (15.1%) - 46 best sellers, 52 regular"}
+{"timestamp":"2025-10-09T12:44:18.295Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Terrain\": 364 total assets, selected 55 exemplars (15.1%) - 52 best sellers, 3 regular"}
+{"timestamp":"2025-10-09T12:44:18.295Z","level":"INFO","context":"exemplars","message":"Category \"2D/Textures & Materials/Food\": 705 total assets, selected 106 exemplars (15.0%) - 78 best sellers, 28 regular"}
+{"timestamp":"2025-10-09T12:44:18.296Z","level":"INFO","context":"exemplars","message":"Category \"2D/Textures & Materials/Nature\": 429 total assets, selected 65 exemplars (15.2%) - 65 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.297Z","level":"INFO","context":"exemplars","message":"Category \"3D/Characters/Animals\": 868 total assets, selected 131 exemplars (15.1%) - 57 best sellers, 74 regular"}
+{"timestamp":"2025-10-09T12:44:18.297Z","level":"INFO","context":"exemplars","message":"Category \"3D/Props/Clothing\": 311 total assets, selected 47 exemplars (15.1%) - 17 best sellers, 30 regular"}
+{"timestamp":"2025-10-09T12:44:18.298Z","level":"INFO","context":"exemplars","message":"Category \"3D/Vehicles/Space\": 1022 total assets, selected 154 exemplars (15.1%) - 45 best sellers, 109 regular"}
+{"timestamp":"2025-10-09T12:44:18.300Z","level":"INFO","context":"exemplars","message":"Category \"2D/Textures & Materials\": 2005 total assets, selected 301 exemplars (15.0%) - 13 best sellers, 288 regular"}
+{"timestamp":"2025-10-09T12:44:18.321Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Animation\": 403 total assets, selected 61 exemplars (15.1%) - 42 best sellers, 19 regular"}
+{"timestamp":"2025-10-09T12:44:18.321Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Level Design\": 398 total assets, selected 60 exemplars (15.1%) - 45 best sellers, 15 regular"}
+{"timestamp":"2025-10-09T12:44:18.322Z","level":"INFO","context":"exemplars","message":"Category \"3D/Characters/Animals/Birds\": 387 total assets, selected 59 exemplars (15.2%) - 45 best sellers, 14 regular"}
+{"timestamp":"2025-10-09T12:44:18.323Z","level":"INFO","context":"exemplars","message":"Category \"Templates/Systems\": 938 total assets, selected 141 exemplars (15.0%) - 44 best sellers, 97 regular"}
+{"timestamp":"2025-10-09T12:44:18.323Z","level":"INFO","context":"exemplars","message":"Category \"Audio/Ambient\": 420 total assets, selected 63 exemplars (15.0%) - 17 best sellers, 46 regular"}
+{"timestamp":"2025-10-09T12:44:18.327Z","level":"INFO","context":"exemplars","message":"Category \"VFX\": 549 total assets, selected 83 exemplars (15.1%) - 5 best sellers, 78 regular"}
+{"timestamp":"2025-10-09T12:44:18.327Z","level":"INFO","context":"exemplars","message":"Category \"2D/Textures & Materials/Floors\": 261 total assets, selected 46 exemplars (17.6%) - 46 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.328Z","level":"INFO","context":"exemplars","message":"Category \"Templates/Tutorials\": 446 total assets, selected 67 exemplars (15.0%) - 49 best sellers, 18 regular"}
+{"timestamp":"2025-10-09T12:44:18.328Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Game Toolkits\": 718 total assets, selected 108 exemplars (15.0%) - 49 best sellers, 59 regular"}
+{"timestamp":"2025-10-09T12:44:18.328Z","level":"INFO","context":"exemplars","message":"Category \"VFX/Environment\": 165 total assets, selected 25 exemplars (15.2%) - 2 best sellers, 23 regular"}
+{"timestamp":"2025-10-09T12:44:18.328Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Localization\": 115 total assets, selected 50 exemplars (43.5%) - 50 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.332Z","level":"INFO","context":"exemplars","message":"Category \"3D/Environments/Roadways\": 221 total assets, selected 43 exemplars (19.5%) - 43 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.332Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Network\": 268 total assets, selected 47 exemplars (17.5%) - 47 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.333Z","level":"INFO","context":"exemplars","message":"Category \"3D/Characters/Animals/Fish\": 306 total assets, selected 46 exemplars (15.0%) - 46 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.333Z","level":"INFO","context":"exemplars","message":"Category \"3D/Vegetation/Plants\": 268 total assets, selected 48 exemplars (17.9%) - 48 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.333Z","level":"INFO","context":"exemplars","message":"Category \"3D/Characters/Animals/Reptiles\": 300 total assets, selected 45 exemplars (15.0%) - 40 best sellers, 5 regular"}
+{"timestamp":"2025-10-09T12:44:18.334Z","level":"INFO","context":"exemplars","message":"Category \"3D\": 939 total assets, selected 141 exemplars (15.0%) - 1 best sellers, 140 regular"}
+{"timestamp":"2025-10-09T12:44:18.341Z","level":"INFO","context":"exemplars","message":"Category \"Audio/Sound FX/Transportation\": 182 total assets, selected 44 exemplars (24.2%) - 44 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.341Z","level":"INFO","context":"exemplars","message":"Category \"2D/Fonts\": 57 total assets, selected 46 exemplars (80.7%) - 46 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.341Z","level":"INFO","context":"exemplars","message":"Category \"VFX/Fire & Explosions\": 300 total assets, selected 45 exemplars (15.0%) - 5 best sellers, 40 regular"}
+{"timestamp":"2025-10-09T12:44:18.342Z","level":"INFO","context":"exemplars","message":"Category \"2D\": 598 total assets, selected 90 exemplars (15.1%) - 0 best sellers, 90 regular"}
+{"timestamp":"2025-10-09T12:44:18.342Z","level":"INFO","context":"exemplars","message":"Category \"VFX/Shaders/Fullscreen & Camera Effects\": 428 total assets, selected 65 exemplars (15.2%) - 39 best sellers, 26 regular"}
+{"timestamp":"2025-10-09T12:44:18.342Z","level":"INFO","context":"exemplars","message":"Category \"Audio/Music/World\": 177 total assets, selected 35 exemplars (19.8%) - 35 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.343Z","level":"INFO","context":"exemplars","message":"Category \"Audio/Noise\": 35 total assets, selected 6 exemplars (17.1%) - 2 best sellers, 4 regular"}
+{"timestamp":"2025-10-09T12:44:18.343Z","level":"INFO","context":"exemplars","message":"Category \"3D/Characters/Animals/Insects\": 258 total assets, selected 40 exemplars (15.5%) - 40 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.343Z","level":"INFO","context":"exemplars","message":"Category \"3D/Props/Accessories\": 230 total assets, selected 35 exemplars (15.2%) - 18 best sellers, 17 regular"}
+{"timestamp":"2025-10-09T12:44:18.344Z","level":"INFO","context":"exemplars","message":"Category \"3D/Environments/Historic\": 724 total assets, selected 109 exemplars (15.1%) - 38 best sellers, 71 regular"}
+{"timestamp":"2025-10-09T12:44:18.344Z","level":"INFO","context":"exemplars","message":"Category \"2D/Textures & Materials/Wood\": 126 total assets, selected 51 exemplars (40.5%) - 51 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.344Z","level":"INFO","context":"exemplars","message":"Category \"2D/Textures & Materials/Water\": 29 total assets, selected 29 exemplars (100.0%) - 29 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.344Z","level":"INFO","context":"exemplars","message":"Category \"VFX/Shaders/Substances\": 69 total assets, selected 45 exemplars (65.2%) - 45 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.344Z","level":"INFO","context":"exemplars","message":"Category \"2D/Textures & Materials/Roofing\": 21 total assets, selected 21 exemplars (100.0%) - 21 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.344Z","level":"INFO","context":"exemplars","message":"Category \"Audio/Music/Rock\": 322 total assets, selected 49 exemplars (15.2%) - 42 best sellers, 7 regular"}
+{"timestamp":"2025-10-09T12:44:18.345Z","level":"INFO","context":"exemplars","message":"Category \"3D/Vegetation/Flowers\": 189 total assets, selected 42 exemplars (22.2%) - 42 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.370Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Physics\": 483 total assets, selected 73 exemplars (15.1%) - 43 best sellers, 30 regular"}
+{"timestamp":"2025-10-09T12:44:18.370Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Version Control\": 18 total assets, selected 18 exemplars (100.0%) - 18 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.371Z","level":"INFO","context":"exemplars","message":"Category \"2D/Textures & Materials/Building\": 54 total assets, selected 41 exemplars (75.9%) - 41 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.372Z","level":"INFO","context":"exemplars","message":"Category \"Add-Ons\": 143 total assets, selected 39 exemplars (27.3%) - 39 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.372Z","level":"INFO","context":"exemplars","message":"Category \"2D/Textures & Materials/Metals\": 204 total assets, selected 43 exemplars (21.1%) - 43 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.372Z","level":"INFO","context":"exemplars","message":"Category \"VFX/Spells\": 382 total assets, selected 58 exemplars (15.2%) - 17 best sellers, 41 regular"}
+{"timestamp":"2025-10-09T12:44:18.372Z","level":"INFO","context":"exemplars","message":"Category \"2D/Textures & Materials/Concrete\": 35 total assets, selected 35 exemplars (100.0%) - 35 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.372Z","level":"INFO","context":"exemplars","message":"Category \"Tools/AI-ML Integration\": 65 total assets, selected 47 exemplars (72.3%) - 47 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.373Z","level":"INFO","context":"exemplars","message":"Category \"2D/Textures & Materials/Fabric\": 76 total assets, selected 39 exemplars (51.3%) - 39 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.373Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Video\": 77 total assets, selected 39 exemplars (50.6%) - 39 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.373Z","level":"INFO","context":"exemplars","message":"Category \"2D/Textures & Materials/Brick\": 141 total assets, selected 25 exemplars (17.7%) - 25 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.373Z","level":"INFO","context":"exemplars","message":"Category \"3D/Props/Armor\": 155 total assets, selected 24 exemplars (15.5%) - 8 best sellers, 16 regular"}
+{"timestamp":"2025-10-09T12:44:18.375Z","level":"INFO","context":"exemplars","message":"Category \"Essentials/Tutorial Projects\": 43 total assets, selected 29 exemplars (67.4%) - 29 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.375Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Generative AI\": 64 total assets, selected 48 exemplars (75.0%) - 48 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.375Z","level":"INFO","context":"exemplars","message":"Category \"VFX/Shaders/DirectX 11\": 24 total assets, selected 24 exemplars (100.0%) - 24 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.376Z","level":"INFO","context":"exemplars","message":"Category \"Tools/Painting\": 107 total assets, selected 51 exemplars (47.7%) - 51 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.376Z","level":"INFO","context":"exemplars","message":"Category \"2D/Textures & Materials/Roads\": 61 total assets, selected 50 exemplars (82.0%) - 50 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.376Z","level":"INFO","context":"exemplars","message":"Category \"2D/Textures & Materials/Abstract\": 30 total assets, selected 30 exemplars (100.0%) - 30 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.376Z","level":"INFO","context":"exemplars","message":"Category \"Decentralization/Infrastructure\": 1 total assets, selected 1 exemplars (100.0%) - 1 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.376Z","level":"INFO","context":"exemplars","message":"Category \"Add-Ons/Services/Billing\": 7 total assets, selected 2 exemplars (28.6%) - 2 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.376Z","level":"INFO","context":"exemplars","message":"Category \"Add-Ons/Services\": 1 total assets, selected 1 exemplars (100.0%) - 0 best sellers, 1 regular"}
+{"timestamp":"2025-10-09T12:44:18.376Z","level":"INFO","context":"exemplars","message":"Category \"Add-Ons/Machine Learning\": 10 total assets, selected 3 exemplars (30.0%) - 3 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.376Z","level":"INFO","context":"exemplars","message":"Category \"2D/Textures & Materials/Glass\": 7 total assets, selected 7 exemplars (100.0%) - 7 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.376Z","level":"INFO","context":"exemplars","message":"Category \"Essentials\": 4 total assets, selected 4 exemplars (100.0%) - 4 best sellers, 0 regular"}
+{"timestamp":"2025-10-09T12:44:18.376Z","level":"INFO","context":"patterns","message":"Extracting patterns from 455 exemplars"}
+{"timestamp":"2025-10-09T12:44:28.841Z","level":"INFO","context":"patterns","message":"Extracting patterns from 7 exemplars"}
+{"timestamp":"2025-10-09T12:44:28.843Z","level":"INFO","context":"patterns","message":"Extracting patterns from 4 exemplars"}
+{"timestamp":"2025-10-09T12:44:30.916Z","level":"INFO","context":"optimizer","message":"Building dynamic grading rules","data":{"exemplarsPath":"data/results-multi-pass/exemplars.json","outputPath":"data/results-multi-pass/grading-rules.json"}}
+{"timestamp":"2025-10-09T12:44:32.786Z","level":"INFO","context":"dynamic-rules","message":"Extracting dynamic grading rules from exemplars"}
+{"timestamp":"2025-10-09T12:44:32.786Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 2D/GUI/Icons","data":{"exemplarCount":455}}
+{"timestamp":"2025-10-09T12:44:32.800Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 2D/GUI/Icons","data":{"confidence":"high","sampleSize":455}}
+{"timestamp":"2025-10-09T12:44:32.800Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D/Characters/Humanoids","data":{"exemplarCount":259}}
+{"timestamp":"2025-10-09T12:44:32.809Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D/Characters/Humanoids","data":{"confidence":"high","sampleSize":259}}
+{"timestamp":"2025-10-09T12:44:32.809Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D/Vegetation/Trees","data":{"exemplarCount":92}}
+{"timestamp":"2025-10-09T12:44:32.811Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D/Vegetation/Trees","data":{"confidence":"high","sampleSize":92}}
+{"timestamp":"2025-10-09T12:44:32.811Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Templates/Packs","data":{"exemplarCount":248}}
+{"timestamp":"2025-10-09T12:44:32.817Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Templates/Packs","data":{"confidence":"high","sampleSize":248}}
+{"timestamp":"2025-10-09T12:44:32.817Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D/Characters/Humanoids/Robots","data":{"exemplarCount":97}}
+{"timestamp":"2025-10-09T12:44:32.818Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D/Characters/Humanoids/Robots","data":{"confidence":"high","sampleSize":97}}
+{"timestamp":"2025-10-09T12:44:32.818Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 2D/Textures & Materials/Tiles","data":{"exemplarCount":41}}
+{"timestamp":"2025-10-09T12:44:32.819Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 2D/Textures & Materials/Tiles","data":{"confidence":"high","sampleSize":41}}
+{"timestamp":"2025-10-09T12:44:32.819Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D/Vegetation","data":{"exemplarCount":53}}
+{"timestamp":"2025-10-09T12:44:32.820Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D/Vegetation","data":{"confidence":"high","sampleSize":53}}
+{"timestamp":"2025-10-09T12:44:32.820Z","level":"INFO","context":"dynamic-rules","message":"Processing category: VFX/Shaders","data":{"exemplarCount":312}}
+{"timestamp":"2025-10-09T12:44:32.825Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for VFX/Shaders","data":{"confidence":"high","sampleSize":312}}
+{"timestamp":"2025-10-09T12:44:32.825Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Audio/Music","data":{"exemplarCount":489}}
+{"timestamp":"2025-10-09T12:44:32.834Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Audio/Music","data":{"confidence":"high","sampleSize":489}}
+{"timestamp":"2025-10-09T12:44:32.835Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D/Props/Interior","data":{"exemplarCount":229}}
+{"timestamp":"2025-10-09T12:44:32.838Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D/Props/Interior","data":{"confidence":"high","sampleSize":229}}
+{"timestamp":"2025-10-09T12:44:32.839Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D/Props/Guns","data":{"exemplarCount":144}}
+{"timestamp":"2025-10-09T12:44:32.841Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D/Props/Guns","data":{"confidence":"high","sampleSize":144}}
+{"timestamp":"2025-10-09T12:44:32.841Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D/Characters/Creatures","data":{"exemplarCount":634}}
+{"timestamp":"2025-10-09T12:44:32.851Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D/Characters/Creatures","data":{"confidence":"high","sampleSize":634}}
+{"timestamp":"2025-10-09T12:44:32.851Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D/Characters/Animals/Mammals","data":{"exemplarCount":126}}
+{"timestamp":"2025-10-09T12:44:32.853Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D/Characters/Animals/Mammals","data":{"confidence":"high","sampleSize":126}}
+{"timestamp":"2025-10-09T12:44:32.853Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D/Props/Weapons","data":{"exemplarCount":512}}
+{"timestamp":"2025-10-09T12:44:32.861Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D/Props/Weapons","data":{"confidence":"high","sampleSize":512}}
+{"timestamp":"2025-10-09T12:44:32.861Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Audio/Music/Electronic","data":{"exemplarCount":148}}
+{"timestamp":"2025-10-09T12:44:32.863Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Audio/Music/Electronic","data":{"confidence":"high","sampleSize":148}}
+{"timestamp":"2025-10-09T12:44:32.863Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Tools/Utilities","data":{"exemplarCount":429}}
+{"timestamp":"2025-10-09T12:44:32.871Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Tools/Utilities","data":{"confidence":"high","sampleSize":429}}
+{"timestamp":"2025-10-09T12:44:32.871Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D/Props/Exterior","data":{"exemplarCount":206}}
+{"timestamp":"2025-10-09T12:44:32.876Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D/Props/Exterior","data":{"confidence":"high","sampleSize":206}}
+{"timestamp":"2025-10-09T12:44:32.876Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Tools/Visual Scripting","data":{"exemplarCount":43}}
+{"timestamp":"2025-10-09T12:44:32.877Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Tools/Visual Scripting","data":{"confidence":"high","sampleSize":43}}
+{"timestamp":"2025-10-09T12:44:32.877Z","level":"INFO","context":"dynamic-rules","message":"Processing category: VFX/Particles","data":{"exemplarCount":146}}
+{"timestamp":"2025-10-09T12:44:32.879Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for VFX/Particles","data":{"confidence":"high","sampleSize":146}}
+{"timestamp":"2025-10-09T12:44:32.879Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D/Characters/Humanoids/Fantasy","data":{"exemplarCount":569}}
+{"timestamp":"2025-10-09T12:44:32.889Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D/Characters/Humanoids/Fantasy","data":{"confidence":"high","sampleSize":569}}
+{"timestamp":"2025-10-09T12:44:32.889Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D/Environments/Dungeons","data":{"exemplarCount":64}}
+{"timestamp":"2025-10-09T12:44:32.891Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D/Environments/Dungeons","data":{"confidence":"high","sampleSize":64}}
+{"timestamp":"2025-10-09T12:44:32.891Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D/Characters/Humanoids/Sci-Fi","data":{"exemplarCount":259}}
+{"timestamp":"2025-10-09T12:44:32.895Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D/Characters/Humanoids/Sci-Fi","data":{"confidence":"high","sampleSize":259}}
+{"timestamp":"2025-10-09T12:44:32.895Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 2D/Environments","data":{"exemplarCount":765}}
+{"timestamp":"2025-10-09T12:44:32.906Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 2D/Environments","data":{"confidence":"high","sampleSize":765}}
+{"timestamp":"2025-10-09T12:44:32.906Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 2D/Characters","data":{"exemplarCount":943}}
+{"timestamp":"2025-10-09T12:44:32.919Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 2D/Characters","data":{"confidence":"high","sampleSize":943}}
+{"timestamp":"2025-10-09T12:44:32.919Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D/Vehicles/Air","data":{"exemplarCount":103}}
+{"timestamp":"2025-10-09T12:44:32.921Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D/Vehicles/Air","data":{"confidence":"high","sampleSize":103}}
+{"timestamp":"2025-10-09T12:44:32.921Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Tools/Modeling","data":{"exemplarCount":62}}
+{"timestamp":"2025-10-09T12:44:32.922Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Tools/Modeling","data":{"confidence":"high","sampleSize":62}}
+{"timestamp":"2025-10-09T12:44:32.922Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D/Vehicles/Sea","data":{"exemplarCount":64}}
+{"timestamp":"2025-10-09T12:44:32.923Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D/Vehicles/Sea","data":{"confidence":"high","sampleSize":64}}
+{"timestamp":"2025-10-09T12:44:32.923Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Audio","data":{"exemplarCount":50}}
+{"timestamp":"2025-10-09T12:44:32.924Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Audio","data":{"confidence":"high","sampleSize":50}}
+{"timestamp":"2025-10-09T12:44:32.924Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 2D/GUI","data":{"exemplarCount":606}}
+{"timestamp":"2025-10-09T12:44:32.932Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 2D/GUI","data":{"confidence":"high","sampleSize":606}}
+{"timestamp":"2025-10-09T12:44:32.932Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D/Animations","data":{"exemplarCount":200}}
+{"timestamp":"2025-10-09T12:44:32.935Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D/Animations","data":{"confidence":"high","sampleSize":200}}
+{"timestamp":"2025-10-09T12:44:32.935Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Audio/Music/Orchestral","data":{"exemplarCount":173}}
+{"timestamp":"2025-10-09T12:44:32.937Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Audio/Music/Orchestral","data":{"confidence":"high","sampleSize":173}}
+{"timestamp":"2025-10-09T12:44:32.937Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D/Characters/Humanoids/Humans","data":{"exemplarCount":310}}
+{"timestamp":"2025-10-09T12:44:32.942Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D/Characters/Humanoids/Humans","data":{"confidence":"high","sampleSize":310}}
+{"timestamp":"2025-10-09T12:44:32.942Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D/Environments/Landscapes","data":{"exemplarCount":135}}
+{"timestamp":"2025-10-09T12:44:32.944Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D/Environments/Landscapes","data":{"confidence":"high","sampleSize":135}}
+{"timestamp":"2025-10-09T12:44:32.944Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D/Environments/Urban","data":{"exemplarCount":248}}
+{"timestamp":"2025-10-09T12:44:32.947Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D/Environments/Urban","data":{"confidence":"high","sampleSize":248}}
+{"timestamp":"2025-10-09T12:44:32.947Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Audio/Sound FX/Foley","data":{"exemplarCount":60}}
+{"timestamp":"2025-10-09T12:44:32.948Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Audio/Sound FX/Foley","data":{"confidence":"high","sampleSize":60}}
+{"timestamp":"2025-10-09T12:44:32.948Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D/Vehicles","data":{"exemplarCount":120}}
+{"timestamp":"2025-10-09T12:44:32.949Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D/Vehicles","data":{"confidence":"high","sampleSize":120}}
+{"timestamp":"2025-10-09T12:44:32.949Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D/Props/Furniture","data":{"exemplarCount":225}}
+{"timestamp":"2025-10-09T12:44:32.952Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D/Props/Furniture","data":{"confidence":"high","sampleSize":225}}
+{"timestamp":"2025-10-09T12:44:32.952Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Audio/Sound FX","data":{"exemplarCount":342}}
+{"timestamp":"2025-10-09T12:44:32.958Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Audio/Sound FX","data":{"confidence":"high","sampleSize":342}}
+{"timestamp":"2025-10-09T12:44:32.958Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Tools/Sprite Management","data":{"exemplarCount":39}}
+{"timestamp":"2025-10-09T12:44:32.958Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Tools/Sprite Management","data":{"confidence":"high","sampleSize":39}}
+{"timestamp":"2025-10-09T12:44:32.958Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Tools/Camera","data":{"exemplarCount":46}}
+{"timestamp":"2025-10-09T12:44:32.959Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Tools/Camera","data":{"confidence":"high","sampleSize":46}}
+{"timestamp":"2025-10-09T12:44:32.959Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D/Props","data":{"exemplarCount":705}}
+{"timestamp":"2025-10-09T12:44:32.967Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D/Props","data":{"confidence":"high","sampleSize":705}}
+{"timestamp":"2025-10-09T12:44:32.967Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Tools","data":{"exemplarCount":154}}
+{"timestamp":"2025-10-09T12:44:32.970Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Tools","data":{"confidence":"high","sampleSize":154}}
+{"timestamp":"2025-10-09T12:44:32.970Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D/Vehicles/Land","data":{"exemplarCount":380}}
+{"timestamp":"2025-10-09T12:44:32.975Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D/Vehicles/Land","data":{"confidence":"high","sampleSize":380}}
+{"timestamp":"2025-10-09T12:44:32.975Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D/Props/Electronics","data":{"exemplarCount":110}}
+{"timestamp":"2025-10-09T12:44:32.977Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D/Props/Electronics","data":{"confidence":"high","sampleSize":110}}
+{"timestamp":"2025-10-09T12:44:32.977Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D/Environments/Industrial","data":{"exemplarCount":210}}
+{"timestamp":"2025-10-09T12:44:32.980Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D/Environments/Industrial","data":{"confidence":"high","sampleSize":210}}
+{"timestamp":"2025-10-09T12:44:32.980Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Audio/Music/Pop","data":{"exemplarCount":44}}
+{"timestamp":"2025-10-09T12:44:32.980Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Audio/Music/Pop","data":{"confidence":"high","sampleSize":44}}
+{"timestamp":"2025-10-09T12:44:32.980Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Tools/Input Management","data":{"exemplarCount":58}}
+{"timestamp":"2025-10-09T12:44:32.981Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Tools/Input Management","data":{"confidence":"high","sampleSize":58}}
+{"timestamp":"2025-10-09T12:44:32.981Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Tools/Behavior AI","data":{"exemplarCount":57}}
+{"timestamp":"2025-10-09T12:44:32.982Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Tools/Behavior AI","data":{"confidence":"high","sampleSize":57}}
+{"timestamp":"2025-10-09T12:44:32.982Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Templates","data":{"exemplarCount":41}}
+{"timestamp":"2025-10-09T12:44:32.982Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Templates","data":{"confidence":"high","sampleSize":41}}
+{"timestamp":"2025-10-09T12:44:32.982Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Audio/Sound FX/Voices","data":{"exemplarCount":78}}
+{"timestamp":"2025-10-09T12:44:32.983Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Audio/Sound FX/Voices","data":{"confidence":"high","sampleSize":78}}
+{"timestamp":"2025-10-09T12:44:32.983Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 2D/Textures & Materials/Stone","data":{"exemplarCount":44}}
+{"timestamp":"2025-10-09T12:44:32.984Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 2D/Textures & Materials/Stone","data":{"confidence":"high","sampleSize":44}}
+{"timestamp":"2025-10-09T12:44:32.984Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Tools/Particles & Effects","data":{"exemplarCount":86}}
+{"timestamp":"2025-10-09T12:44:32.985Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Tools/Particles & Effects","data":{"confidence":"high","sampleSize":86}}
+{"timestamp":"2025-10-09T12:44:32.985Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Tools/Integration","data":{"exemplarCount":168}}
+{"timestamp":"2025-10-09T12:44:32.988Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Tools/Integration","data":{"confidence":"high","sampleSize":168}}
+{"timestamp":"2025-10-09T12:44:32.988Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 2D/Textures & Materials/Sky","data":{"exemplarCount":98}}
+{"timestamp":"2025-10-09T12:44:32.989Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 2D/Textures & Materials/Sky","data":{"confidence":"high","sampleSize":98}}
+{"timestamp":"2025-10-09T12:44:32.989Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Tools/Terrain","data":{"exemplarCount":55}}
+{"timestamp":"2025-10-09T12:44:32.990Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Tools/Terrain","data":{"confidence":"high","sampleSize":55}}
+{"timestamp":"2025-10-09T12:44:32.990Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 2D/Textures & Materials/Food","data":{"exemplarCount":106}}
+{"timestamp":"2025-10-09T12:44:32.991Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 2D/Textures & Materials/Food","data":{"confidence":"high","sampleSize":106}}
+{"timestamp":"2025-10-09T12:44:32.991Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 2D/Textures & Materials/Nature","data":{"exemplarCount":65}}
+{"timestamp":"2025-10-09T12:44:32.992Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 2D/Textures & Materials/Nature","data":{"confidence":"high","sampleSize":65}}
+{"timestamp":"2025-10-09T12:44:32.992Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D/Characters/Animals","data":{"exemplarCount":131}}
+{"timestamp":"2025-10-09T12:44:32.994Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D/Characters/Animals","data":{"confidence":"high","sampleSize":131}}
+{"timestamp":"2025-10-09T12:44:32.994Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D/Props/Clothing","data":{"exemplarCount":47}}
+{"timestamp":"2025-10-09T12:44:32.995Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D/Props/Clothing","data":{"confidence":"high","sampleSize":47}}
+{"timestamp":"2025-10-09T12:44:32.995Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D/Vehicles/Space","data":{"exemplarCount":154}}
+{"timestamp":"2025-10-09T12:44:32.997Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D/Vehicles/Space","data":{"confidence":"high","sampleSize":154}}
+{"timestamp":"2025-10-09T12:44:32.997Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 2D/Textures & Materials","data":{"exemplarCount":301}}
+{"timestamp":"2025-10-09T12:44:33.001Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 2D/Textures & Materials","data":{"confidence":"high","sampleSize":301}}
+{"timestamp":"2025-10-09T12:44:33.001Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Tools/Animation","data":{"exemplarCount":61}}
+{"timestamp":"2025-10-09T12:44:33.002Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Tools/Animation","data":{"confidence":"high","sampleSize":61}}
+{"timestamp":"2025-10-09T12:44:33.002Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Tools/Level Design","data":{"exemplarCount":60}}
+{"timestamp":"2025-10-09T12:44:33.003Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Tools/Level Design","data":{"confidence":"high","sampleSize":60}}
+{"timestamp":"2025-10-09T12:44:33.003Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D/Characters/Animals/Birds","data":{"exemplarCount":59}}
+{"timestamp":"2025-10-09T12:44:33.004Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D/Characters/Animals/Birds","data":{"confidence":"high","sampleSize":59}}
+{"timestamp":"2025-10-09T12:44:33.004Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Templates/Systems","data":{"exemplarCount":141}}
+{"timestamp":"2025-10-09T12:44:33.006Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Templates/Systems","data":{"confidence":"high","sampleSize":141}}
+{"timestamp":"2025-10-09T12:44:33.006Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Audio/Ambient","data":{"exemplarCount":63}}
+{"timestamp":"2025-10-09T12:44:33.007Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Audio/Ambient","data":{"confidence":"high","sampleSize":63}}
+{"timestamp":"2025-10-09T12:44:33.007Z","level":"INFO","context":"dynamic-rules","message":"Processing category: VFX","data":{"exemplarCount":83}}
+{"timestamp":"2025-10-09T12:44:33.008Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for VFX","data":{"confidence":"high","sampleSize":83}}
+{"timestamp":"2025-10-09T12:44:33.008Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 2D/Textures & Materials/Floors","data":{"exemplarCount":46}}
+{"timestamp":"2025-10-09T12:44:33.009Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 2D/Textures & Materials/Floors","data":{"confidence":"high","sampleSize":46}}
+{"timestamp":"2025-10-09T12:44:33.009Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Templates/Tutorials","data":{"exemplarCount":67}}
+{"timestamp":"2025-10-09T12:44:33.010Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Templates/Tutorials","data":{"confidence":"high","sampleSize":67}}
+{"timestamp":"2025-10-09T12:44:33.010Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Tools/Game Toolkits","data":{"exemplarCount":108}}
+{"timestamp":"2025-10-09T12:44:33.011Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Tools/Game Toolkits","data":{"confidence":"high","sampleSize":108}}
+{"timestamp":"2025-10-09T12:44:33.011Z","level":"INFO","context":"dynamic-rules","message":"Processing category: VFX/Environment","data":{"exemplarCount":25}}
+{"timestamp":"2025-10-09T12:44:33.012Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for VFX/Environment","data":{"confidence":"medium","sampleSize":25}}
+{"timestamp":"2025-10-09T12:44:33.012Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Tools/Localization","data":{"exemplarCount":50}}
+{"timestamp":"2025-10-09T12:44:33.012Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Tools/Localization","data":{"confidence":"high","sampleSize":50}}
+{"timestamp":"2025-10-09T12:44:33.012Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D/Environments/Roadways","data":{"exemplarCount":43}}
+{"timestamp":"2025-10-09T12:44:33.013Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D/Environments/Roadways","data":{"confidence":"high","sampleSize":43}}
+{"timestamp":"2025-10-09T12:44:33.013Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Tools/Network","data":{"exemplarCount":47}}
+{"timestamp":"2025-10-09T12:44:33.014Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Tools/Network","data":{"confidence":"high","sampleSize":47}}
+{"timestamp":"2025-10-09T12:44:33.014Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D/Characters/Animals/Fish","data":{"exemplarCount":46}}
+{"timestamp":"2025-10-09T12:44:33.014Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D/Characters/Animals/Fish","data":{"confidence":"high","sampleSize":46}}
+{"timestamp":"2025-10-09T12:44:33.014Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D/Vegetation/Plants","data":{"exemplarCount":48}}
+{"timestamp":"2025-10-09T12:44:33.017Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D/Vegetation/Plants","data":{"confidence":"high","sampleSize":48}}
+{"timestamp":"2025-10-09T12:44:33.017Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D/Characters/Animals/Reptiles","data":{"exemplarCount":45}}
+{"timestamp":"2025-10-09T12:44:33.017Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D/Characters/Animals/Reptiles","data":{"confidence":"high","sampleSize":45}}
+{"timestamp":"2025-10-09T12:44:33.017Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D","data":{"exemplarCount":141}}
+{"timestamp":"2025-10-09T12:44:33.019Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D","data":{"confidence":"high","sampleSize":141}}
+{"timestamp":"2025-10-09T12:44:33.019Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Audio/Sound FX/Transportation","data":{"exemplarCount":44}}
+{"timestamp":"2025-10-09T12:44:33.020Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Audio/Sound FX/Transportation","data":{"confidence":"high","sampleSize":44}}
+{"timestamp":"2025-10-09T12:44:33.020Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 2D/Fonts","data":{"exemplarCount":46}}
+{"timestamp":"2025-10-09T12:44:33.021Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 2D/Fonts","data":{"confidence":"high","sampleSize":46}}
+{"timestamp":"2025-10-09T12:44:33.022Z","level":"INFO","context":"dynamic-rules","message":"Processing category: VFX/Fire & Explosions","data":{"exemplarCount":45}}
+{"timestamp":"2025-10-09T12:44:33.023Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for VFX/Fire & Explosions","data":{"confidence":"high","sampleSize":45}}
+{"timestamp":"2025-10-09T12:44:33.023Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 2D","data":{"exemplarCount":90}}
+{"timestamp":"2025-10-09T12:44:33.024Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 2D","data":{"confidence":"high","sampleSize":90}}
+{"timestamp":"2025-10-09T12:44:33.024Z","level":"INFO","context":"dynamic-rules","message":"Processing category: VFX/Shaders/Fullscreen & Camera Effects","data":{"exemplarCount":65}}
+{"timestamp":"2025-10-09T12:44:33.025Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for VFX/Shaders/Fullscreen & Camera Effects","data":{"confidence":"high","sampleSize":65}}
+{"timestamp":"2025-10-09T12:44:33.025Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Audio/Music/World","data":{"exemplarCount":35}}
+{"timestamp":"2025-10-09T12:44:33.025Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Audio/Music/World","data":{"confidence":"high","sampleSize":35}}
+{"timestamp":"2025-10-09T12:44:33.025Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Audio/Noise","data":{"exemplarCount":6}}
+{"timestamp":"2025-10-09T12:44:33.026Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Audio/Noise","data":{"confidence":"low","sampleSize":6}}
+{"timestamp":"2025-10-09T12:44:33.026Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D/Characters/Animals/Insects","data":{"exemplarCount":40}}
+{"timestamp":"2025-10-09T12:44:33.026Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D/Characters/Animals/Insects","data":{"confidence":"high","sampleSize":40}}
+{"timestamp":"2025-10-09T12:44:33.026Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D/Props/Accessories","data":{"exemplarCount":35}}
+{"timestamp":"2025-10-09T12:44:33.027Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D/Props/Accessories","data":{"confidence":"high","sampleSize":35}}
+{"timestamp":"2025-10-09T12:44:33.027Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D/Environments/Historic","data":{"exemplarCount":109}}
+{"timestamp":"2025-10-09T12:44:33.029Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D/Environments/Historic","data":{"confidence":"high","sampleSize":109}}
+{"timestamp":"2025-10-09T12:44:33.029Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 2D/Textures & Materials/Wood","data":{"exemplarCount":51}}
+{"timestamp":"2025-10-09T12:44:33.029Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 2D/Textures & Materials/Wood","data":{"confidence":"high","sampleSize":51}}
+{"timestamp":"2025-10-09T12:44:33.029Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 2D/Textures & Materials/Water","data":{"exemplarCount":29}}
+{"timestamp":"2025-10-09T12:44:33.029Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 2D/Textures & Materials/Water","data":{"confidence":"medium","sampleSize":29}}
+{"timestamp":"2025-10-09T12:44:33.029Z","level":"INFO","context":"dynamic-rules","message":"Processing category: VFX/Shaders/Substances","data":{"exemplarCount":45}}
+{"timestamp":"2025-10-09T12:44:33.030Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for VFX/Shaders/Substances","data":{"confidence":"high","sampleSize":45}}
+{"timestamp":"2025-10-09T12:44:33.030Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 2D/Textures & Materials/Roofing","data":{"exemplarCount":21}}
+{"timestamp":"2025-10-09T12:44:33.031Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 2D/Textures & Materials/Roofing","data":{"confidence":"medium","sampleSize":21}}
+{"timestamp":"2025-10-09T12:44:33.031Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Audio/Music/Rock","data":{"exemplarCount":49}}
+{"timestamp":"2025-10-09T12:44:33.031Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Audio/Music/Rock","data":{"confidence":"high","sampleSize":49}}
+{"timestamp":"2025-10-09T12:44:33.031Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D/Vegetation/Flowers","data":{"exemplarCount":42}}
+{"timestamp":"2025-10-09T12:44:33.032Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D/Vegetation/Flowers","data":{"confidence":"high","sampleSize":42}}
+{"timestamp":"2025-10-09T12:44:33.032Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Tools/Physics","data":{"exemplarCount":73}}
+{"timestamp":"2025-10-09T12:44:33.033Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Tools/Physics","data":{"confidence":"high","sampleSize":73}}
+{"timestamp":"2025-10-09T12:44:33.033Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Tools/Version Control","data":{"exemplarCount":18}}
+{"timestamp":"2025-10-09T12:44:33.033Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Tools/Version Control","data":{"confidence":"medium","sampleSize":18}}
+{"timestamp":"2025-10-09T12:44:33.033Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 2D/Textures & Materials/Building","data":{"exemplarCount":41}}
+{"timestamp":"2025-10-09T12:44:33.033Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 2D/Textures & Materials/Building","data":{"confidence":"high","sampleSize":41}}
+{"timestamp":"2025-10-09T12:44:33.033Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Add-Ons","data":{"exemplarCount":39}}
+{"timestamp":"2025-10-09T12:44:33.034Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Add-Ons","data":{"confidence":"high","sampleSize":39}}
+{"timestamp":"2025-10-09T12:44:33.034Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 2D/Textures & Materials/Metals","data":{"exemplarCount":43}}
+{"timestamp":"2025-10-09T12:44:33.034Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 2D/Textures & Materials/Metals","data":{"confidence":"high","sampleSize":43}}
+{"timestamp":"2025-10-09T12:44:33.034Z","level":"INFO","context":"dynamic-rules","message":"Processing category: VFX/Spells","data":{"exemplarCount":58}}
+{"timestamp":"2025-10-09T12:44:33.035Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for VFX/Spells","data":{"confidence":"high","sampleSize":58}}
+{"timestamp":"2025-10-09T12:44:33.035Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 2D/Textures & Materials/Concrete","data":{"exemplarCount":35}}
+{"timestamp":"2025-10-09T12:44:33.036Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 2D/Textures & Materials/Concrete","data":{"confidence":"high","sampleSize":35}}
+{"timestamp":"2025-10-09T12:44:33.036Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Tools/AI-ML Integration","data":{"exemplarCount":47}}
+{"timestamp":"2025-10-09T12:44:33.037Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Tools/AI-ML Integration","data":{"confidence":"high","sampleSize":47}}
+{"timestamp":"2025-10-09T12:44:33.037Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 2D/Textures & Materials/Fabric","data":{"exemplarCount":39}}
+{"timestamp":"2025-10-09T12:44:33.037Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 2D/Textures & Materials/Fabric","data":{"confidence":"high","sampleSize":39}}
+{"timestamp":"2025-10-09T12:44:33.038Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Tools/Video","data":{"exemplarCount":39}}
+{"timestamp":"2025-10-09T12:44:33.038Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Tools/Video","data":{"confidence":"high","sampleSize":39}}
+{"timestamp":"2025-10-09T12:44:33.038Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 2D/Textures & Materials/Brick","data":{"exemplarCount":25}}
+{"timestamp":"2025-10-09T12:44:33.039Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 2D/Textures & Materials/Brick","data":{"confidence":"medium","sampleSize":25}}
+{"timestamp":"2025-10-09T12:44:33.039Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 3D/Props/Armor","data":{"exemplarCount":24}}
+{"timestamp":"2025-10-09T12:44:33.039Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 3D/Props/Armor","data":{"confidence":"medium","sampleSize":24}}
+{"timestamp":"2025-10-09T12:44:33.039Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Essentials/Tutorial Projects","data":{"exemplarCount":29}}
+{"timestamp":"2025-10-09T12:44:33.040Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Essentials/Tutorial Projects","data":{"confidence":"medium","sampleSize":29}}
+{"timestamp":"2025-10-09T12:44:33.040Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Tools/Generative AI","data":{"exemplarCount":48}}
+{"timestamp":"2025-10-09T12:44:33.040Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Tools/Generative AI","data":{"confidence":"high","sampleSize":48}}
+{"timestamp":"2025-10-09T12:44:33.040Z","level":"INFO","context":"dynamic-rules","message":"Processing category: VFX/Shaders/DirectX 11","data":{"exemplarCount":24}}
+{"timestamp":"2025-10-09T12:44:33.041Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for VFX/Shaders/DirectX 11","data":{"confidence":"medium","sampleSize":24}}
+{"timestamp":"2025-10-09T12:44:33.041Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Tools/Painting","data":{"exemplarCount":51}}
+{"timestamp":"2025-10-09T12:44:33.041Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Tools/Painting","data":{"confidence":"high","sampleSize":51}}
+{"timestamp":"2025-10-09T12:44:33.041Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 2D/Textures & Materials/Roads","data":{"exemplarCount":50}}
+{"timestamp":"2025-10-09T12:44:33.042Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 2D/Textures & Materials/Roads","data":{"confidence":"high","sampleSize":50}}
+{"timestamp":"2025-10-09T12:44:33.042Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 2D/Textures & Materials/Abstract","data":{"exemplarCount":30}}
+{"timestamp":"2025-10-09T12:44:33.042Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 2D/Textures & Materials/Abstract","data":{"confidence":"high","sampleSize":30}}
+{"timestamp":"2025-10-09T12:44:33.042Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Decentralization/Infrastructure","data":{"exemplarCount":1}}
+{"timestamp":"2025-10-09T12:44:33.042Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Decentralization/Infrastructure","data":{"confidence":"low","sampleSize":1}}
+{"timestamp":"2025-10-09T12:44:33.042Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Add-Ons/Services/Billing","data":{"exemplarCount":2}}
+{"timestamp":"2025-10-09T12:44:33.043Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Add-Ons/Services/Billing","data":{"confidence":"low","sampleSize":2}}
+{"timestamp":"2025-10-09T12:44:33.043Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Add-Ons/Services","data":{"exemplarCount":1}}
+{"timestamp":"2025-10-09T12:44:33.043Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Add-Ons/Services","data":{"confidence":"low","sampleSize":1}}
+{"timestamp":"2025-10-09T12:44:33.043Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Add-Ons/Machine Learning","data":{"exemplarCount":3}}
+{"timestamp":"2025-10-09T12:44:33.043Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Add-Ons/Machine Learning","data":{"confidence":"low","sampleSize":3}}
+{"timestamp":"2025-10-09T12:44:33.043Z","level":"INFO","context":"dynamic-rules","message":"Processing category: 2D/Textures & Materials/Glass","data":{"exemplarCount":7}}
+{"timestamp":"2025-10-09T12:44:33.043Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for 2D/Textures & Materials/Glass","data":{"confidence":"low","sampleSize":7}}
+{"timestamp":"2025-10-09T12:44:33.043Z","level":"INFO","context":"dynamic-rules","message":"Processing category: Essentials","data":{"exemplarCount":4}}
+{"timestamp":"2025-10-09T12:44:33.043Z","level":"INFO","context":"dynamic-rules","message":"Generated rules for Essentials","data":{"confidence":"low","sampleSize":4}}
+{"timestamp":"2025-10-09T12:44:33.044Z","level":"SUCCESS","context":"dynamic-rules","message":"Dynamic grading rules extraction completed","data":{"categories":118,"highConfidence":103,"mediumConfidence":8,"lowConfidence":7}}
+{"timestamp":"2025-10-09T12:44:33.049Z","level":"SUCCESS","context":"optimizer","message":"Dynamic grading rules built successfully","data":{"categories":118,"highConfidence":103,"mediumConfidence":8,"lowConfidence":7,"outputPath":"data/results-multi-pass/grading-rules.json"}}
+{"timestamp":"2025-10-09T12:44:33.050Z","level":"INFO","context":"optimizer","message":"Completed buildGradingRules","data":{"duration_ms":2134}}
+{"timestamp":"2025-10-09T12:44:33.084Z","level":"INFO","context":"optimizer","message":"Pass 2: Convergence analysis","data":{"convergenceMetric":"1.000","threshold":0.95,"exemplarsAdded":0,"exemplarsRemoved":0,"exemplarsUnchanged":13783}}
+{"timestamp":"2025-10-09T12:44:33.084Z","level":"SUCCESS","context":"optimizer","message":"Pass 2: Converged! (1.000 >= 0.95)"}
+{"timestamp":"2025-10-09T12:44:33.084Z","level":"INFO","context":"optimizer","message":"Building final vocabulary and playbooks"}
+{"timestamp":"2025-10-09T12:44:33.091Z","level":"INFO","context":"optimizer","message":"Building exemplar vocabulary","data":{"exemplarsPath":"data/results-multi-pass/exemplars.json","outputPath":"data/results-multi-pass/exemplar_vocab.json"}}
+{"timestamp":"2025-10-09T12:44:34.627Z","level":"INFO","context":"vocab:builder","message":"Building exemplar-based vocabulary","data":{"categories":118,"totalExemplars":15754}}
+{"timestamp":"2025-10-09T12:44:34.659Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 2D/GUI/Icons","data":{"titleWords":4,"commonTags":10,"qualityScore":"45.6"}}
+{"timestamp":"2025-10-09T12:44:34.671Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D/Characters/Humanoids","data":{"titleWords":2,"commonTags":24,"qualityScore":"54.2"}}
+{"timestamp":"2025-10-09T12:44:34.676Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D/Vegetation/Trees","data":{"titleWords":3,"commonTags":12,"qualityScore":"68.8"}}
+{"timestamp":"2025-10-09T12:44:34.698Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Templates/Packs","data":{"titleWords":2,"commonTags":4,"qualityScore":"66.9"}}
+{"timestamp":"2025-10-09T12:44:34.702Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D/Characters/Humanoids/Robots","data":{"titleWords":2,"commonTags":16,"qualityScore":"46.9"}}
+{"timestamp":"2025-10-09T12:44:34.704Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 2D/Textures & Materials/Tiles","data":{"titleWords":3,"commonTags":8,"qualityScore":"77.5"}}
+{"timestamp":"2025-10-09T12:44:34.708Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D/Vegetation","data":{"titleWords":3,"commonTags":20,"qualityScore":"75.1"}}
+{"timestamp":"2025-10-09T12:44:34.726Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for VFX/Shaders","data":{"titleWords":1,"commonTags":5,"qualityScore":"62.7"}}
+{"timestamp":"2025-10-09T12:44:34.752Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Audio/Music","data":{"titleWords":2,"commonTags":13,"qualityScore":"51.6"}}
+{"timestamp":"2025-10-09T12:44:34.762Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D/Props/Interior","data":{"titleWords":4,"commonTags":10,"qualityScore":"60.3"}}
+{"timestamp":"2025-10-09T12:44:34.767Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D/Props/Guns","data":{"titleWords":5,"commonTags":17,"qualityScore":"55.7"}}
+{"timestamp":"2025-10-09T12:44:34.796Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D/Characters/Creatures","data":{"titleWords":1,"commonTags":14,"qualityScore":"54.0"}}
+{"timestamp":"2025-10-09T12:44:34.799Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D/Characters/Animals/Mammals","data":{"titleWords":3,"commonTags":15,"qualityScore":"59.9"}}
+{"timestamp":"2025-10-09T12:44:34.816Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D/Props/Weapons","data":{"titleWords":2,"commonTags":10,"qualityScore":"49.2"}}
+{"timestamp":"2025-10-09T12:44:34.823Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Audio/Music/Electronic","data":{"titleWords":5,"commonTags":11,"qualityScore":"59.6"}}
+{"timestamp":"2025-10-09T12:44:34.851Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Tools/Utilities","data":{"titleWords":0,"commonTags":2,"qualityScore":"64.6"}}
+{"timestamp":"2025-10-09T12:44:34.860Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D/Props/Exterior","data":{"titleWords":1,"commonTags":5,"qualityScore":"49.5"}}
+{"timestamp":"2025-10-09T12:44:34.864Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Tools/Visual Scripting","data":{"titleWords":0,"commonTags":6,"qualityScore":"102.6"}}
+{"timestamp":"2025-10-09T12:44:34.870Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for VFX/Particles","data":{"titleWords":2,"commonTags":19,"qualityScore":"64.7"}}
+{"timestamp":"2025-10-09T12:44:34.901Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D/Characters/Humanoids/Fantasy","data":{"titleWords":1,"commonTags":12,"qualityScore":"66.4"}}
+{"timestamp":"2025-10-09T12:44:34.904Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D/Environments/Dungeons","data":{"titleWords":3,"commonTags":13,"qualityScore":"82.0"}}
+{"timestamp":"2025-10-09T12:44:34.921Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D/Characters/Humanoids/Sci-Fi","data":{"titleWords":1,"commonTags":11,"qualityScore":"70.4"}}
+{"timestamp":"2025-10-09T12:44:34.957Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 2D/Environments","data":{"titleWords":1,"commonTags":7,"qualityScore":"53.4"}}
+{"timestamp":"2025-10-09T12:44:34.994Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 2D/Characters","data":{"titleWords":2,"commonTags":12,"qualityScore":"49.2"}}
+{"timestamp":"2025-10-09T12:44:34.997Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D/Vehicles/Air","data":{"titleWords":4,"commonTags":20,"qualityScore":"63.8"}}
+{"timestamp":"2025-10-09T12:44:35.004Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Tools/Modeling","data":{"titleWords":1,"commonTags":2,"qualityScore":"93.7"}}
+{"timestamp":"2025-10-09T12:44:35.006Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D/Vehicles/Sea","data":{"titleWords":1,"commonTags":12,"qualityScore":"69.9"}}
+{"timestamp":"2025-10-09T12:44:35.009Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Audio","data":{"titleWords":2,"commonTags":19,"qualityScore":"93.4"}}
+{"timestamp":"2025-10-09T12:44:35.041Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 2D/GUI","data":{"titleWords":2,"commonTags":4,"qualityScore":"63.2"}}
+{"timestamp":"2025-10-09T12:44:35.051Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D/Animations","data":{"titleWords":3,"commonTags":8,"qualityScore":"67.1"}}
+{"timestamp":"2025-10-09T12:44:35.063Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Audio/Music/Orchestral","data":{"titleWords":7,"commonTags":15,"qualityScore":"62.3"}}
+{"timestamp":"2025-10-09T12:44:35.095Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D/Characters/Humanoids/Humans","data":{"titleWords":2,"commonTags":3,"qualityScore":"62.5"}}
+{"timestamp":"2025-10-09T12:44:35.102Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D/Environments/Landscapes","data":{"titleWords":2,"commonTags":13,"qualityScore":"68.5"}}
+{"timestamp":"2025-10-09T12:44:35.113Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D/Environments/Urban","data":{"titleWords":4,"commonTags":11,"qualityScore":"59.9"}}
+{"timestamp":"2025-10-09T12:44:35.115Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Audio/Sound FX/Foley","data":{"titleWords":2,"commonTags":7,"qualityScore":"63.4"}}
+{"timestamp":"2025-10-09T12:44:35.119Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D/Vehicles","data":{"titleWords":3,"commonTags":9,"qualityScore":"44.2"}}
+{"timestamp":"2025-10-09T12:44:35.125Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D/Props/Furniture","data":{"titleWords":2,"commonTags":8,"qualityScore":"50.4"}}
+{"timestamp":"2025-10-09T12:44:35.142Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Audio/Sound FX","data":{"titleWords":4,"commonTags":8,"qualityScore":"47.7"}}
+{"timestamp":"2025-10-09T12:44:35.143Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Tools/Sprite Management","data":{"titleWords":1,"commonTags":9,"qualityScore":"88.5"}}
+{"timestamp":"2025-10-09T12:44:35.144Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Tools/Camera","data":{"titleWords":1,"commonTags":4,"qualityScore":"98.4"}}
+{"timestamp":"2025-10-09T12:44:35.170Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D/Props","data":{"titleWords":1,"commonTags":7,"qualityScore":"47.9"}}
+{"timestamp":"2025-10-09T12:44:35.175Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Tools","data":{"titleWords":1,"commonTags":6,"qualityScore":"55.9"}}
+{"timestamp":"2025-10-09T12:44:35.189Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D/Vehicles/Land","data":{"titleWords":0,"commonTags":6,"qualityScore":"45.2"}}
+{"timestamp":"2025-10-09T12:44:35.192Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D/Props/Electronics","data":{"titleWords":0,"commonTags":7,"qualityScore":"55.1"}}
+{"timestamp":"2025-10-09T12:44:35.200Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D/Environments/Industrial","data":{"titleWords":2,"commonTags":9,"qualityScore":"67.4"}}
+{"timestamp":"2025-10-09T12:44:35.201Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Audio/Music/Pop","data":{"titleWords":3,"commonTags":6,"qualityScore":"79.6"}}
+{"timestamp":"2025-10-09T12:44:35.204Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Tools/Input Management","data":{"titleWords":0,"commonTags":5,"qualityScore":"81.7"}}
+{"timestamp":"2025-10-09T12:44:35.209Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Tools/Behavior AI","data":{"titleWords":1,"commonTags":11,"qualityScore":"92.6"}}
+{"timestamp":"2025-10-09T12:44:35.210Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Templates","data":{"titleWords":3,"commonTags":0,"qualityScore":"43.9"}}
+{"timestamp":"2025-10-09T12:44:35.217Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Audio/Sound FX/Voices","data":{"titleWords":5,"commonTags":24,"qualityScore":"74.7"}}
+{"timestamp":"2025-10-09T12:44:35.217Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 2D/Textures & Materials/Stone","data":{"titleWords":7,"commonTags":9,"qualityScore":"72.1"}}
+{"timestamp":"2025-10-09T12:44:35.225Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Tools/Particles & Effects","data":{"titleWords":0,"commonTags":10,"qualityScore":"87.8"}}
+{"timestamp":"2025-10-09T12:44:35.241Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Tools/Integration","data":{"titleWords":0,"commonTags":0,"qualityScore":"70.1"}}
+{"timestamp":"2025-10-09T12:44:35.246Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 2D/Textures & Materials/Sky","data":{"titleWords":4,"commonTags":18,"qualityScore":"67.3"}}
+{"timestamp":"2025-10-09T12:44:35.253Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Tools/Terrain","data":{"titleWords":2,"commonTags":15,"qualityScore":"109.8"}}
+{"timestamp":"2025-10-09T12:44:35.256Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 2D/Textures & Materials/Food","data":{"titleWords":2,"commonTags":3,"qualityScore":"70.8"}}
+{"timestamp":"2025-10-09T12:44:35.258Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 2D/Textures & Materials/Nature","data":{"titleWords":4,"commonTags":18,"qualityScore":"83.5"}}
+{"timestamp":"2025-10-09T12:44:35.287Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D/Characters/Animals","data":{"titleWords":3,"commonTags":12,"qualityScore":"64.7"}}
+{"timestamp":"2025-10-09T12:44:35.291Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D/Props/Clothing","data":{"titleWords":6,"commonTags":14,"qualityScore":"61.5"}}
+{"timestamp":"2025-10-09T12:44:35.296Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D/Vehicles/Space","data":{"titleWords":1,"commonTags":15,"qualityScore":"57.3"}}
+{"timestamp":"2025-10-09T12:44:35.308Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 2D/Textures & Materials","data":{"titleWords":1,"commonTags":5,"qualityScore":"44.5"}}
+{"timestamp":"2025-10-09T12:44:35.311Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Tools/Animation","data":{"titleWords":1,"commonTags":6,"qualityScore":"93.9"}}
+{"timestamp":"2025-10-09T12:44:35.315Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Tools/Level Design","data":{"titleWords":2,"commonTags":5,"qualityScore":"100.4"}}
+{"timestamp":"2025-10-09T12:44:35.317Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D/Characters/Animals/Birds","data":{"titleWords":5,"commonTags":13,"qualityScore":"77.7"}}
+{"timestamp":"2025-10-09T12:44:35.330Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Templates/Systems","data":{"titleWords":3,"commonTags":5,"qualityScore":"79.5"}}
+{"timestamp":"2025-10-09T12:44:35.333Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Audio/Ambient","data":{"titleWords":4,"commonTags":16,"qualityScore":"52.7"}}
+{"timestamp":"2025-10-09T12:44:35.338Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for VFX","data":{"titleWords":3,"commonTags":13,"qualityScore":"64.1"}}
+{"timestamp":"2025-10-09T12:44:35.339Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 2D/Textures & Materials/Floors","data":{"titleWords":4,"commonTags":17,"qualityScore":"76.4"}}
+{"timestamp":"2025-10-09T12:44:35.344Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Templates/Tutorials","data":{"titleWords":2,"commonTags":16,"qualityScore":"85.2"}}
+{"timestamp":"2025-10-09T12:44:35.353Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Tools/Game Toolkits","data":{"titleWords":1,"commonTags":0,"qualityScore":"88.0"}}
+{"timestamp":"2025-10-09T12:44:35.354Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for VFX/Environment","data":{"titleWords":3,"commonTags":15,"qualityScore":"59.8"}}
+{"timestamp":"2025-10-09T12:44:35.357Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Tools/Localization","data":{"titleWords":1,"commonTags":11,"qualityScore":"94.9"}}
+{"timestamp":"2025-10-09T12:44:35.359Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D/Environments/Roadways","data":{"titleWords":3,"commonTags":16,"qualityScore":"86.6"}}
+{"timestamp":"2025-10-09T12:44:35.364Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Tools/Network","data":{"titleWords":1,"commonTags":18,"qualityScore":"98.8"}}
+{"timestamp":"2025-10-09T12:44:35.366Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D/Characters/Animals/Fish","data":{"titleWords":3,"commonTags":17,"qualityScore":"90.4"}}
+{"timestamp":"2025-10-09T12:44:35.367Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D/Vegetation/Plants","data":{"titleWords":4,"commonTags":16,"qualityScore":"88.8"}}
+{"timestamp":"2025-10-09T12:44:35.369Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D/Characters/Animals/Reptiles","data":{"titleWords":2,"commonTags":17,"qualityScore":"78.1"}}
+{"timestamp":"2025-10-09T12:44:35.375Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D","data":{"titleWords":1,"commonTags":0,"qualityScore":"31.4"}}
+{"timestamp":"2025-10-09T12:44:35.377Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Audio/Sound FX/Transportation","data":{"titleWords":5,"commonTags":21,"qualityScore":"82.1"}}
+{"timestamp":"2025-10-09T12:44:35.379Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 2D/Fonts","data":{"titleWords":3,"commonTags":21,"qualityScore":"79.7"}}
+{"timestamp":"2025-10-09T12:44:35.380Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for VFX/Fire & Explosions","data":{"titleWords":5,"commonTags":17,"qualityScore":"58.5"}}
+{"timestamp":"2025-10-09T12:44:35.384Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 2D","data":{"titleWords":1,"commonTags":9,"qualityScore":"49.2"}}
+{"timestamp":"2025-10-09T12:44:35.388Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for VFX/Shaders/Fullscreen & Camera Effects","data":{"titleWords":1,"commonTags":10,"qualityScore":"87.5"}}
+{"timestamp":"2025-10-09T12:44:35.389Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Audio/Music/World","data":{"titleWords":2,"commonTags":9,"qualityScore":"85.6"}}
+{"timestamp":"2025-10-09T12:44:35.390Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Audio/Noise","data":{"titleWords":18,"commonTags":39,"qualityScore":"50.0"}}
+{"timestamp":"2025-10-09T12:44:35.390Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D/Characters/Animals/Insects","data":{"titleWords":1,"commonTags":15,"qualityScore":"82.7"}}
+{"timestamp":"2025-10-09T12:44:35.392Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D/Props/Accessories","data":{"titleWords":2,"commonTags":24,"qualityScore":"69.0"}}
+{"timestamp":"2025-10-09T12:44:35.395Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D/Environments/Historic","data":{"titleWords":1,"commonTags":12,"qualityScore":"63.5"}}
+{"timestamp":"2025-10-09T12:44:35.396Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 2D/Textures & Materials/Wood","data":{"titleWords":3,"commonTags":11,"qualityScore":"75.6"}}
+{"timestamp":"2025-10-09T12:44:35.396Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 2D/Textures & Materials/Water","data":{"titleWords":5,"commonTags":11,"qualityScore":"78.9"}}
+{"timestamp":"2025-10-09T12:44:35.397Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for VFX/Shaders/Substances","data":{"titleWords":3,"commonTags":12,"qualityScore":"76.5"}}
+{"timestamp":"2025-10-09T12:44:35.398Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 2D/Textures & Materials/Roofing","data":{"titleWords":6,"commonTags":2,"qualityScore":"68.5"}}
+{"timestamp":"2025-10-09T12:44:35.399Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Audio/Music/Rock","data":{"titleWords":5,"commonTags":16,"qualityScore":"73.8"}}
+{"timestamp":"2025-10-09T12:44:35.400Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D/Vegetation/Flowers","data":{"titleWords":3,"commonTags":9,"qualityScore":"71.8"}}
+{"timestamp":"2025-10-09T12:44:35.405Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Tools/Physics","data":{"titleWords":2,"commonTags":12,"qualityScore":"93.8"}}
+{"timestamp":"2025-10-09T12:44:35.405Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Tools/Version Control","data":{"titleWords":1,"commonTags":12,"qualityScore":"78.8"}}
+{"timestamp":"2025-10-09T12:44:35.406Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 2D/Textures & Materials/Building","data":{"titleWords":3,"commonTags":1,"qualityScore":"70.7"}}
+{"timestamp":"2025-10-09T12:44:35.408Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Add-Ons","data":{"titleWords":1,"commonTags":12,"qualityScore":"95.6"}}
+{"timestamp":"2025-10-09T12:44:35.410Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 2D/Textures & Materials/Metals","data":{"titleWords":4,"commonTags":10,"qualityScore":"72.9"}}
+{"timestamp":"2025-10-09T12:44:35.413Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for VFX/Spells","data":{"titleWords":6,"commonTags":23,"qualityScore":"75.3"}}
+{"timestamp":"2025-10-09T12:44:35.413Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 2D/Textures & Materials/Concrete","data":{"titleWords":3,"commonTags":14,"qualityScore":"75.5"}}
+{"timestamp":"2025-10-09T12:44:35.417Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Tools/AI-ML Integration","data":{"titleWords":0,"commonTags":11,"qualityScore":"94.8"}}
+{"timestamp":"2025-10-09T12:44:35.419Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 2D/Textures & Materials/Fabric","data":{"titleWords":5,"commonTags":10,"qualityScore":"79.3"}}
+{"timestamp":"2025-10-09T12:44:35.422Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Tools/Video","data":{"titleWords":3,"commonTags":21,"qualityScore":"94.3"}}
+{"timestamp":"2025-10-09T12:44:35.424Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 2D/Textures & Materials/Brick","data":{"titleWords":5,"commonTags":23,"qualityScore":"73.6"}}
+{"timestamp":"2025-10-09T12:44:35.426Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 3D/Props/Armor","data":{"titleWords":8,"commonTags":27,"qualityScore":"58.2"}}
+{"timestamp":"2025-10-09T12:44:35.427Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Essentials/Tutorial Projects","data":{"titleWords":4,"commonTags":7,"qualityScore":"88.4"}}
+{"timestamp":"2025-10-09T12:44:35.430Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Tools/Generative AI","data":{"titleWords":1,"commonTags":15,"qualityScore":"104.8"}}
+{"timestamp":"2025-10-09T12:44:35.432Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for VFX/Shaders/DirectX 11","data":{"titleWords":5,"commonTags":3,"qualityScore":"84.1"}}
+{"timestamp":"2025-10-09T12:44:35.435Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Tools/Painting","data":{"titleWords":3,"commonTags":9,"qualityScore":"100.7"}}
+{"timestamp":"2025-10-09T12:44:35.437Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 2D/Textures & Materials/Roads","data":{"titleWords":4,"commonTags":14,"qualityScore":"71.7"}}
+{"timestamp":"2025-10-09T12:44:35.437Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 2D/Textures & Materials/Abstract","data":{"titleWords":4,"commonTags":24,"qualityScore":"73.7"}}
+{"timestamp":"2025-10-09T12:44:35.438Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Decentralization/Infrastructure","data":{"titleWords":3,"commonTags":10,"qualityScore":"87.2"}}
+{"timestamp":"2025-10-09T12:44:35.438Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Add-Ons/Services/Billing","data":{"titleWords":8,"commonTags":24,"qualityScore":"109.3"}}
+{"timestamp":"2025-10-09T12:44:35.438Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Add-Ons/Services","data":{"titleWords":4,"commonTags":3,"qualityScore":"33.9"}}
+{"timestamp":"2025-10-09T12:44:35.438Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Add-Ons/Machine Learning","data":{"titleWords":6,"commonTags":18,"qualityScore":"103.6"}}
+{"timestamp":"2025-10-09T12:44:35.438Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for 2D/Textures & Materials/Glass","data":{"titleWords":13,"commonTags":34,"qualityScore":"80.0"}}
+{"timestamp":"2025-10-09T12:44:35.439Z","level":"INFO","context":"vocab:builder","message":"Built exemplar vocabulary for Essentials","data":{"titleWords":12,"commonTags":19,"qualityScore":"105.4"}}
+{"timestamp":"2025-10-09T12:44:35.439Z","level":"SUCCESS","context":"vocab:builder","message":"Exemplar vocabulary built successfully","data":{"categories":118}}
+{"timestamp":"2025-10-09T12:44:35.439Z","level":"INFO","context":"vocab:builder","message":"Completed buildExemplarVocabulary","data":{"duration_ms":813}}
+{"timestamp":"2025-10-09T12:44:35.478Z","level":"SUCCESS","context":"optimizer","message":"Exemplar vocabulary built successfully","data":{"categories":118,"outputPath":"data/results-multi-pass/exemplar_vocab.json"}}
+{"timestamp":"2025-10-09T12:44:35.478Z","level":"INFO","context":"optimizer","message":"Completed buildExemplarVocabulary","data":{"duration_ms":2387}}
+{"timestamp":"2025-10-09T12:44:35.479Z","level":"INFO","context":"optimizer","message":"Generating category playbooks","data":{"exemplarsPath":"data/results-multi-pass/exemplars.json","outputPath":"data/results-multi-pass/playbooks.json"}}
+{"timestamp":"2025-10-09T12:44:39.421Z","level":"INFO","context":"optimizer","message":"Generated playbook for 2D/GUI/Icons","data":{"exemplarCount":455}}
+{"timestamp":"2025-10-09T12:44:39.421Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D/Characters/Humanoids","data":{"exemplarCount":259}}
+{"timestamp":"2025-10-09T12:44:39.421Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D/Vegetation/Trees","data":{"exemplarCount":92}}
+{"timestamp":"2025-10-09T12:44:39.421Z","level":"INFO","context":"optimizer","message":"Generated playbook for Templates/Packs","data":{"exemplarCount":248}}
+{"timestamp":"2025-10-09T12:44:39.421Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D/Characters/Humanoids/Robots","data":{"exemplarCount":97}}
+{"timestamp":"2025-10-09T12:44:39.421Z","level":"INFO","context":"optimizer","message":"Generated playbook for 2D/Textures & Materials/Tiles","data":{"exemplarCount":41}}
+{"timestamp":"2025-10-09T12:44:39.422Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D/Vegetation","data":{"exemplarCount":53}}
+{"timestamp":"2025-10-09T12:44:39.422Z","level":"INFO","context":"optimizer","message":"Generated playbook for VFX/Shaders","data":{"exemplarCount":312}}
+{"timestamp":"2025-10-09T12:44:39.422Z","level":"INFO","context":"optimizer","message":"Generated playbook for Audio/Music","data":{"exemplarCount":489}}
+{"timestamp":"2025-10-09T12:44:39.422Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D/Props/Interior","data":{"exemplarCount":229}}
+{"timestamp":"2025-10-09T12:44:39.422Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D/Props/Guns","data":{"exemplarCount":144}}
+{"timestamp":"2025-10-09T12:44:39.422Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D/Characters/Creatures","data":{"exemplarCount":634}}
+{"timestamp":"2025-10-09T12:44:39.423Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D/Characters/Animals/Mammals","data":{"exemplarCount":126}}
+{"timestamp":"2025-10-09T12:44:39.423Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D/Props/Weapons","data":{"exemplarCount":512}}
+{"timestamp":"2025-10-09T12:44:39.423Z","level":"INFO","context":"optimizer","message":"Generated playbook for Audio/Music/Electronic","data":{"exemplarCount":148}}
+{"timestamp":"2025-10-09T12:44:39.423Z","level":"INFO","context":"optimizer","message":"Generated playbook for Tools/Utilities","data":{"exemplarCount":429}}
+{"timestamp":"2025-10-09T12:44:39.423Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D/Props/Exterior","data":{"exemplarCount":206}}
+{"timestamp":"2025-10-09T12:44:39.423Z","level":"INFO","context":"optimizer","message":"Generated playbook for Tools/Visual Scripting","data":{"exemplarCount":43}}
+{"timestamp":"2025-10-09T12:44:39.423Z","level":"INFO","context":"optimizer","message":"Generated playbook for VFX/Particles","data":{"exemplarCount":146}}
+{"timestamp":"2025-10-09T12:44:39.423Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D/Characters/Humanoids/Fantasy","data":{"exemplarCount":569}}
+{"timestamp":"2025-10-09T12:44:39.423Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D/Environments/Dungeons","data":{"exemplarCount":64}}
+{"timestamp":"2025-10-09T12:44:39.423Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D/Characters/Humanoids/Sci-Fi","data":{"exemplarCount":259}}
+{"timestamp":"2025-10-09T12:44:39.424Z","level":"INFO","context":"optimizer","message":"Generated playbook for 2D/Environments","data":{"exemplarCount":765}}
+{"timestamp":"2025-10-09T12:44:39.424Z","level":"INFO","context":"optimizer","message":"Generated playbook for 2D/Characters","data":{"exemplarCount":943}}
+{"timestamp":"2025-10-09T12:44:39.424Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D/Vehicles/Air","data":{"exemplarCount":103}}
+{"timestamp":"2025-10-09T12:44:39.424Z","level":"INFO","context":"optimizer","message":"Generated playbook for Tools/Modeling","data":{"exemplarCount":62}}
+{"timestamp":"2025-10-09T12:44:39.424Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D/Vehicles/Sea","data":{"exemplarCount":64}}
+{"timestamp":"2025-10-09T12:44:39.424Z","level":"INFO","context":"optimizer","message":"Generated playbook for Audio","data":{"exemplarCount":50}}
+{"timestamp":"2025-10-09T12:44:39.424Z","level":"INFO","context":"optimizer","message":"Generated playbook for 2D/GUI","data":{"exemplarCount":606}}
+{"timestamp":"2025-10-09T12:44:39.424Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D/Animations","data":{"exemplarCount":200}}
+{"timestamp":"2025-10-09T12:44:39.424Z","level":"INFO","context":"optimizer","message":"Generated playbook for Audio/Music/Orchestral","data":{"exemplarCount":173}}
+{"timestamp":"2025-10-09T12:44:39.424Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D/Characters/Humanoids/Humans","data":{"exemplarCount":310}}
+{"timestamp":"2025-10-09T12:44:39.424Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D/Environments/Landscapes","data":{"exemplarCount":135}}
+{"timestamp":"2025-10-09T12:44:39.424Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D/Environments/Urban","data":{"exemplarCount":248}}
+{"timestamp":"2025-10-09T12:44:39.424Z","level":"INFO","context":"optimizer","message":"Generated playbook for Audio/Sound FX/Foley","data":{"exemplarCount":60}}
+{"timestamp":"2025-10-09T12:44:39.424Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D/Vehicles","data":{"exemplarCount":120}}
+{"timestamp":"2025-10-09T12:44:39.424Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D/Props/Furniture","data":{"exemplarCount":225}}
+{"timestamp":"2025-10-09T12:44:39.424Z","level":"INFO","context":"optimizer","message":"Generated playbook for Audio/Sound FX","data":{"exemplarCount":342}}
+{"timestamp":"2025-10-09T12:44:39.425Z","level":"INFO","context":"optimizer","message":"Generated playbook for Tools/Sprite Management","data":{"exemplarCount":39}}
+{"timestamp":"2025-10-09T12:44:39.425Z","level":"INFO","context":"optimizer","message":"Generated playbook for Tools/Camera","data":{"exemplarCount":46}}
+{"timestamp":"2025-10-09T12:44:39.425Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D/Props","data":{"exemplarCount":705}}
+{"timestamp":"2025-10-09T12:44:39.425Z","level":"INFO","context":"optimizer","message":"Generated playbook for Tools","data":{"exemplarCount":154}}
+{"timestamp":"2025-10-09T12:44:39.425Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D/Vehicles/Land","data":{"exemplarCount":380}}
+{"timestamp":"2025-10-09T12:44:39.425Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D/Props/Electronics","data":{"exemplarCount":110}}
+{"timestamp":"2025-10-09T12:44:39.425Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D/Environments/Industrial","data":{"exemplarCount":210}}
+{"timestamp":"2025-10-09T12:44:39.425Z","level":"INFO","context":"optimizer","message":"Generated playbook for Audio/Music/Pop","data":{"exemplarCount":44}}
+{"timestamp":"2025-10-09T12:44:39.425Z","level":"INFO","context":"optimizer","message":"Generated playbook for Tools/Input Management","data":{"exemplarCount":58}}
+{"timestamp":"2025-10-09T12:44:39.425Z","level":"INFO","context":"optimizer","message":"Generated playbook for Tools/Behavior AI","data":{"exemplarCount":57}}
+{"timestamp":"2025-10-09T12:44:39.425Z","level":"INFO","context":"optimizer","message":"Generated playbook for Templates","data":{"exemplarCount":41}}
+{"timestamp":"2025-10-09T12:44:39.425Z","level":"INFO","context":"optimizer","message":"Generated playbook for Audio/Sound FX/Voices","data":{"exemplarCount":78}}
+{"timestamp":"2025-10-09T12:44:39.425Z","level":"INFO","context":"optimizer","message":"Generated playbook for 2D/Textures & Materials/Stone","data":{"exemplarCount":44}}
+{"timestamp":"2025-10-09T12:44:39.425Z","level":"INFO","context":"optimizer","message":"Generated playbook for Tools/Particles & Effects","data":{"exemplarCount":86}}
+{"timestamp":"2025-10-09T12:44:39.425Z","level":"INFO","context":"optimizer","message":"Generated playbook for Tools/Integration","data":{"exemplarCount":168}}
+{"timestamp":"2025-10-09T12:44:39.425Z","level":"INFO","context":"optimizer","message":"Generated playbook for 2D/Textures & Materials/Sky","data":{"exemplarCount":98}}
+{"timestamp":"2025-10-09T12:44:39.426Z","level":"INFO","context":"optimizer","message":"Generated playbook for Tools/Terrain","data":{"exemplarCount":55}}
+{"timestamp":"2025-10-09T12:44:39.426Z","level":"INFO","context":"optimizer","message":"Generated playbook for 2D/Textures & Materials/Food","data":{"exemplarCount":106}}
+{"timestamp":"2025-10-09T12:44:39.426Z","level":"INFO","context":"optimizer","message":"Generated playbook for 2D/Textures & Materials/Nature","data":{"exemplarCount":65}}
+{"timestamp":"2025-10-09T12:44:39.426Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D/Characters/Animals","data":{"exemplarCount":131}}
+{"timestamp":"2025-10-09T12:44:39.426Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D/Props/Clothing","data":{"exemplarCount":47}}
+{"timestamp":"2025-10-09T12:44:39.426Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D/Vehicles/Space","data":{"exemplarCount":154}}
+{"timestamp":"2025-10-09T12:44:39.426Z","level":"INFO","context":"optimizer","message":"Generated playbook for 2D/Textures & Materials","data":{"exemplarCount":301}}
+{"timestamp":"2025-10-09T12:44:39.426Z","level":"INFO","context":"optimizer","message":"Generated playbook for Tools/Animation","data":{"exemplarCount":61}}
+{"timestamp":"2025-10-09T12:44:39.426Z","level":"INFO","context":"optimizer","message":"Generated playbook for Tools/Level Design","data":{"exemplarCount":60}}
+{"timestamp":"2025-10-09T12:44:39.426Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D/Characters/Animals/Birds","data":{"exemplarCount":59}}
+{"timestamp":"2025-10-09T12:44:39.426Z","level":"INFO","context":"optimizer","message":"Generated playbook for Templates/Systems","data":{"exemplarCount":141}}
+{"timestamp":"2025-10-09T12:44:39.426Z","level":"INFO","context":"optimizer","message":"Generated playbook for Audio/Ambient","data":{"exemplarCount":63}}
+{"timestamp":"2025-10-09T12:44:39.426Z","level":"INFO","context":"optimizer","message":"Generated playbook for VFX","data":{"exemplarCount":83}}
+{"timestamp":"2025-10-09T12:44:39.426Z","level":"INFO","context":"optimizer","message":"Generated playbook for 2D/Textures & Materials/Floors","data":{"exemplarCount":46}}
+{"timestamp":"2025-10-09T12:44:39.426Z","level":"INFO","context":"optimizer","message":"Generated playbook for Templates/Tutorials","data":{"exemplarCount":67}}
+{"timestamp":"2025-10-09T12:44:39.426Z","level":"INFO","context":"optimizer","message":"Generated playbook for Tools/Game Toolkits","data":{"exemplarCount":108}}
+{"timestamp":"2025-10-09T12:44:39.426Z","level":"INFO","context":"optimizer","message":"Generated playbook for VFX/Environment","data":{"exemplarCount":25}}
+{"timestamp":"2025-10-09T12:44:39.427Z","level":"INFO","context":"optimizer","message":"Generated playbook for Tools/Localization","data":{"exemplarCount":50}}
+{"timestamp":"2025-10-09T12:44:39.427Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D/Environments/Roadways","data":{"exemplarCount":43}}
+{"timestamp":"2025-10-09T12:44:39.427Z","level":"INFO","context":"optimizer","message":"Generated playbook for Tools/Network","data":{"exemplarCount":47}}
+{"timestamp":"2025-10-09T12:44:39.427Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D/Characters/Animals/Fish","data":{"exemplarCount":46}}
+{"timestamp":"2025-10-09T12:44:39.427Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D/Vegetation/Plants","data":{"exemplarCount":48}}
+{"timestamp":"2025-10-09T12:44:39.427Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D/Characters/Animals/Reptiles","data":{"exemplarCount":45}}
+{"timestamp":"2025-10-09T12:44:39.427Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D","data":{"exemplarCount":141}}
+{"timestamp":"2025-10-09T12:44:39.427Z","level":"INFO","context":"optimizer","message":"Generated playbook for Audio/Sound FX/Transportation","data":{"exemplarCount":44}}
+{"timestamp":"2025-10-09T12:44:39.427Z","level":"INFO","context":"optimizer","message":"Generated playbook for 2D/Fonts","data":{"exemplarCount":46}}
+{"timestamp":"2025-10-09T12:44:39.427Z","level":"INFO","context":"optimizer","message":"Generated playbook for VFX/Fire & Explosions","data":{"exemplarCount":45}}
+{"timestamp":"2025-10-09T12:44:39.427Z","level":"INFO","context":"optimizer","message":"Generated playbook for 2D","data":{"exemplarCount":90}}
+{"timestamp":"2025-10-09T12:44:39.428Z","level":"INFO","context":"optimizer","message":"Generated playbook for VFX/Shaders/Fullscreen & Camera Effects","data":{"exemplarCount":65}}
+{"timestamp":"2025-10-09T12:44:39.428Z","level":"INFO","context":"optimizer","message":"Generated playbook for Audio/Music/World","data":{"exemplarCount":35}}
+{"timestamp":"2025-10-09T12:44:39.428Z","level":"INFO","context":"optimizer","message":"Generated playbook for Audio/Noise","data":{"exemplarCount":6}}
+{"timestamp":"2025-10-09T12:44:39.428Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D/Characters/Animals/Insects","data":{"exemplarCount":40}}
+{"timestamp":"2025-10-09T12:44:39.428Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D/Props/Accessories","data":{"exemplarCount":35}}
+{"timestamp":"2025-10-09T12:44:39.428Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D/Environments/Historic","data":{"exemplarCount":109}}
+{"timestamp":"2025-10-09T12:44:39.428Z","level":"INFO","context":"optimizer","message":"Generated playbook for 2D/Textures & Materials/Wood","data":{"exemplarCount":51}}
+{"timestamp":"2025-10-09T12:44:39.428Z","level":"INFO","context":"optimizer","message":"Generated playbook for 2D/Textures & Materials/Water","data":{"exemplarCount":29}}
+{"timestamp":"2025-10-09T12:44:39.428Z","level":"INFO","context":"optimizer","message":"Generated playbook for VFX/Shaders/Substances","data":{"exemplarCount":45}}
+{"timestamp":"2025-10-09T12:44:39.428Z","level":"INFO","context":"optimizer","message":"Generated playbook for 2D/Textures & Materials/Roofing","data":{"exemplarCount":21}}
+{"timestamp":"2025-10-09T12:44:39.428Z","level":"INFO","context":"optimizer","message":"Generated playbook for Audio/Music/Rock","data":{"exemplarCount":49}}
+{"timestamp":"2025-10-09T12:44:39.429Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D/Vegetation/Flowers","data":{"exemplarCount":42}}
+{"timestamp":"2025-10-09T12:44:39.429Z","level":"INFO","context":"optimizer","message":"Generated playbook for Tools/Physics","data":{"exemplarCount":73}}
+{"timestamp":"2025-10-09T12:44:39.429Z","level":"INFO","context":"optimizer","message":"Generated playbook for Tools/Version Control","data":{"exemplarCount":18}}
+{"timestamp":"2025-10-09T12:44:39.429Z","level":"INFO","context":"optimizer","message":"Generated playbook for 2D/Textures & Materials/Building","data":{"exemplarCount":41}}
+{"timestamp":"2025-10-09T12:44:39.429Z","level":"INFO","context":"optimizer","message":"Generated playbook for Add-Ons","data":{"exemplarCount":39}}
+{"timestamp":"2025-10-09T12:44:39.429Z","level":"INFO","context":"optimizer","message":"Generated playbook for 2D/Textures & Materials/Metals","data":{"exemplarCount":43}}
+{"timestamp":"2025-10-09T12:44:39.429Z","level":"INFO","context":"optimizer","message":"Generated playbook for VFX/Spells","data":{"exemplarCount":58}}
+{"timestamp":"2025-10-09T12:44:39.429Z","level":"INFO","context":"optimizer","message":"Generated playbook for 2D/Textures & Materials/Concrete","data":{"exemplarCount":35}}
+{"timestamp":"2025-10-09T12:44:39.429Z","level":"INFO","context":"optimizer","message":"Generated playbook for Tools/AI-ML Integration","data":{"exemplarCount":47}}
+{"timestamp":"2025-10-09T12:44:39.430Z","level":"INFO","context":"optimizer","message":"Generated playbook for 2D/Textures & Materials/Fabric","data":{"exemplarCount":39}}
+{"timestamp":"2025-10-09T12:44:39.430Z","level":"INFO","context":"optimizer","message":"Generated playbook for Tools/Video","data":{"exemplarCount":39}}
+{"timestamp":"2025-10-09T12:44:39.430Z","level":"INFO","context":"optimizer","message":"Generated playbook for 2D/Textures & Materials/Brick","data":{"exemplarCount":25}}
+{"timestamp":"2025-10-09T12:44:39.430Z","level":"INFO","context":"optimizer","message":"Generated playbook for 3D/Props/Armor","data":{"exemplarCount":24}}
+{"timestamp":"2025-10-09T12:44:39.430Z","level":"INFO","context":"optimizer","message":"Generated playbook for Essentials/Tutorial Projects","data":{"exemplarCount":29}}
+{"timestamp":"2025-10-09T12:44:39.430Z","level":"INFO","context":"optimizer","message":"Generated playbook for Tools/Generative AI","data":{"exemplarCount":48}}
+{"timestamp":"2025-10-09T12:44:39.430Z","level":"INFO","context":"optimizer","message":"Generated playbook for VFX/Shaders/DirectX 11","data":{"exemplarCount":24}}
+{"timestamp":"2025-10-09T12:44:39.430Z","level":"INFO","context":"optimizer","message":"Generated playbook for Tools/Painting","data":{"exemplarCount":51}}
+{"timestamp":"2025-10-09T12:44:39.430Z","level":"INFO","context":"optimizer","message":"Generated playbook for 2D/Textures & Materials/Roads","data":{"exemplarCount":50}}
+{"timestamp":"2025-10-09T12:44:39.430Z","level":"INFO","context":"optimizer","message":"Generated playbook for 2D/Textures & Materials/Abstract","data":{"exemplarCount":30}}
+{"timestamp":"2025-10-09T12:44:39.430Z","level":"INFO","context":"optimizer","message":"Generated playbook for Decentralization/Infrastructure","data":{"exemplarCount":1}}
+{"timestamp":"2025-10-09T12:44:39.430Z","level":"INFO","context":"optimizer","message":"Generated playbook for Add-Ons/Services/Billing","data":{"exemplarCount":2}}
+{"timestamp":"2025-10-09T12:44:39.431Z","level":"INFO","context":"optimizer","message":"Generated playbook for Add-Ons/Services","data":{"exemplarCount":1}}
+{"timestamp":"2025-10-09T12:44:39.431Z","level":"INFO","context":"optimizer","message":"Generated playbook for Add-Ons/Machine Learning","data":{"exemplarCount":3}}
+{"timestamp":"2025-10-09T12:44:39.431Z","level":"INFO","context":"optimizer","message":"Generated playbook for 2D/Textures & Materials/Glass","data":{"exemplarCount":7}}
+{"timestamp":"2025-10-09T12:44:39.431Z","level":"INFO","context":"optimizer","message":"Generated playbook for Essentials","data":{"exemplarCount":4}}
+{"timestamp":"2025-10-09T12:44:39.438Z","level":"SUCCESS","context":"optimizer","message":"Playbooks generated successfully","data":{"categories":118,"outputPath":"data/results-multi-pass/playbooks.json"}}
+{"timestamp":"2025-10-09T12:44:39.438Z","level":"INFO","context":"optimizer","message":"Completed generatePlaybooks","data":{"duration_ms":3959}}
+{"timestamp":"2025-10-09T12:44:39.438Z","level":"SUCCESS","context":"optimizer","message":"Multi-pass build completed","data":{"passes":2,"converged":true,"finalConvergence":"1.000","totalExemplars":15754}}
+{"timestamp":"2025-10-09T12:44:39.439Z","level":"INFO","context":"optimizer","message":"Completed buildAllMultiPass","data":{"duration_ms":91592}}
+≡ƒÄ» Multi-pass build completed in 2 passes!
+Γ£à System converged with 100.0% stability
+
+{
+  "success": true,
+  "summary": {
+    "approach": "multi-pass-iterative",
+    "corpus_files_processed": 1,
+    "total_assets_processed": 99728,
+    "exemplars_per_category": "15%",
+    "best_sellers_provided": 5581,
+    "output_directory": "data/results-multi-pass/",
+    "convergence": {
+      "converged": true,
+      "passes_completed": 2,
+      "max_passes_allowed": 5,
+      "final_convergence_metric": "1.000",
+      "convergence_threshold": 0.95
+    },
+    "final_results": {
+      "total_exemplars": 15754,
+      "total_categories": 118,
+      "grading_rules_categories": 118
+    }
+  },
+  "pass_details": [
+    {
+      "pass": 1,
+      "exemplars": 15754,
+      "categories": 118,
+      "changes": "initial-pass"
+    },
+    {
+      "pass": 2,
+      "exemplars": 15754,
+      "categories": 118,
+      "changes": {
+        "added": 0,
+        "removed": 0,
+        "stability": "100.0%"
+      }
+    }
+  ],
+  "files_created": {
+    "exemplars": "data/results-multi-pass/exemplars.json",
+    "gradingRules": "data/results-multi-pass/grading-rules.json",
+    "vocabulary": "data/results-multi-pass/exemplar_vocab.json",
+    "playbooks": "data/results-multi-pass/playbooks.json"
+  },
+  "next_steps": [
+    "Grade with evolved rules: node main.mjs grade --input asset.json --vocab data/results-multi-pass/exemplar_vocab.json --rules data/results-multi-pass/grading-rules.json",
+    "Optimize with stable exemplars: node main.mjs optimize --input asset.json --exemplars data/results-multi-pass/exemplars.json --vocab data/results-multi-pass/exemplar_vocab.json",
+    "View evolved playbooks: cat data/results-multi-pass/playbooks.json"
+  ]
+}

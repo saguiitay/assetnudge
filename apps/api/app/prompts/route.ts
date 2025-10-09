@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     if (!isDevelopment) {
       return NextResponse.json(
         { success: false, error: 'Prompts endpoint only available in development mode' },
-        { status: 403 }
+        { status: 403, headers: corsHeaders }
       );
     }
 
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
     } catch (parseError) {
       return NextResponse.json(
         { success: false, error: 'Invalid JSON in request body' },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     }
 
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
             asset: '{ title, category, ... } - Required asset data'
           }
         },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     }
 
@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
     if (!result.success) {
       return NextResponse.json(
         { success: false, error: result.error },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     }
 
@@ -93,16 +93,16 @@ export async function POST(request: NextRequest) {
         success: true,
         fieldType: result.fieldType,
         prompt: result.prompt
-      });
+      }, { headers: corsHeaders });
     } else if (result.prompts) {
       return NextResponse.json({
         success: true,
         prompts: result.prompts
-      });
+      }, { headers: corsHeaders });
     } else {
       return NextResponse.json(
         { success: false, error: 'Unexpected response format from optimizer' },
-        { status: 500 }
+        { status: 500, headers: corsHeaders }
       );
     }
 
@@ -114,28 +114,7 @@ export async function POST(request: NextRequest) {
         error: 'Failed to generate prompts',
         details: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined
       },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     );
   }
-}
-
-export async function GET() {
-  return NextResponse.json(
-    { success: false, error: 'Method not allowed. Use POST.' },
-    { status: 405 }
-  );
-}
-
-export async function PUT() {
-  return NextResponse.json(
-    { success: false, error: 'Method not allowed. Use POST.' },
-    { status: 405 }
-  );
-}
-
-export async function DELETE() {
-  return NextResponse.json(
-    { success: false, error: 'Method not allowed. Use POST.' },
-    { status: 405 }
-  );
 }

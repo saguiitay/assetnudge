@@ -19,13 +19,12 @@ import { Button } from '@workspace/ui/components/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@workspace/ui/components/card';
 import { Badge } from '@workspace/ui/components/badge';
 import { Alert, AlertDescription } from '@workspace/ui/components/alert';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@workspace/ui/components/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@workspace/ui/components/dialog';
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '@workspace/ui/components/hover-card';
 import { AssetMediaGallery } from './media-gallery';
 import { X, Download, AlertCircle, CheckCircle, ShoppingCart, Sparkles, RefreshCw, Info, Copy } from 'lucide-react';
 import { EditorProvider, EditorBubbleMenu, EditorFormatBold, EditorFormatItalic, EditorLinkSelector, EditorNodeBulletList, EditorNodeOrderedList, type JSONContent, type Editor } from '@workspace/ui/components/kibo-ui/editor';
-import { Asset, AssetImage, AssetMainImage, AssetVideo } from '@repo/optimizer/src/types';
+import { Asset } from '@repo/optimizer/src/types';
+import { PromptHoverCard } from './prompt-hover-card';
 
 // JSON validation function for Kibo UI editor output
 const validateEditorContent = (content: any) => {
@@ -120,23 +119,31 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
   const [generationError, setGenerationError] = useState<string | null>(null);
   const [generationSuccess, setGenerationSuccess] = useState<string | null>(null);
 
-  // Check if we're in development/debug mode
-  const isDevelopment = process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_DEBUG === 'true';
-
-  // AI prompts for different fields (for development tooltips)
-  const fieldPrompts = {
-    title: 'Generate a compelling and descriptive title for this digital asset. The title should be clear, engaging, and accurately represent the content. Keep it under 60 characters for optimal SEO. Consider the target audience and the asset\'s unique value proposition.',
-    short_description: 'Create a compelling short description for this digital asset. This should be a concise summary that hooks the reader and clearly communicates the value proposition. Keep it under 160 characters, focus on benefits, and include a call-to-action mindset. This will be used in previews and search results.',
-    long_description: 'Generate a comprehensive long description for this digital asset. Include detailed information about what\'s included, how it can be used, the target audience, technical specifications if relevant, and the benefits/value it provides. Structure it with clear sections, use bullet points where appropriate, and maintain an engaging, professional tone. Aim for 300-800 words.',
-    tags: 'Generate relevant tags and keywords for this digital asset. Include primary keywords, secondary keywords, style descriptors, and category tags. Focus on terms that potential buyers would search for. Return 10-15 tags maximum, prioritizing discoverability and relevance.'
-  };
-
-  const copyToClipboard = async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-    } catch (err) {
-      console.error('Failed to copy text:', err);
-    }
+  // Function to get current asset data for prompt loading
+  const getCurrentAssetData = (): Asset => {
+    return {
+      id: 'temp-id',
+      url: 'https://assetstore.unity.com/packages/temp',
+      title: form.getValues('title') || 'Sample Asset Title',
+      short_description: form.getValues('short_description') || 'Sample description',
+      long_description: form.getValues('long_description') || 'Sample long description',
+      tags: form.getValues('tags') || ['sample', 'tags'],
+      category: form.getValues('category') || 'Tools/Utilities',
+      price: form.getValues('price') || 0,
+      images_count: 0,
+      videos_count: 0,
+      rating: [],
+      reviews_count: 0,
+      last_update: new Date().toISOString(),
+      publisher: 'Sample Publisher',
+      size: '1.0 MB',
+      version: '1.0.0',
+      publishNotes: '',
+      favorites: 0,
+      mainImage: undefined,
+      images: [],
+      videos: []
+    } as Asset;
   };
 
   const form = useForm<AssetFormData>({
@@ -681,30 +688,11 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
                   <FormItem>
                     <FormLabel className="flex items-center gap-2">
                       Title
-                      {isDevelopment && (
-                        <HoverCard>
-                          <HoverCardTrigger asChild>
-                            <button type="button" className="text-muted-foreground hover:text-foreground" aria-label="Show AI prompt for title generation">
-                              <Info className="h-3 w-3" />
-                            </button>
-                          </HoverCardTrigger>
-                          <HoverCardContent className="w-80">
-                            <div className="space-y-2">
-                              <h4 className="text-sm font-semibold">AI Prompt for Title</h4>
-                              <p className="text-xs text-muted-foreground">{fieldPrompts.title}</p>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => copyToClipboard(fieldPrompts.title)}
-                                className="w-full gap-2 h-6 text-xs"
-                              >
-                                <Copy className="h-3 w-3" />
-                                Copy Prompt
-                              </Button>
-                            </div>
-                          </HoverCardContent>
-                        </HoverCard>
-                      )}
+                      <PromptHoverCard
+                        fieldType="title"
+                        fieldName="Title"
+                        getCurrentAssetData={getCurrentAssetData}
+                      />
                     </FormLabel>
                     <FormControl>
                       <div className="flex gap-2">
@@ -754,30 +742,11 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
                   <FormLabel className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       Short Description
-                      {isDevelopment && (
-                        <HoverCard>
-                          <HoverCardTrigger asChild>
-                            <button type="button" className="text-muted-foreground hover:text-foreground" aria-label="Show AI prompt for short description generation">
-                              <Info className="h-3 w-3" />
-                            </button>
-                          </HoverCardTrigger>
-                          <HoverCardContent className="w-80">
-                            <div className="space-y-2">
-                              <h4 className="text-sm font-semibold">AI Prompt for Short Description</h4>
-                              <p className="text-xs text-muted-foreground">{fieldPrompts.short_description}</p>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => copyToClipboard(fieldPrompts.short_description)}
-                                className="w-full gap-2 h-6 text-xs"
-                              >
-                                <Copy className="h-3 w-3" />
-                                Copy Prompt
-                              </Button>
-                            </div>
-                          </HoverCardContent>
-                        </HoverCard>
-                      )}
+                      <PromptHoverCard
+                        fieldType="short_description"
+                        fieldName="Short Description"
+                        getCurrentAssetData={getCurrentAssetData}
+                      />
                     </div>
                     <Button
                       type="button"
@@ -818,30 +787,11 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
                   <FormLabel className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       Long Description
-                      {isDevelopment && (
-                        <HoverCard>
-                          <HoverCardTrigger asChild>
-                            <button type="button" className="text-muted-foreground hover:text-foreground" aria-label="Show AI prompt for long description generation">
-                              <Info className="h-3 w-3" />
-                            </button>
-                          </HoverCardTrigger>
-                          <HoverCardContent className="w-80">
-                            <div className="space-y-2">
-                              <h4 className="text-sm font-semibold">AI Prompt for Long Description</h4>
-                              <p className="text-xs text-muted-foreground">{fieldPrompts.long_description}</p>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => copyToClipboard(fieldPrompts.long_description)}
-                                className="w-full gap-2 h-6 text-xs"
-                              >
-                                <Copy className="h-3 w-3" />
-                                Copy Prompt
-                              </Button>
-                            </div>
-                          </HoverCardContent>
-                        </HoverCard>
-                      )}
+                      <PromptHoverCard
+                        fieldType="long_description"
+                        fieldName="Long Description"
+                        getCurrentAssetData={getCurrentAssetData}
+                      />
                     </div>
                     <Button
                       type="button"
@@ -905,30 +855,11 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <FormLabel>Tags</FormLabel>
-                  {isDevelopment && (
-                    <HoverCard>
-                      <HoverCardTrigger asChild>
-                        <button type="button" className="text-muted-foreground hover:text-foreground" aria-label="Show AI prompt for tags generation">
-                          <Info className="h-3 w-3" />
-                        </button>
-                      </HoverCardTrigger>
-                      <HoverCardContent className="w-80">
-                        <div className="space-y-2">
-                          <h4 className="text-sm font-semibold">AI Prompt for Tags</h4>
-                          <p className="text-xs text-muted-foreground">{fieldPrompts.tags}</p>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => copyToClipboard(fieldPrompts.tags)}
-                            className="w-full gap-2 h-6 text-xs"
-                          >
-                            <Copy className="h-3 w-3" />
-                            Copy Prompt
-                          </Button>
-                        </div>
-                      </HoverCardContent>
-                    </HoverCard>
-                  )}
+                  <PromptHoverCard
+                    fieldType="tags"
+                    fieldName="Tags"
+                    getCurrentAssetData={getCurrentAssetData}
+                  />
                 </div>
                 <Button
                   type="button"
