@@ -321,7 +321,7 @@ export class UnityAssetOptimizer {
       }
 
       // Identify exemplars by category with best sellers
-      const exemplarsByCategory = identifyExemplars(corpus, finalTopN, finalTopPercent, bestSellers);
+      const exemplarsByCategory = await identifyExemplars(corpus, finalTopN, finalTopPercent, bestSellers);
       
       // Extract patterns for each category
       const categoryPatterns: Record<string, any> = {};

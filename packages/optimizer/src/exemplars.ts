@@ -2,8 +2,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Logger } from './utils/logger';
 import { calculateDetailedRating, DetailedRatingResult } from './utils/rating-analysis';
-import { Asset, BestSellerAsset } from './types';
-import { OFFICIAL_CATEGORIES } from './config';
+import { Asset, BestSellerAsset, Vocabulary } from './types';
+import { OFFICIAL_CATEGORIES, DEFAULT_WEIGHTS, DEFAULT_THRESHOLDS } from './config';
+import { AssetGrader } from './grader';
 
 /**
  * Exemplar Management System
@@ -69,140 +70,71 @@ export interface CategoryStats {
 }
 
 /**
- * Calculate composite quality score for an asset with enhanced rating analysis
+ * Calculate composite quality score for an asset using AssetGrader
  * @param asset - Asset data
+ * @param grader - AssetGrader instance to use for scoring
+ * @param vocab - Vocabulary data for grading context
  * @param isBestSeller - Whether this asset is marked as a best seller
  * @returns Quality score
  */
-export function calculateQualityScore(asset: Asset, isBestSeller: boolean = false): number {
-    let score = 0;
+export async function calculateQualityScore(
+    asset: Asset, 
+    grader: AssetGrader, 
+    vocab: Vocabulary,
+    isBestSeller: boolean = false
+): Promise<number> {
+    // Get the base grader score (0-100)
+    const gradeResult = await grader.gradeAsset(asset, vocab);
+    let score = gradeResult.score;
     
-    // Enhanced rating analysis
+    // Enhanced rating analysis for additional context
     const ratingData = calculateDetailedRating(asset.rating || []);
     const reviewsCount = asset.reviews_count || 0;
     
-    // Review strength: average rating × log(1 + reviews) × quality multiplier
-    const baseReviewStrength = ratingData.averageRating * Math.log(1 + reviewsCount);
-    const qualityMultiplier = 1 + (ratingData.ratingQuality / 100);
-    const reviewStrength = baseReviewStrength * qualityMultiplier;
-    score += reviewStrength * 10; // Weight factor
+    // Add rating quality multiplier to grader score
+    const qualityMultiplier = 1 + (ratingData.ratingQuality / 200); // Scale down the multiplier
+    score *= qualityMultiplier;
     
-    // MAJOR BONUS for best sellers
+    // MAJOR BONUS for best sellers (maintain original logic)
     if (isBestSeller) {
-        score += 100; // Significant boost to ensure best sellers are always top-ranked
-        logger.debug(`Best seller bonus applied to "${asset.title?.substring(0, 50)}": +100 points`);
+        score += 50; // Significant boost to ensure best sellers are highly ranked
+        logger.debug(`Best seller bonus applied to "${asset.title?.substring(0, 50)}": +50 points`);
     }
     
-    // Rating quality bonuses
+    // Additional popularity boost based on engagement
+    const popularity = reviewsCount + (asset.favorites || 0);
+    const popularityBoost = Math.log(1 + popularity) * 2;
+    score += popularityBoost;
+    
+    // Rating quality bonuses (smaller scale since base score is already comprehensive)
     if (ratingData.totalRatings >= 50 && ratingData.averageRating >= 4.5) {
-        score += 15; // High-volume excellent ratings bonus
-    }
-    
-    if (ratingData.consistency.excellentPercentage > 70) {
-        score += 10; // Consistently excellent ratings bonus
+        score += 10; // High-volume excellent ratings bonus
     }
     
     if (ratingData.ratingQuality > 80) {
-        score += 12; // High overall rating quality bonus
+        score += 8; // High overall rating quality bonus
     }
     
     // Rating quality penalties
     if (ratingData.consistency.isControversial) {
-        score -= 8; // Controversial rating pattern penalty
+        score -= 5; // Controversial rating pattern penalty
     }
-    
-    if (ratingData.consistency.negativePercentage > 20) {
-        score -= 5; // High negative sentiment penalty
-    }
-    
-    // Volume thresholds with quality requirements
-    if (ratingData.totalRatings >= 100 && ratingData.averageRating >= 4.0) {
-        score += 8; // Proven quality with high volume
-    }
-    
-    if (ratingData.totalRatings >= 20 && ratingData.ratingQuality < 30) {
-        score -= 10; // Poor quality despite sufficient volume
-    }
-    
-    // Freshness bonus (recent update ≤ 180 days)
-    const freshness = calculateFreshnessScore(asset.last_update);
-    score += freshness * 5;
-    
-    // Popularity proxy (reviews_count + favorites)
-    const popularity = reviewsCount + (asset.favorites || 0);
-    score += Math.log(1 + popularity) * 3;
-    
-    // Listing completeness
-    const completeness = calculateCompletenessScore(asset);
-    score += completeness * 8;
     
     // Log detailed scoring for debugging
     logger.debug('Quality score calculated', {
         title: asset.title?.substring(0, 50),
-        baseScore: score.toFixed(1),
+        graderScore: gradeResult.score,
+        finalScore: score.toFixed(1),
         averageRating: ratingData.averageRating.toFixed(2),
         ratingQuality: ratingData.ratingQuality.toFixed(1),
         totalRatings: ratingData.totalRatings,
-        reviewStrength: reviewStrength.toFixed(1)
+        isBestSeller
     });
     
     return score;
 }
 
-/**
- * Calculate freshness score based on last update
- * @param lastUpdate - Last update date string
- * @returns Freshness score (0-10)
- */
-function calculateFreshnessScore(lastUpdate: string): number {
-    if (!lastUpdate) return 0;
-    
-    try {
-        const updateDate = new Date(lastUpdate);
-        const now = new Date();
-        const daysDiff = Math.floor((now.getTime() - updateDate.getTime()) / (1000 * 60 * 60 * 24));
-        
-        if (daysDiff <= 180) return 10; // Very fresh
-        if (daysDiff <= 365) return 7;  // Fresh
-        if (daysDiff <= 730) return 4;  // Somewhat fresh
-        return 1; // Old but still counts
-    } catch (error) {
-        logger.warn(`Invalid date format: ${lastUpdate}`);
-        return 0;
-    }
-}
 
-/**
- * Calculate completeness score based on listing quality
- * @param asset - Asset data
- * @returns Completeness score (0-10)
- */
-function calculateCompletenessScore(asset: Asset): number {
-    let score = 0;
-    
-    // Images presence and count
-    const imageCount = asset.images_count || 0;
-    if (imageCount >= 5) score += 3;
-    else if (imageCount >= 3) score += 2;
-    else if (imageCount >= 1) score += 1;
-    
-    // Videos presence
-    if ((asset.videos_count || 0) > 0) score += 2;
-    
-    // Description richness
-    const description = asset.long_description || asset.short_description || '';
-    const descriptionLength = description.replace(/<[^>]*>/g, '').length; // Strip HTML
-    if (descriptionLength >= 500) score += 3;
-    else if (descriptionLength >= 200) score += 2;
-    else if (descriptionLength >= 50) score += 1;
-    
-    // Tags presence
-    const tagsCount = (asset.tags || []).length;
-    if (tagsCount >= 4) score += 2;
-    else if (tagsCount >= 2) score += 1;
-    
-    return score;
-}
 
 /**
  * Normalize URL for matching
@@ -334,20 +266,32 @@ function extractCategory(asset: Asset): string {
  * @param topN - Number of exemplars per category (default: 20)
  * @param topPercent - Percentage of exemplars per category
  * @param bestSellers - Array of best seller assets to always include
+ * @param vocab - Vocabulary data for grading context (optional, uses default if not provided)
  * @returns Exemplars grouped by category
  */
-export function identifyExemplars(
+export async function identifyExemplars(
     assets: Asset[], 
     topN: number | null = null, 
     topPercent: number | null = null, 
-    bestSellers: BestSellerAsset[] = []
-): ExemplarsByCategory {
+    bestSellers: BestSellerAsset[] = [],
+    vocab?: Vocabulary
+): Promise<ExemplarsByCategory> {
     // Default to topN = 20 if neither is specified
     const finalTopN = topN !== null ? topN : (topPercent !== null ? null : 20);
     const finalTopPercent = topPercent;
     
     const selectionMethod = finalTopPercent !== null ? `top ${finalTopPercent}%` : `top ${finalTopN}`;
     logger.info(`Identifying exemplars from ${assets.length} assets using ${selectionMethod}, with ${bestSellers.length} best sellers`);
+    
+    // Create AssetGrader instance with default config
+    const graderConfig = {
+        weights: DEFAULT_WEIGHTS,
+        thresholds: DEFAULT_THRESHOLDS
+    };
+    const grader = new AssetGrader(graderConfig);
+    
+    // Use provided vocab or create minimal default
+    const defaultVocab: Vocabulary = vocab || {};
     
     // Create a lookup for best sellers by URL, ID, and title
     const bestSellerLookup = new Set<string>();
@@ -357,23 +301,21 @@ export function identifyExemplars(
         if (bs.title) bestSellerLookup.add(normalizeTitle(bs.title));
     });
     
-    // Group assets by category
+    // Group assets by category and calculate scores
     const assetsByCategory: { [category: string]: ExemplarAsset[] } = {};
     
-    assets.forEach(asset => {
+    // Process assets in parallel for better performance
+    const processedAssets = await Promise.all(assets.map(async (asset) => {
         const category = extractCategory(asset);
-        if (!assetsByCategory[category]) {
-            assetsByCategory[category] = [];
-        }
         
         // Check if this asset is a best seller
         const isBestSeller = isBestSellerAsset(asset, bestSellerLookup);
         
-        // Calculate quality score with enhanced rating analysis and add to asset
-        const qualityScore = calculateQualityScore(asset, isBestSeller);
+        // Calculate quality score using AssetGrader
+        const qualityScore = await calculateQualityScore(asset, grader, defaultVocab, isBestSeller);
         const ratingData = calculateDetailedRating(asset.rating || []);
         
-        assetsByCategory[category].push({
+        return {
             ...asset,
             qualityScore,
             category: category, // Normalize category
@@ -381,7 +323,15 @@ export function identifyExemplars(
             _ratingAnalysis: ratingData,
             // Mark best seller status
             isBestSeller: isBestSeller
-        });
+        };
+    }));
+    
+    // Group processed assets by category
+    processedAssets.forEach(asset => {
+        if (!assetsByCategory[asset.category]) {
+            assetsByCategory[asset.category] = [];
+        }
+        assetsByCategory[asset.category]!.push(asset);
     });
     
     // Select exemplars per category
