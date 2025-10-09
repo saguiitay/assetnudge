@@ -472,12 +472,17 @@ export class AssetGrader {
     const titleTokens = new Set(tokenize(asset.title).uni);
     const topTitleKw = (vocab.top_unigrams || []).slice(0, 30).map(x => x.t);
     const titleOverlap = topTitleKw.filter(t => titleTokens.has(t)).length;
-    const titleKWOK = titleOverlap >= 2;
+    const titleKWOK = titleOverlap >= 1;
     
     if (titleKWOK) {
       score.score += w.titlekw;
     } else {
-      score.reasons.push(`Add ≥2 category keywords in title - currently ${titleOverlap}`);
+      if (topTitleKw.length === 0) {
+        score.reasons.push(`Add at least one keyword in title`);
+      }
+      else {
+        score.reasons.push(`Add at least one keyword in title - currently ${titleOverlap} (top keywords: ${topTitleKw.slice(0,5).join(', ')}...)`);
+      }
     }
 
     // Tag coverage - measures how well asset tags cover the category hierarchy
@@ -503,10 +508,10 @@ export class AssetGrader {
       score.score += w.tagcov;
     } else {
       const missingTerms = categoryTerms.filter(term => !assetTags.has(term));
-      const coverageDetail = categoryTerms.length > 0 
-        ? `category coverage ${Math.round(tagCoverage * 100)}% (missing: ${missingTerms.join(', ')})`
-        : `tag coverage ${Math.round(tagCoverage * 100)}%`;
-      score.reasons.push(`Increase ${coverageDetail}`);
+      // const coverageDetail = categoryTerms.length > 0 
+      //   ? `category coverage ${Math.round(tagCoverage * 100)}% (missing: ${missingTerms.join(', ')})`
+      //   : `tag coverage ${Math.round(tagCoverage * 100)}%`;
+      score.reasons.push(`Add category terms as tags: ${missingTerms.join(', ')}`);
     }
 
     // Price outlier detection
