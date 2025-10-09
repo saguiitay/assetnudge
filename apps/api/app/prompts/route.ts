@@ -81,6 +81,17 @@ function generateAllPrompts(
   };
 }
 
+// Add CORS headers
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+};
+
+export async function OPTIONS() {
+  return new NextResponse(null, { status: 200, headers: corsHeaders });
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Only allow in development/debug mode
