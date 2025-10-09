@@ -4,8 +4,8 @@
   "private": true,
   "description": "AI-powered optimization tool for Unity Asset Store listings",
   "scripts": {
-    "build-all": "npx tsx main.ts build-all --corpus data/corpus/ --out-dir data/results/ --top-percent 15 --best-sellers data/best_seller_assets_full.json",
-    "build-all-multi-pass": "npx tsx main.ts build-all-multi-pass --corpus data/corpus/ --out-dir data/results-multi-pass/ --top-percent 15 --best-sellers data/best_seller_assets_full.json",
+    "build-all": "npx tsx main.ts build-all --corpus data/corpus/ --out-dir data/results/ --topN 30 --top-percent 15 --best-sellers data/best_seller_assets_full.json",
+    "build-all-multi-pass": "npx tsx main.ts build-all-multi-pass --corpus data/corpus/ --out-dir data/results/ --topN 30 --top-percent 15 --best-sellers data/best_seller_assets_full.json",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
