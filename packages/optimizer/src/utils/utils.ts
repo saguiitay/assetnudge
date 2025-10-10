@@ -261,8 +261,8 @@ export const countBullets = (text: string): number => {
     }
   }
   
-  // 5. Count HTML numbered bullets: <p>1. content</p>
-  const htmlNumberedPattern = /<(?:p|div)[^>]*>\s*\d+\.\s+/gi;
+  // 5. Count HTML numbered bullets: <p>1. content</p> or <p>1- content</p>
+  const htmlNumberedPattern = /<(?:p|div)[^>]*>\s*\d+[\.\-]\s+/gi;
   let htmlNumberedMatch;
   while ((htmlNumberedMatch = htmlNumberedPattern.exec(text)) !== null) {
     if (!isAlreadyCounted(htmlNumberedMatch.index, htmlNumberedMatch.index + htmlNumberedMatch[0].length)) {
@@ -301,8 +301,8 @@ export const countBullets = (text: string): number => {
     }
   }
   
-  // 9. Count numbered list items (1. 2. etc. at start of lines)
-  const numberedPattern = /(?:^|\n)\s*\d+\.\s+/gm;
+  // 9. Count numbered list items (1. 2. etc. or 1- 2- etc. at start of lines)
+  const numberedPattern = /(?:^|\n)\s*\d+[\.\-]\s+/gm;
   let numberedMatch;
   while ((numberedMatch = numberedPattern.exec(text)) !== null) {
     if (!isAlreadyCounted(numberedMatch.index, numberedMatch.index + numberedMatch[0].length)) {
