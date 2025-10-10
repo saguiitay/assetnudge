@@ -2,7 +2,7 @@
  * Tags-specific AI prompts for Unity Asset Store optimization
  */
 
-import type { Asset } from '../types';
+import type { Asset } from '../../types';
 
 /**
  * Build system prompt for tag suggestions

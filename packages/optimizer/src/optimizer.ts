@@ -12,8 +12,8 @@ import { Logger } from './utils/logger';
 import { URLValidator, FileValidator } from './utils/validation';
 import { AssetGrader } from './grader';
 import { SimilarityEngine } from './similarity';
-import { AISuggestionEngine } from './ai-suggestions';
-import { HeuristicSuggestions as HeuristicSuggestionsEngine } from './heuristic-suggestions';
+import { AISuggestionEngine } from './suggestions/ai-suggestions';
+import { HeuristicSuggestions as HeuristicSuggestionsEngine } from './suggestions/heuristic-suggestions';
 import { Builder } from './builder';
 
 // External dependencies

@@ -3,11 +3,11 @@
  * Provides fallback suggestion algorithms when AI is unavailable
  */
 
-import { tokenize, jaccard, zscore, tfVector, cosine, TFVector } from './utils/utils';
-import { Logger } from './utils/logger';
-import { VocabularyBuilder } from './vocabulary';
-import { Asset } from './types';
-import { Vocabulary, CategoryVocabulary } from './types';
+import { tokenize, jaccard, zscore, tfVector, cosine, TFVector } from '../utils/utils';
+import { Logger } from '../utils/logger';
+import { VocabularyBuilder } from '../vocabulary';
+import { Asset } from '../types';
+import { Vocabulary, CategoryVocabulary } from '../types';
 
 /**
  * Configuration interface required by HeuristicSuggestions

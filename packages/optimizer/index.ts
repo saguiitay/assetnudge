@@ -21,7 +21,7 @@ import {
   buildShortDescUserPrompt,
   buildLongDescSystemPrompt,
   buildLongDescUserPrompt
-} from './src/prompts/index';
+} from './src/suggestions/prompts/index';
 
 /**
  * Export Config class as OptimizerConfig for compatibility

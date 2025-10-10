@@ -4,9 +4,8 @@
  */
 
 import OpenAI from 'openai';
-import { Logger } from './utils/logger';
-import { AssetValidator } from './utils/validation';
-import HeuristicSuggestions from './heuristic-suggestions';
+import { Logger } from '../utils/logger';
+import { AssetValidator } from '../utils/validation';
 import { 
   buildTitleSystemPrompt,
   buildTitleUserPrompt,
@@ -17,7 +16,7 @@ import {
   buildLongDescSystemPrompt,
   buildLongDescUserPrompt
 } from './prompts/index';
-import type { Asset, Vocabulary } from './types';
+import type { Asset } from '../types';
 
 const logger = new Logger('ai');
 
@@ -175,13 +174,13 @@ interface SimilarExemplar {
  * Comprehensive AI suggestions response interface
  */
 export interface AISuggestions {
+  rationale?: string;
   suggested_tags: TagSuggestion[];
   suggested_title: TitleSuggestion[];
   suggested_description: DescriptionSuggestion;
   recommendations: Recommendation[];
   suggested_category: CategorySuggestion;
   similar_exemplars?: SimilarExemplar[];
-  rationale?: string;
 }
 
 /**
@@ -323,6 +322,7 @@ export class AISuggestionEngine {
       const schema = {
         type: 'object',
         properties: {
+          rationale: { type: 'string' },
           suggested_titles: {
             type: 'array',
             items: {
@@ -336,8 +336,7 @@ export class AISuggestionEngine {
               },
               required: ['text', 'intent']
             }
-          },
-          rationale: { type: 'string' }
+          }
         },
         required: ['suggested_titles']
       };
@@ -369,6 +368,7 @@ export class AISuggestionEngine {
       const schema = {
         type: 'object',
         properties: {
+          rationale: { type: 'string' },
           suggested_tags: {
             type: 'array',
             items: {
@@ -381,8 +381,7 @@ export class AISuggestionEngine {
               },
               required: ['tag', 'reason']
             }
-          },
-          rationale: { type: 'string' }
+          }
         },
         required: ['suggested_tags']
       };
@@ -414,8 +413,8 @@ export class AISuggestionEngine {
       const schema = {
         type: 'object',
         properties: {
-          suggested_short_description: { type: 'string' },
-          rationale: { type: 'string' }
+          rationale: { type: 'string' },
+          suggested_short_description: { type: 'string' }
         },
         required: ['suggested_short_description']
       };
@@ -447,8 +446,8 @@ export class AISuggestionEngine {
       const schema = {
         type: 'object',
         properties: {
-          suggested_long_description: { type: 'string' },
-          rationale: { type: 'string' }
+          rationale: { type: 'string' },
+          suggested_long_description: { type: 'string' }
         },
         required: ['suggested_long_description']
       };
@@ -484,8 +483,6 @@ export class AISuggestionEngine {
       };
     });
   }
-
-
 
   /**
    * Generic OpenAI API call with schema validation
@@ -526,59 +523,6 @@ export class AISuggestionEngine {
       });
       throw new Error(`Invalid JSON response for ${schemaName}`);
     }
-  }
-
-
-
-
-
-
-
-
-
-  /**
-   * Generate heuristic fallback suggestions when AI is unavailable
-   */
-  private async generateHeuristicFallback(asset: Asset, vocab: Vocabulary | null): Promise<AISuggestions> {
-    this.logger.debug('Generating heuristic fallback suggestions');
-
-    // Use heuristic suggestions as fallback
-    const heuristicEngine = new HeuristicSuggestions(this.config);
-    
-    const heuristicTags = heuristicEngine.suggestTags(asset, vocab);
-    const heuristicTitles = heuristicEngine.suggestTitle(asset, vocab);
-    const heuristicDescription = heuristicEngine.suggestDescription(asset, vocab);
-    const heuristicRecommendations = heuristicEngine.generateRecommendations(asset, vocab);
-    const heuristicCategory = heuristicEngine.suggestCategory(asset, vocab);
-    
-    return {
-      suggested_tags: Array.isArray(heuristicTags) ? heuristicTags.map(tag => ({
-        tag: typeof tag === 'string' ? tag : (tag as any).tag || '',
-        reason: typeof tag === 'object' && tag && 'reason' in tag ? String((tag as any).reason) : 'Heuristic suggestion'
-      })) : [],
-      suggested_title: Array.isArray(heuristicTitles) ? heuristicTitles.map(title => ({
-        text: typeof title === 'string' ? title : (title as any).text || '',
-        intent: typeof title === 'object' && title && 'intent' in title ? String((title as any).intent) : 'Improvement suggestion'
-      })) : [],
-      suggested_description: {
-        short: typeof heuristicDescription === 'object' && heuristicDescription && 'short' in heuristicDescription ? 
-               String((heuristicDescription as any).short) : '',
-        long_markdown: typeof heuristicDescription === 'object' && heuristicDescription && 'long' in heuristicDescription ? 
-                       String((heuristicDescription as any).long) : ''
-      },
-      recommendations: Array.isArray(heuristicRecommendations) ? heuristicRecommendations.map(rec => ({
-        item: typeof rec === 'string' ? rec : (rec as any).item || '',
-        effort: typeof rec === 'object' && rec && 'effort' in rec ? String((rec as any).effort) : 'Medium',
-        impact: typeof rec === 'object' && rec && 'impact' in rec ? String((rec as any).impact) : 'Medium'
-      })) : [],
-      suggested_category: {
-        category: Array.isArray(heuristicCategory) && heuristicCategory.length > 0 && heuristicCategory[0] ? 
-                  (heuristicCategory[0] as any).category || 'Templates/Systems' : 'Templates/Systems',
-        confidence: Array.isArray(heuristicCategory) && heuristicCategory.length > 0 && heuristicCategory[0] ? 
-                    Number((heuristicCategory[0] as any).confidence) || 0.5 : 0.5
-      },
-      rationale: 'Generated using heuristic methods (AI unavailable)'
-    };
   }
 
   /**
