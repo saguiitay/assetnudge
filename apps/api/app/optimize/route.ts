@@ -146,12 +146,7 @@ export async function POST(request: NextRequest) {
 
         // Structure the response to match the expected format
         result = {
-          optimizedAsset: { [fieldKey]: fieldResult },
-          generated: { [fieldKey]: fieldResult },
-          analysis_metadata: {
-            generated_fields: [fieldKey],
-            timestamp: new Date().toISOString()
-          }
+          [fieldKey]: fieldResult,
         };
         
       } catch (error) {
@@ -173,17 +168,12 @@ export async function POST(request: NextRequest) {
     if (options.generateField || options.generateAll) {
       return NextResponse.json({
         success: true,
-        optimization: result,
-        generated_fields: result.analysis_metadata?.generated_fields || [],
-        optimized_content: result.optimizedAsset || {},
-        generated_content: result.generated || {},
-        optimized_at: new Date().toISOString()
+        result: result,
       }, { headers: corsHeaders });
     } else {
       return NextResponse.json({
         success: true,
-        optimization: result,
-        optimized_at: new Date().toISOString()
+        result: result,
       }, { headers: corsHeaders });
     }
 
@@ -244,49 +234,23 @@ export async function GET() {
         debug: false
       }
     },
-    example_response_full: {
+    example_response: {
       success: true,
-      optimization: {
-        grade: { score: 85, letter: 'B+' },
-        suggested_tags: ['education', 'math', 'interactive'],
-        suggested_title: 'Enhanced Math Learning Game',
-        suggested_description: 'Interactive educational game...',
-        recommendations: ['Add progress tracking', 'Include assessments'],
-        ai_suggestions: { /* AI-generated content */ },
-        analysis_metadata: {
-          coaching_method: 'exemplar-based',
-          ai_used: true,
-          timestamp: '2025-10-10T12:00:00.000Z'
-        }
-      },
-      optimized_at: '2025-10-10T12:00:00.000Z'
-    },
-    example_response_field_specific: {
-      success: true,
-      optimization: {
-        grade: { score: 85, letter: 'B+' },
-        /* ... full optimization results ... */
-        optimizedAsset: {
-          title: 'Enhanced Interactive Math Learning Game',
-          tags: ['education', 'math', 'interactive', 'learning']
-        },
-        generated: {
-          title: 'Enhanced Interactive Math Learning Game',
-          tags: ['education', 'math', 'interactive', 'learning']
-        },
-        analysis_metadata: {
-          generated_fields: ['title', 'tags'],
-          /* ... other metadata ... */
-        }
-      },
-      generated_fields: ['title', 'tags'],
-      optimized_content: {
-        title: 'Enhanced Interactive Math Learning Game',
-        tags: ['education', 'math', 'interactive', 'learning']
-      },
-      generated_content: {
-        title: 'Enhanced Interactive Math Learning Game',
-        tags: ['education', 'math', 'interactive', 'learning']
+      results: {
+        tite: [
+                {
+                    "text": "TileWorldCreator 4 — Professional Tools/Level Design",
+                    "rationale": "Includes category with professional keywords"
+                },
+                {
+                    "text": "Complete Tools/Level Design Solution — Build Faster in Unity",
+                    "rationale": "Includes category with professional keywords"
+                },
+                {
+                    "text": "TileWorldCreator 4 | Ready-to-Use Tools/Level Design",
+                    "rationale": "Includes category with professional keywords"
+                }
+            ]
       },
       optimized_at: '2025-10-10T12:00:00.000Z'
     }
