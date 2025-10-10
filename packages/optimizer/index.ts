@@ -29,37 +29,9 @@ import {
 export class OptimizerConfig extends Config {}
 
 /**
- * Scrape asset function wrapper (uses fallback strategy by default)
- */
-export async function scrapeAsset(url: string, config: { debug?: boolean; apiKey?: string } | null = null): Promise<{ success: true; asset: Asset } | { success: false; error: string }> {
-  // Convert config to args array if provided
-  const args: string[] = [];
-  if (config) {
-    if (config.debug) args.push('--debug', 'true');
-    if (config.apiKey) args.push('--apiKey', config.apiKey);
-  }
-  
-  const optimizer = new UnityAssetOptimizer(args);
-  await SetupValidator.validateSetup(optimizer.config, optimizer.aiEngine, optimizer.logger);
-  
-  try {
-    const asset = await optimizer.scrapeAssetWithGraphQL(url);
-    return {
-      success: true,
-      asset: asset as any
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error'
-    };
-  }
-}
-
-/**
  * Scrape asset with GraphQL API (most reliable)
  */
-export async function scrapeAssetWithGraphQLAPI(url: string, config: { debug?: boolean } | null = null): Promise<{ success: true; asset: Asset; method: 'graphql' } | { success: false; error: string }> {
+export async function scrapeAsset(url: string, config: { debug?: boolean } | null = null): Promise<{ success: true; asset: Asset; method: 'graphql' } | { success: false; error: string }> {
   const args: string[] = [];
   if (config) {
     if (config.debug) args.push('--debug', 'true');

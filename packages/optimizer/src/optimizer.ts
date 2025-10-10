@@ -113,18 +113,6 @@ export interface HeuristicSuggestionsResult {
 }
 
 /**
- * Batch optimization result for a single asset
- */
-export interface BatchOptimizationResult {
-  asset_id: string;
-  title: string;
-  grade?: GradeResult;
-  suggestions?: HeuristicSuggestionsResult;
-  error?: string;
-  processed_at: string;
-}
-
-/**
  * System status response
  */
 export interface SystemStatus {
