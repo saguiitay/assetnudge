@@ -141,6 +141,82 @@ export async function optimizeAsset(options: any, config: { debug?: boolean } | 
 }
 
 /**
+ * Suggest titles for an asset using exemplars, grading rules, AI, and heuristics
+ */
+export async function suggestTitleForAsset(
+  asset: Asset,
+  exemplarsPath?: string | null,
+  gradingRulesPath?: string | null,
+  vocab?: TypesVocabulary,
+  config: { debug?: boolean } | null = null
+): Promise<any[]> {
+  const args: string[] = [];
+  if (config && config.debug) args.push('--debug', 'true');
+  
+  const optimizer = new UnityAssetOptimizer(args);
+  await SetupValidator.validateSetup(optimizer.config, optimizer.aiEngine, optimizer.logger);
+  
+  return optimizer.suggestTitleForAsset(asset, exemplarsPath, gradingRulesPath, vocab);
+}
+
+/**
+ * Suggest tags for an asset using exemplars, grading rules, AI, and heuristics
+ */
+export async function suggestTagsForAsset(
+  asset: Asset,
+  exemplarsPath?: string | null,
+  gradingRulesPath?: string | null,
+  vocab?: TypesVocabulary,
+  config: { debug?: boolean } | null = null
+): Promise<any[]> {
+  const args: string[] = [];
+  if (config && config.debug) args.push('--debug', 'true');
+  
+  const optimizer = new UnityAssetOptimizer(args);
+  await SetupValidator.validateSetup(optimizer.config, optimizer.aiEngine, optimizer.logger);
+  
+  return optimizer.suggestTagsForAsset(asset, exemplarsPath, gradingRulesPath, vocab);
+}
+
+/**
+ * Suggest short description for an asset using exemplars, grading rules, AI, and heuristics
+ */
+export async function suggestShortDescriptionForAsset(
+  asset: Asset,
+  exemplarsPath?: string | null,
+  gradingRulesPath?: string | null,
+  vocab?: TypesVocabulary,
+  config: { debug?: boolean } | null = null
+): Promise<any> {
+  const args: string[] = [];
+  if (config && config.debug) args.push('--debug', 'true');
+  
+  const optimizer = new UnityAssetOptimizer(args);
+  await SetupValidator.validateSetup(optimizer.config, optimizer.aiEngine, optimizer.logger);
+  
+  return optimizer.suggestShortDescriptionForAsset(asset, exemplarsPath, gradingRulesPath, vocab);
+}
+
+/**
+ * Suggest long description for an asset using exemplars, grading rules, AI, and heuristics
+ */
+export async function suggestLongDescriptionForAsset(
+  asset: Asset,
+  exemplarsPath?: string | null,
+  gradingRulesPath?: string | null,
+  vocab?: TypesVocabulary,
+  config: { debug?: boolean } | null = null
+): Promise<any> {
+  const args: string[] = [];
+  if (config && config.debug) args.push('--debug', 'true');
+  
+  const optimizer = new UnityAssetOptimizer(args);
+  await SetupValidator.validateSetup(optimizer.config, optimizer.aiEngine, optimizer.logger);
+  
+  return optimizer.suggestLongDescriptionForAsset(asset, exemplarsPath, gradingRulesPath, vocab);
+}
+
+/**
  * Generate AI prompts for asset optimization fields
  * Loads context data (exemplars and vocabulary) from default file locations
  */

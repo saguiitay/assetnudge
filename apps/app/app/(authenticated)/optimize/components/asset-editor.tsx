@@ -28,7 +28,8 @@ import { X, Download, AlertCircle, CheckCircle, ShoppingCart, Sparkles, RefreshC
 import { EditorProvider, EditorBubbleMenu, EditorFormatBold, EditorFormatItalic, EditorLinkSelector, EditorNodeBulletList, EditorNodeOrderedList, type JSONContent, type Editor } from '@workspace/ui/components/kibo-ui/editor';
 import { Asset } from '@repo/optimizer/src/types';
 import { PromptHoverCard } from './prompt-hover-card';
-import { GenerateButton } from './generate-button';
+import { GenerateButton, type GeneratableField } from './generate-button';
+import { SuggestionInput } from '@workspace/ui/components/suggestion-input';
 
 // JSON validation function for Kibo UI editor output
 const validateEditorContent = (content: any) => {
@@ -228,7 +229,7 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
   };
 
   // Asset generation functions
-  const generateField = async (fieldKey: keyof Asset) => {
+  const generateField = async (fieldKey: GeneratableField) => {
     const currentAssetData = {
       ...importedData,
       title: form.getValues('title'),
@@ -251,15 +252,16 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
       const isDevelopment = process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_DEBUG === 'true';
 
-      const response = await fetch(`${apiUrl}/optimize`, {
+      const response = await fetch(`${apiUrl}/optimize?field=${fieldKey}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          assetData: currentAssetData,
-          generateFields: [fieldKey],
-          generateAll: false,
+          options: {
+            assetData: currentAssetData,
+            useAI: true
+          },
           debug: isDevelopment
         }),
       });
@@ -271,7 +273,7 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
         return;
       }
 
-      const generatedData = result.optimizedAsset || result.generated || {};
+      const generatedData = result.optimized_content || result.generated_content || result.optimization?.optimizedAsset || result.optimization?.generated || {};
       
       // Update the form with generated data
       if (generatedData[fieldKey]) {
@@ -321,17 +323,17 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
       const isDevelopment = process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_DEBUG === 'true';
-      const fieldsToGenerate = ['title', 'tags', 'short_description', 'long_description'];
 
-      const response = await fetch(`${apiUrl}/optimize`, {
+      const response = await fetch(`${apiUrl}/optimize?generateAll=true`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          assetData: currentAssetData,
-          generateFields: fieldsToGenerate,
-          generateAll: true,
+          options: {
+            assetData: currentAssetData,
+            useAI: true
+          },
           debug: isDevelopment
         }),
       });
@@ -343,7 +345,7 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
         return;
       }
 
-      const generatedData = result.optimizedAsset || result.generated || {};
+      const generatedData = result.optimized_content || result.generated_content || result.optimization?.optimizedAsset || result.optimization?.generated || {};
       
       // Update form with all generated data
       setIsBatchUpdating(true);
@@ -684,92 +686,101 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
       <CardContent>
         <FieldSet>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FieldGroup>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Controller
-                control={form.control}
-                name="title"
-                render={({ field, fieldState }) => (
-                  <Field data-invalid={!!fieldState.error}>
-                    <FieldLabel htmlFor="title" className="flex items-center gap-2">
-                      Title
-                      <PromptHoverCard
-                        fieldType="title"
-                        fieldName="Title"
-                        getCurrentAssetData={getCurrentAssetData}
-                      />
-                    </FieldLabel>
-                    <div className="flex gap-2">
-                      <Input 
-                        id="title" 
-                        placeholder="Enter asset title" 
-                        {...field} 
-                        className="flex-1" 
-                        aria-invalid={!!fieldState.error}
-                      />
-                      <GenerateButton
-                        fieldKey="title"
-                        size='icon'
-                        isGenerating={isGenerating.title || false}
-                        isDisabled={Object.values(isGenerating).some(Boolean)}
-                        onGenerate={generateField}
-                      />
-                    </div>
-                    {fieldState.error && (
-                      <FieldError>{fieldState.error.message}</FieldError>
-                    )}
-                  </Field>
-                )}
-              />
 
-              <Controller
-                control={form.control}
-                name="category"
-                render={({ field, fieldState }) => (
-                  <Field data-invalid={!!fieldState.error}>
-                    <FieldLabel htmlFor="category">Category</FieldLabel>
-                    <Input 
-                      id="category" 
-                      placeholder="Enter category" 
-                      {...field} 
-                      aria-invalid={!!fieldState.error}
-                    />
-                    {fieldState.error && (
-                      <FieldError>{fieldState.error.message}</FieldError>
+            <Controller
+              control={form.control}
+              name="category"
+              render={({ field, fieldState }) => (
+                <Field data-invalid={!!fieldState.error}>
+                  <FieldLabel htmlFor="category">Category</FieldLabel>
+                  <Input 
+                    id="category" 
+                    placeholder="Enter category" 
+                    {...field} 
+                    aria-invalid={!!fieldState.error}
+                  />
+                  {fieldState.error && (
+                    <FieldError>{fieldState.error.message}</FieldError>
+                  )}
+                </Field>
+              )}
+            />
+
+            <Controller
+              control={form.control}
+              name="title"
+              render={({ field, fieldState }) => (
+                <Field data-invalid={!!fieldState.error}>
+                  <SuggestionInput
+                    label={(
+                      <div className="flex items-center gap-2">
+                        <span>
+                          Title
+                        </span>
+                        <PromptHoverCard
+                          fieldType="title"
+                          fieldName="Title"
+                          getCurrentAssetData={getCurrentAssetData}
+                        />
+                      </div>
                     )}
-                  </Field>
-                )}
-              />
-            </div>
-            </FieldGroup>
+                    value={field.value}
+                    onChange={field.onChange}
+                    onSuggest={async (currentValue) => {
+                      try {
+                        await generateField('title');
+                        return [form.getValues('title')];
+                      } catch (error) {
+                        console.error('Error generating title suggestions:', error);
+                        return [];
+                      }
+                    }}
+                    placeholder="Enter asset title"
+                    variant="input"
+                    buttonSize="icon"
+                    buttonVariant="outline"
+                  />
+                  {fieldState.error && (
+                    <FieldError>{fieldState.error.message}</FieldError>
+                  )}
+                </Field>
+              )}
+            />
 
             <Controller
               control={form.control}
               name="short_description"
               render={({ field, fieldState }) => (
                 <Field data-invalid={!!fieldState.error}>
-                  <FieldLabel htmlFor="short_description" className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      Short Description
-                      <PromptHoverCard
-                        fieldType="short_description"
-                        fieldName="Short Description"
-                        getCurrentAssetData={getCurrentAssetData}
-                      />
-                    </div>
-                    <GenerateButton
-                      fieldKey="short_description"
-                      isGenerating={isGenerating.short_description || false}
-                      isDisabled={Object.values(isGenerating).some(Boolean) || !form.watch('title')}
-                      onGenerate={generateField}
-                    />
-                  </FieldLabel>
-                  <Textarea
-                    id="short_description"
+                  <SuggestionInput
+                    label={(
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                          Short Description
+                        </span>
+                        <PromptHoverCard
+                          fieldType="short_description"
+                          fieldName="Short Description"
+                          getCurrentAssetData={getCurrentAssetData}
+                        />
+                      </div>
+                    )}
+                    value={field.value}
+                    onChange={field.onChange}
+                    onSuggest={async (currentValue) => {
+                      try {
+                        await generateField('short_description');
+                        return [form.getValues('short_description')];
+                      } catch (error) {
+                        console.error('Error generating short description suggestions:', error);
+                        return [];
+                      }
+                    }}
                     placeholder="Enter a brief description"
-                    className="resize-none"
-                    {...field}
-                    aria-invalid={!!fieldState.error}
+                    variant="textarea"
+                    rows={3}
+                    buttonSize="default"
+                    buttonVariant="outline"
                   />
                   <FieldDescription>
                     A brief summary of the asset (max 200 characters)

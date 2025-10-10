@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { optimizeAsset } from '@repo/optimizer';
+import { 
+  optimizeAsset, 
+  suggestTitleForAsset, 
+  suggestTagsForAsset, 
+  suggestShortDescriptionForAsset, 
+  suggestLongDescriptionForAsset 
+} from '@repo/optimizer';
 
 export const runtime = 'nodejs';
 
@@ -44,19 +50,142 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Get field-specific optimization parameters from query params
+    const { searchParams } = new URL(request.url);
+    const field = searchParams.get('field');
+
+    // Parse and validate field parameter
+    if (field) {
+      const validFields = ['title', 'tags', 'short_description', 'long_description'];
+      
+      if (!validFields.includes(field)) {
+        return NextResponse.json(
+          { 
+            success: false, 
+            error: `Invalid field: ${field}. Valid fields are: ${validFields.join(', ')}` 
+          },
+          { status: 400, headers: corsHeaders }
+        );
+      }
+      
+      // Add field-specific option to the optimization request
+      options.generateField = field;
+    } else {
+      // Generate all fields by default
+      options.generateAll = true;
+    }
+
     if (debug) {
       console.log('Optimizing asset with options:', JSON.stringify(options, null, 2));
+      if (options.generateField) {
+        console.log('Generating specific field:', options.generateField);
+      } else {
+        console.log('Generating all fields');
+      }
     }
 
     // Optimize the asset
     const config = debug ? { debug } : null;
-    const result = await optimizeAsset(options, config as any);
+    let result: any;
 
-    return NextResponse.json({
-      success: true,
-      optimization: result,
-      optimized_at: new Date().toISOString()
-    }, { headers: corsHeaders });
+    // Use field-specific methods when a specific field is requested
+    if (options.generateField) {
+      const fieldKey = options.generateField;
+      const assetData = options.assetData;
+      
+      if (!assetData) {
+        return NextResponse.json(
+          { success: false, error: 'assetData is required for field generation' },
+          { status: 400, headers: corsHeaders }
+        );
+      }
+
+      try {
+        let fieldResult: any;
+        
+        switch (fieldKey) {
+          case 'title':
+            fieldResult = await suggestTitleForAsset(
+              assetData,
+              options.exemplarsPath,
+              options.gradingRulesPath,
+              options.vocab,
+              config
+            );
+            break;
+          case 'tags':
+            fieldResult = await suggestTagsForAsset(
+              assetData,
+              options.exemplarsPath,
+              options.gradingRulesPath,
+              options.vocab,
+              config
+            );
+            break;
+          case 'short_description':
+            fieldResult = await suggestShortDescriptionForAsset(
+              assetData,
+              options.exemplarsPath,
+              options.gradingRulesPath,
+              options.vocab,
+              config
+            );
+            break;
+          case 'long_description':
+            fieldResult = await suggestLongDescriptionForAsset(
+              assetData,
+              options.exemplarsPath,
+              options.gradingRulesPath,
+              options.vocab,
+              config
+            );
+            break;
+          default:
+            throw new Error(`Unsupported field: ${fieldKey}`);
+        }
+
+        // Structure the response to match the expected format
+        result = {
+          optimizedAsset: { [fieldKey]: fieldResult },
+          generated: { [fieldKey]: fieldResult },
+          analysis_metadata: {
+            generated_fields: [fieldKey],
+            timestamp: new Date().toISOString()
+          }
+        };
+        
+      } catch (error) {
+        console.error(`Error generating field ${fieldKey}:`, error);
+        return NextResponse.json(
+          { 
+            success: false, 
+            error: `Failed to generate ${fieldKey}: ${error instanceof Error ? error.message : 'Unknown error'}`
+          },
+          { status: 500, headers: corsHeaders }
+        );
+      }
+    } else {
+      // Use the general optimization function for full optimization
+      result = await optimizeAsset(options, config as any);
+    }
+
+    // Structure response based on whether field-specific generation was requested
+    if (options.generateField || options.generateAll) {
+      return NextResponse.json({
+        success: true,
+        optimization: result,
+        generated_fields: result.analysis_metadata?.generated_fields || [],
+        optimized_content: result.optimizedAsset || {},
+        generated_content: result.generated || {},
+        optimized_at: new Date().toISOString()
+      }, { headers: corsHeaders });
+    } else {
+      return NextResponse.json({
+        success: true,
+        optimization: result,
+        optimized_at: new Date().toISOString()
+      }, { headers: corsHeaders });
+    }
 
   } catch (error) {
     console.error('Error optimizing asset:', error);
@@ -90,33 +219,76 @@ export async function GET() {
         description: 'Enable debug mode for detailed optimization information'
       }
     },
-    example_request: {
-      options: {
-        assetData: {
-          title: 'Math Learning Game',
-          description: 'Educational game for learning basic mathematics...',
-          tags: ['education', 'math', 'learning'],
-          category: 'Educational'
-        },
-        optimizationLevel: 'moderate',
-        targetAudience: 'elementary',
-        includeAccessibility: true
-      },
-      debug: false
+    query_parameters: {
+      field: {
+        type: 'string',
+        required: false,
+        description: 'Specific field to generate/optimize (title, tags, short_description, long_description). If not provided, all fields will be generated.',
+        example: 'title'
+      }
     },
-    example_response: {
+    example_request: {
+      url: '/optimize?field=title',
+      body: {
+        options: {
+          assetData: {
+            title: 'Math Learning Game',
+            description: 'Educational game for learning basic mathematics...',
+            tags: ['education', 'math', 'learning'],
+            category: 'Educational'
+          },
+          useAI: true,
+          exemplarsPath: '/path/to/exemplars.json',
+          vocabPath: '/path/to/vocab.json'
+        },
+        debug: false
+      }
+    },
+    example_response_full: {
       success: true,
       optimization: {
-        recommendations: [
-          'Add audio narration for accessibility',
-          'Include progress tracking features',
-          'Simplify user interface for younger users'
-        ],
-        accessibility_improvements: ['High contrast mode', 'Text-to-speech support'],
-        educational_enhancements: ['Assessment tools', 'Learning analytics'],
-        technical_optimizations: ['Performance improvements', 'Memory optimization']
+        grade: { score: 85, letter: 'B+' },
+        suggested_tags: ['education', 'math', 'interactive'],
+        suggested_title: 'Enhanced Math Learning Game',
+        suggested_description: 'Interactive educational game...',
+        recommendations: ['Add progress tracking', 'Include assessments'],
+        ai_suggestions: { /* AI-generated content */ },
+        analysis_metadata: {
+          coaching_method: 'exemplar-based',
+          ai_used: true,
+          timestamp: '2025-10-10T12:00:00.000Z'
+        }
       },
-      optimized_at: '2025-10-03T12:00:00.000Z'
+      optimized_at: '2025-10-10T12:00:00.000Z'
+    },
+    example_response_field_specific: {
+      success: true,
+      optimization: {
+        grade: { score: 85, letter: 'B+' },
+        /* ... full optimization results ... */
+        optimizedAsset: {
+          title: 'Enhanced Interactive Math Learning Game',
+          tags: ['education', 'math', 'interactive', 'learning']
+        },
+        generated: {
+          title: 'Enhanced Interactive Math Learning Game',
+          tags: ['education', 'math', 'interactive', 'learning']
+        },
+        analysis_metadata: {
+          generated_fields: ['title', 'tags'],
+          /* ... other metadata ... */
+        }
+      },
+      generated_fields: ['title', 'tags'],
+      optimized_content: {
+        title: 'Enhanced Interactive Math Learning Game',
+        tags: ['education', 'math', 'interactive', 'learning']
+      },
+      generated_content: {
+        title: 'Enhanced Interactive Math Learning Game',
+        tags: ['education', 'math', 'interactive', 'learning']
+      },
+      optimized_at: '2025-10-10T12:00:00.000Z'
     }
   }, { headers: corsHeaders });
 }

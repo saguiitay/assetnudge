@@ -1,12 +1,13 @@
 import { Button } from '@workspace/ui/components/button';
 import { RefreshCw, Sparkles } from 'lucide-react';
-import { Asset } from '@repo/optimizer/src/types';
+
+export type GeneratableField = 'title' | 'tags' | 'short_description' | 'long_description';
 
 interface GenerateButtonProps {
-  fieldKey: keyof Asset;
+  fieldKey: GeneratableField;
   isGenerating: boolean;
   isDisabled: boolean;
-  onGenerate: (fieldKey: keyof Asset) => void;
+  onGenerate: (fieldKey: GeneratableField) => void;
   size?: 'icon' | 'default';
   variant?: 'outline' | 'default';
   className?: string;
@@ -26,7 +27,7 @@ export function GenerateButton({
       type="button"
       variant={variant}
       size={size}
-      onClick={() => onGenerate(fieldKey)}
+      onClick={() => onGenerate(fieldKey as GeneratableField)}
       disabled={isDisabled}
       className={`gap-2 whitespace-nowrap ${className}`}
     >

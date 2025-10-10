@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { scrapeAsset, scrapeAssetWithGraphQLAPI } from '@repo/optimizer';
+import { scrapeAsset } from '@repo/optimizer';
 
 export const runtime = 'nodejs';
 
@@ -44,15 +44,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate scraping method
-    const validMethods = ['graphql', 'fallback'];
-    if (!validMethods.includes(method)) {
-      return NextResponse.json(
-        { success: false, error: `Method must be one of: ${validMethods.join(', ')}` },
-        { status: 400, headers: corsHeaders }
-      );
-    }
-
     // Validate Unity Asset Store URL
     if (!url.includes('assetstore.unity.com/packages/')) {
       return NextResponse.json(
@@ -68,15 +59,7 @@ export async function POST(request: NextRequest) {
       console.log(`Using ${method} scraping method for URL: ${url}`);
     }
     
-    switch (method) {
-      case 'graphql':
-        result = await scrapeAssetWithGraphQLAPI(url);
-        break;
-      case 'fallback':
-      default:
-        result = await scrapeAsset(url);
-        break;
-    }
+    result = await scrapeAsset(url);
 
     if (!result.success) {
       return NextResponse.json(
