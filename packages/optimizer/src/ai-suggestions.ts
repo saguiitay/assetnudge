@@ -318,7 +318,6 @@ export class AISuggestionEngine {
         params.asset,
         params.exemplars || [],
         params.vocab || {},
-        this.config.getValidCategories()
       );
 
       const schema = {
@@ -365,7 +364,6 @@ export class AISuggestionEngine {
         params.asset,
         params.exemplars || [],
         params.vocab || {},
-        this.config.getValidCategories()
       );
 
       const schema = {
@@ -411,7 +409,6 @@ export class AISuggestionEngine {
         params.asset,
         params.exemplars || [],
         params.vocab || {},
-        this.config.getValidCategories()
       );
 
       const schema = {
@@ -445,7 +442,6 @@ export class AISuggestionEngine {
         params.asset,
         params.exemplars || [],
         params.vocab || {},
-        this.config.getValidCategories()
       );
 
       const schema = {
