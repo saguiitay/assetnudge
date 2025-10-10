@@ -793,6 +793,125 @@ export function generateCategoryPlaybook(category: string, patterns: CategoryPat
     };
 }
 
+/**
+ * Generate exemplar-based suggestions for a specific field
+ * @param field - The field to generate (title, tags, short_description, long_description)
+ * @param asset - Target asset
+ * @param exemplarsData - Loaded exemplars data
+ * @param maxNeighbors - Maximum neighbors to consider (default: 5)
+ * @returns Field-specific suggestions based on exemplars
+ */
+export function generateExemplarFieldSuggestion(field: string, asset: Asset, exemplarsData: ExemplarsData, maxNeighbors: number = 5): any {
+    logger.info('Generating exemplar-based field suggestion', {
+        field,
+        assetTitle: asset.title,
+        category: extractAssetCategory(asset)
+    });
+    
+    const neighbors = findNearestExemplars(asset, exemplarsData, maxNeighbors);
+    const category = extractAssetCategory(asset);
+    const categoryPatterns = exemplarsData.patterns[category];
+    
+    if (!categoryPatterns || neighbors.length === 0) {
+        logger.warn('No patterns or neighbors found for field generation', { category, field });
+        return null;
+    }
+    
+    switch (field) {
+        case 'title':
+            return generateExemplarTitle(asset, neighbors, categoryPatterns);
+        case 'tags':
+            return generateExemplarTags(asset, neighbors, categoryPatterns);
+        case 'short_description':
+            return generateExemplarShortDescription(asset, neighbors, categoryPatterns);
+        case 'long_description':
+            return generateExemplarLongDescription(asset, neighbors, categoryPatterns);
+        default:
+            logger.warn('Unsupported field for exemplar generation', { field });
+            return null;
+    }
+}
+
+/**
+ * Generate title based on exemplar patterns
+ */
+function generateExemplarTitle(asset: Asset, neighbors: ExemplarWithSimilarity[], patterns: CategoryPatterns): string {
+    const titleWords = patterns.vocabulary.titleWords.slice(0, 8).map(w => w.item);
+    const titleBigrams = patterns.vocabulary.titleBigrams.slice(0, 3).map(b => b.item);
+    
+    // Use the most common title pattern from exemplars
+    if (titleBigrams.length > 0 && titleWords.length > 0) {
+        const phrase = titleBigrams[0] || ''; // Most common phrase
+        const extraWords = titleWords.filter(w => !phrase.includes(w)).slice(0, 2);
+        return `${phrase} ${extraWords.join(' ')}`.trim();
+    }
+    
+    // Fallback to top title words
+    return titleWords.slice(0, 4).join(' ');
+}
+
+/**
+ * Generate tags based on exemplar patterns
+ */
+function generateExemplarTags(asset: Asset, neighbors: ExemplarWithSimilarity[], patterns: CategoryPatterns): string[] {
+    const commonTags = patterns.tags.commonTags.slice(0, 8).map(t => t.item);
+    const optimalCount = Math.round(patterns.tags.averageTagCount);
+    
+    // Start with most common tags
+    const suggestedTags = [...commonTags.slice(0, optimalCount)];
+    
+    // Add co-occurrence suggestions if needed
+    const currentTags = asset.tags.map(t => t.toLowerCase());
+    const cooccurrences = patterns.tags.tagCooccurrence.slice(0, 3);
+    
+    for (const cooccur of cooccurrences) {
+        const [tag1, tag2] = cooccur.item.split('|');
+        if (tag1 && tag2 && currentTags.includes(tag1) && !suggestedTags.includes(tag2) && suggestedTags.length < optimalCount) {
+            suggestedTags.push(tag2);
+        }
+    }
+    
+    return suggestedTags.slice(0, optimalCount);
+}
+
+/**
+ * Generate short description based on exemplar patterns
+ */
+function generateExemplarShortDescription(asset: Asset, neighbors: ExemplarWithSimilarity[], patterns: CategoryPatterns): string {
+    const descWords = patterns.vocabulary.descriptionWords.slice(0, 10).map(w => w.item);
+    
+    // Create a concise description using common terms
+    const keyTerms = descWords.slice(0, 6);
+    const description = `${keyTerms.slice(0, 3).join(' ')} for ${keyTerms.slice(3, 6).join(' ')}`;
+    
+    // Ensure it's within the typical length
+    return description.length > 160 ? description.substring(0, 157) + '...' : description;
+}
+
+/**
+ * Generate long description based on exemplar patterns
+ */
+function generateExemplarLongDescription(asset: Asset, neighbors: ExemplarWithSimilarity[], patterns: CategoryPatterns): string {
+    const descWords = patterns.vocabulary.descriptionWords.slice(0, 15).map(w => w.item);
+    const optimalLength = patterns.structure.longDescriptionLength.median;
+    
+    let description = `This ${asset.category || 'asset'} provides ${descWords.slice(0, 3).join(', ')} `;
+    description += `capabilities with ${descWords.slice(3, 6).join(', ')} features. `;
+    
+    // Add features section if common in exemplars
+    if (patterns.structure.commonStructures.hasFeaturesList > 0.5) {
+        description += '\n\nKey Features:\n';
+        for (let i = 6; i < Math.min(descWords.length, 10); i++) {
+            description += `• ${descWords[i]}\n`;
+        }
+    }
+    
+    // Add usage section
+    description += `\nPerfect for ${descWords.slice(10, 13).join(', ')} applications.`;
+    
+    return description;
+}
+
 function identifyExemplarStrengths(exemplar: AssetWithQuality, patterns: CategoryPatterns): string[] {
     const strengths: string[] = [];
     

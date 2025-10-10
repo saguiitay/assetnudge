@@ -444,4 +444,34 @@ export class ConfigValidator {
   }
 }
 
+/**
+ * Setup validator for the Unity Asset Optimizer
+ */
+export class SetupValidator {
+  /**
+   * Validate configuration and dependencies
+   */
+  static async validateSetup(config: any, aiEngine: any, logger: any): Promise<string[]> {
+    logger.info('Validating setup...');
+    
+    const issues = config.validate();
+    
+    if (issues.length > 0) {
+      issues.forEach((issue: string) => logger.warn(issue));
+    }
+
+    // Test AI connection if available
+    if (config.hasAI()) {
+      const aiTest = await aiEngine.testConnection();
+      if (aiTest.success) {
+        logger.success('AI connection test passed', { model: aiTest.model });
+      } else {
+        logger.error('AI connection test failed', null, { error: aiTest.error });
+      }
+    }
+
+    return issues;
+  }
+}
+
 export { logger as validatorLogger };

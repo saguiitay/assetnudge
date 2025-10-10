@@ -10,33 +10,26 @@ import * as path from 'path';
 import { Config } from './config';
 import { Logger } from './utils/logger';
 import { URLValidator, FileValidator } from './utils/validation';
-import { VocabularyBuilder } from './vocabulary';
 import { AssetGrader } from './grader';
 import { SimilarityEngine } from './similarity';
 import { AISuggestionEngine } from './ai-suggestions';
 import { HeuristicSuggestions as HeuristicSuggestionsEngine } from './heuristic-suggestions';
+import { Builder } from './builder';
 
 // External dependencies
 import { scrapeAssetWithGraphQL } from './scrappers/graphql-scraper';
 
 // Rating analysis and dynamic grading
-import { calculateDetailedRating } from './utils/rating-analysis';
-import { extractGradingRules } from './dynamic-grading-rules';
 import { DynamicAssetGrader } from './dynamic-asset-grader';
 
 // Exemplar and pattern modules
-import { identifyExemplars, saveExemplars, getExemplarStats, type ExemplarsByCategory } from './exemplars';
-import { extractCategoryPatterns } from './pattern-extraction';
-import { generateCategoryPlaybook, generateExemplarRecommendations } from './exemplar-coaching';
+import { generateExemplarRecommendations, generateExemplarFieldSuggestion } from './exemplar-coaching';
 
 // Types
 import type { 
   Asset, 
   Vocabulary, 
   GradeResult, 
-  BestSellerAsset,
-  GraderConfig,
-  CategoryVocabulary,
   DynamicGradingRulesFile
 } from './types';
 
@@ -48,6 +41,8 @@ export interface OptimizeOptions {
   input?: string | undefined;
   /** URL to scrape asset data from */
   url?: string | undefined;
+  /** Direct asset data object */
+  assetData?: Asset | undefined;
   /** Path to vocabulary file */
   vocabPath?: string | undefined;
   /** Path to exemplars file */
@@ -56,6 +51,10 @@ export interface OptimizeOptions {
   neighborsPath?: string | undefined;
   /** Whether to use AI suggestions */
   useAI?: boolean;
+  /** Specific fields to generate/optimize (title, tags, short_description, long_description) */
+  generateFields?: string[] | undefined;
+  /** Whether to generate all fields at once */
+  generateAll?: boolean;
 }
 
 /**
@@ -85,6 +84,10 @@ export interface OptimizationResult {
   similar_assets: any[];
   exemplar_coaching: any;
   ai_suggestions: any;
+  /** Optimized asset content (when generating specific fields) */
+  optimizedAsset?: Partial<Asset>;
+  /** Generated content for specific fields */
+  generated?: Record<string, any>;
   analysis_metadata: {
     coaching_method: string;
     ai_used: boolean;
@@ -93,6 +96,8 @@ export interface OptimizationResult {
     exemplar_neighbors: number;
     category_alignment: number | null;
     timestamp: string;
+    /** Fields that were generated/optimized */
+    generated_fields?: string[];
   };
 }
 
@@ -148,94 +153,27 @@ export interface SystemStatus {
 }
 
 /**
- * Exemplar build statistics
- */
-export interface ExemplarBuildStats {
-  categories: number;
-  totalExemplars: number;
-  bestSellersIncluded: number;
-  selectionCriteria: string;
-}
-
-/**
- * Grading rules build statistics
- */
-export interface GradingRulesBuildStats {
-  categories: number;
-  confidenceDistribution: {
-    high: number;
-    medium: number;
-    low: number;
-  };
-  totalExemplars: number;
-  bestSellersCount: number;
-}
-
-/**
- * Vocabulary build statistics
- */
-export interface VocabularyBuildStats {
-  categories: number;
-  totalCategories: number;
-  source: string;
-}
-
-/**
- * Playbook generation statistics
- */
-export interface PlaybookStats {
-  categories: number;
-  totalCategories: number;
-}
-
-/**
- * Multi-pass build statistics
- */
-export interface MultiPassBuildStats {
-  passes: number;
-  converged: boolean;
-  convergenceMetric: number;
-  convergenceThreshold: number;
-  passResults: {
-    pass: number;
-    exemplarStats: ExemplarBuildStats;
-    gradingRulesStats: GradingRulesBuildStats;
-    exemplarChanges?: {
-      added: string[];
-      removed: string[];
-      unchanged: string[];
-    };
-  }[];
-  finalFiles: {
-    exemplars: string;
-    gradingRules: string;
-    vocabulary: string;
-    playbooks: string;
-  };
-}
-
-/**
  * Main optimizer class that orchestrates all functionality
  */
 export class UnityAssetOptimizer {
   public config: Config;
-  private logger: Logger;
-  private vocabularyBuilder: VocabularyBuilder;
+  public logger: Logger;
   public grader: AssetGrader;
-  private similarityEngine: SimilarityEngine;
-  private aiEngine: AISuggestionEngine;
-  private heuristicEngine: HeuristicSuggestionsEngine;
+  public similarityEngine: SimilarityEngine;
+  public aiEngine: AISuggestionEngine;
+  public heuristicEngine: HeuristicSuggestionsEngine;
+  public builder: Builder;
 
   constructor(args: string[] = []) {
     this.config = Config.fromEnvironment(args);
     this.logger = new Logger('optimizer', this.config.debug);
     
     // Initialize modules
-    this.vocabularyBuilder = new VocabularyBuilder(this.config);
     this.grader = new AssetGrader(this.config);
     this.similarityEngine = new SimilarityEngine(this.config);
     this.aiEngine = new AISuggestionEngine(this.config as any);
     this.heuristicEngine = new HeuristicSuggestionsEngine(this.config);
+    this.builder = new Builder(this.config);
     
     this.logger.info('Unity Asset Optimizer initialized', {
       hasAI: this.config.hasAI(),
@@ -243,461 +181,7 @@ export class UnityAssetOptimizer {
     });
   }
 
-  /**
-   * Validate configuration and dependencies
-   */
-  async validateSetup(): Promise<string[]> {
-    this.logger.info('Validating setup...');
-    
-    const issues = this.config.validate();
-    
-    if (issues.length > 0) {
-      issues.forEach(issue => this.logger.warn(issue));
-    }
 
-    // Test AI connection if available
-    if (this.config.hasAI()) {
-      const aiTest = await this.aiEngine.testConnection();
-      if (aiTest.success) {
-        this.logger.success('AI connection test passed', { model: aiTest.model });
-      } else {
-        this.logger.error('AI connection test failed', null, { error: aiTest.error });
-      }
-    }
-
-    return issues;
-  }
-
-  /**
-   * Build exemplars database from corpus file path
-   */
-  async buildExemplars(
-    corpusPath: string, 
-    outputPath: string, 
-    topN: number | null = null, 
-    topPercent: number | null = null, 
-    bestSellersPath: string | null = null
-  ): Promise<ExemplarBuildStats> {
-    return this.logger.time('buildExemplars', async () => {
-      // Default to topN = 20 if neither is specified
-      const finalTopN = topN !== null ? topN : (topPercent !== null ? null : 20);
-      const finalTopPercent = topPercent;
-      
-      this.logger.info('Building exemplars', { 
-        corpusPath, 
-        outputPath, 
-        topN: finalTopN, 
-        topPercent: finalTopPercent,
-        hasBestSellers: !!bestSellersPath
-      });
-      
-      // Validate input file
-      const corpus = await FileValidator.validateJSONFile(corpusPath) as Asset[];
-      
-      // Load best sellers list if provided
-      let bestSellers: BestSellerAsset[] = [];
-      if (bestSellersPath) {
-        try {
-          bestSellers = await FileValidator.validateJSONFile(bestSellersPath) as BestSellerAsset[];
-          this.logger.info('Best sellers list loaded', { 
-            count: bestSellers.length,
-            source: bestSellersPath
-          });
-        } catch (error) {
-          this.logger.error('Failed to load best sellers', error as Error, { path: bestSellersPath });
-          throw new Error(`Failed to load best sellers from ${bestSellersPath}: ${(error as Error).message}`);
-        }
-      }
-      
-      return this.buildExemplarsFromCorpus(corpus, outputPath, finalTopN, finalTopPercent, bestSellers);
-    });
-  }
-
-  /**
-   * Build exemplars database from corpus array
-   */
-  async buildExemplarsFromCorpus(
-    corpus: Asset[], 
-    outputPath: string, 
-    topN: number | null = null, 
-    topPercent: number | null = null, 
-    bestSellers: BestSellerAsset[] = []
-  ): Promise<ExemplarBuildStats> {
-    return this.logger.time('buildExemplarsFromCorpus', async () => {
-      // Default to topN = 20 if neither is specified
-      const finalTopN = topN !== null ? topN : (topPercent !== null ? null : 20);
-      const finalTopPercent = topPercent;
-      
-      this.logger.info('Building exemplars from corpus array', { 
-        corpusSize: corpus.length,
-        outputPath, 
-        topN: finalTopN, 
-        topPercent: finalTopPercent,
-        bestSellersCount: bestSellers.length
-      });
-      
-      // Validate corpus is an array
-      if (!Array.isArray(corpus)) {
-        throw new Error('Corpus must be an array of assets');
-      }
-
-      // Validate best sellers is an array if provided
-      if (bestSellers && !Array.isArray(bestSellers)) {
-        throw new Error('Best sellers must be an array of assets');
-      }
-
-      // Identify exemplars by category with best sellers
-      const exemplarsByCategory = await identifyExemplars(corpus, finalTopN, finalTopPercent, bestSellers);
-      
-      // Extract patterns for each category
-      const categoryPatterns: Record<string, any> = {};
-      for (const [category, exemplars] of Object.entries(exemplarsByCategory)) {
-        if (exemplars.length > 0) {
-          categoryPatterns[category] = extractCategoryPatterns(exemplars, this.config);
-          this.logger.info(`Extracted patterns for category: ${category}`, {
-            exemplarCount: exemplars.length,
-            avgQualityScore: categoryPatterns[category].metadata.averageQualityScore.toFixed(2)
-          });
-        }
-      }
-      
-      // Create complete exemplars database
-      const exemplarsData = {
-        exemplars: exemplarsByCategory,
-        patterns: categoryPatterns,
-        metadata: {
-          corpusSize: corpus.length,
-          bestSellersProvided: bestSellers.length,
-          topN: finalTopN,
-          topPercent: finalTopPercent,
-          selectionCriteria: finalTopPercent !== null ? `top ${finalTopPercent}%` : `top ${finalTopN}`,
-          createdAt: new Date().toISOString(),
-          stats: getExemplarStats(exemplarsByCategory)
-        }
-      };
-      
-      // Save exemplars (save the complete exemplarsData object, not just exemplarsByCategory)
-      await this.writeJSON(outputPath, exemplarsData);
-      
-      this.logger.success('Exemplars built successfully', {
-        categories: Object.keys(exemplarsByCategory).length,
-        totalExemplars: exemplarsData.metadata.stats.totalExemplars,
-        bestSellersIncluded: exemplarsData.metadata.stats.totalBestSellers || 0,
-        selectionCriteria: exemplarsData.metadata.selectionCriteria,
-        outputPath
-      });
-      
-      return {
-        categories: Object.keys(exemplarsByCategory).length,
-        totalExemplars: exemplarsData.metadata.stats.totalExemplars,
-        bestSellersIncluded: exemplarsData.metadata.stats.totalBestSellers || 0,
-        selectionCriteria: exemplarsData.metadata.selectionCriteria
-      };
-    });
-  }
-
-  /**
-   * Build dynamic grading rules from exemplars
-   */
-  async buildGradingRules(exemplarsPath: string, outputPath: string): Promise<GradingRulesBuildStats> {
-    return this.logger.time('buildGradingRules', async () => {
-      this.logger.info('Building dynamic grading rules', { exemplarsPath, outputPath });
-      
-      // Load exemplars data
-      const exemplarsData = await FileValidator.validateJSONFile(exemplarsPath);
-      
-      // Generate dynamic rules from exemplars
-      const fallbackConfig = {
-        weights: this.config.weights,
-        thresholds: this.config.thresholds
-      };
-      
-      const gradingRules = extractGradingRules(exemplarsData, fallbackConfig);
-      
-      // Save grading rules
-      await this.writeJSON(outputPath, gradingRules);
-      
-      this.logger.success('Dynamic grading rules built successfully', {
-        categories: Object.keys(gradingRules.rules).length,
-        highConfidence: gradingRules.metadata.confidenceDistribution.high,
-        mediumConfidence: gradingRules.metadata.confidenceDistribution.medium,
-        lowConfidence: gradingRules.metadata.confidenceDistribution.low,
-        outputPath
-      });
-      
-      return {
-        categories: Object.keys(gradingRules.rules).length,
-        confidenceDistribution: gradingRules.metadata.confidenceDistribution,
-        totalExemplars: gradingRules.metadata.totalExemplars,
-        bestSellersCount: gradingRules.metadata.bestSellersCount
-      };
-    });
-  }
-
-  /**
-   * Build exemplar-based vocabulary
-   */
-  async buildExemplarVocabulary(exemplarsPath: string, outputPath: string): Promise<VocabularyBuildStats> {
-    return this.logger.time('buildExemplarVocabulary', async () => {
-      this.logger.info('Building exemplar vocabulary', { exemplarsPath, outputPath });
-      
-      // Load exemplars data
-      const exemplarsData = await FileValidator.validateJSONFile(exemplarsPath);
-      
-      // Build exemplar vocabulary
-      const vocabulary = await this.vocabularyBuilder.buildExemplarVocabulary(exemplarsData);
-      
-      // Save vocabulary
-      await this.writeJSON(outputPath, vocabulary);
-      
-      this.logger.success('Exemplar vocabulary built successfully', {
-        categories: Object.keys(vocabulary).length,
-        outputPath
-      });
-      
-      return {
-        categories: Object.keys(vocabulary).length,
-        totalCategories: Object.keys(vocabulary).length,
-        source: 'exemplars'
-      };
-    });
-  }
-
-  /**
-   * Generate category playbooks from exemplars
-   */
-  async generatePlaybooks(exemplarsPath: string, outputPath: string): Promise<PlaybookStats> {
-    return this.logger.time('generatePlaybooks', async () => {
-      this.logger.info('Generating category playbooks', { exemplarsPath, outputPath });
-      
-      // Load exemplars data
-      const exemplarsData = await FileValidator.validateJSONFile(exemplarsPath);
-      
-      // Generate playbooks for each category
-      const playbooks: Record<string, any> = {};
-      for (const [category, exemplars] of Object.entries(exemplarsData.exemplars)) {
-        if (Array.isArray(exemplars) && exemplars.length > 0 && exemplarsData.patterns[category]) {
-          playbooks[category] = generateCategoryPlaybook(
-            category,
-            exemplarsData.patterns[category],
-            exemplars as any[]
-          );
-          this.logger.info(`Generated playbook for ${category}`, {
-            exemplarCount: exemplars.length
-          });
-        }
-      }
-      
-      const playbookData = {
-        playbooks,
-        metadata: {
-          totalCategories: Object.keys(playbooks).length,
-          sourceExemplars: exemplarsData.metadata.stats.totalExemplars
-        }
-      };
-      
-      // Save playbooks
-      await this.writeJSON(outputPath, playbookData);
-      
-      this.logger.success('Playbooks generated successfully', {
-        categories: Object.keys(playbooks).length,
-        outputPath
-      });
-      
-      return {
-        categories: Object.keys(playbooks).length,
-        totalCategories: Object.keys(playbooks).length
-      };
-    });
-  }
-
-  /**
-   * Multi-pass build: Iteratively build exemplars and grading rules until convergence
-   * This creates a feedback loop where better grading rules lead to better exemplar selection,
-   * which in turn creates even better grading rules, until the system stabilizes.
-   */
-  async buildAllMultiPass(
-    corpus: Asset[],
-    outputDir: string,
-    topN: number | null = null,
-    topPercent: number | null = null,
-    bestSellers: BestSellerAsset[] = [],
-    maxPasses: number = 5,
-    convergenceThreshold: number = 0.95
-  ): Promise<MultiPassBuildStats> {
-    return this.logger.time('buildAllMultiPass', async () => {
-      // Ensure output directory ends with slash
-      const outDir = outputDir.endsWith('/') || outputDir.endsWith('\\') ? outputDir : outputDir + '/';
-      
-      // Define output paths
-      const exemplarsPath = outDir + 'exemplars.json';
-      const gradingRulesPath = outDir + 'grading-rules.json';
-      const vocabPath = outDir + 'exemplar_vocab.json';
-      const playbooksPath = outDir + 'playbooks.json';
-      
-      this.logger.info('Starting multi-pass build', {
-        corpusSize: corpus.length,
-        outputDir: outDir,
-        topN,
-        topPercent,
-        bestSellers: bestSellers.length,
-        maxPasses,
-        convergenceThreshold
-      });
-      
-      let passResults: MultiPassBuildStats['passResults'] = [];
-      let previousExemplarIds: Set<string> = new Set();
-      let converged = false;
-      let convergenceMetric = 0;
-      
-      for (let pass = 1; pass <= maxPasses; pass++) {
-        this.logger.info(`Starting pass ${pass}/${maxPasses}`);
-        
-        // For pass 1, use default grading configuration
-        // For subsequent passes, use the grading rules from the previous pass
-        let weights = this.config.weights;
-        let thresholds = this.config.thresholds;
-        
-        if (pass > 1) {
-          try {
-            const gradingRulesData = await this.readJSON(gradingRulesPath) as any;
-            
-            // For now, just log that we would use dynamic rules
-            // The actual dynamic rule application would need more complex logic
-            this.logger.info(`Pass ${pass}: Would use dynamic rules from previous pass`, {
-              categoriesWithRules: Object.keys(gradingRulesData.rules || {}).length
-            });
-          } catch (error) {
-            this.logger.warn(`Pass ${pass}: Could not load previous grading rules, using defaults`, {
-              error: (error as Error).message
-            });
-          }
-        }
-        
-        // Step 1: Build exemplars with current grading configuration
-        const exemplarStats = await identifyExemplars(
-          corpus, 
-          topN, 
-          topPercent, 
-          bestSellers,
-          undefined, // vocab - let it use default
-          weights,
-          thresholds
-        );
-        
-        // Extract patterns and save exemplars
-        const categoryPatterns: Record<string, any> = {};
-        for (const [category, exemplars] of Object.entries(exemplarStats)) {
-          if (exemplars.length > 0) {
-            categoryPatterns[category] = extractCategoryPatterns(exemplars, this.config);
-          }
-        }
-        
-        const exemplarsData = {
-          exemplars: exemplarStats,
-          patterns: categoryPatterns,
-          metadata: {
-            corpusSize: corpus.length,
-            bestSellersProvided: bestSellers.length,
-            topN,
-            topPercent,
-            selectionCriteria: topPercent !== null ? `top ${topPercent}%` : `top ${topN}`,
-            createdAt: new Date().toISOString(),
-            pass: pass,
-            stats: getExemplarStats(exemplarStats)
-          }
-        };
-        
-        await this.writeJSON(exemplarsPath, exemplarsData);
-        
-        const exemplarBuildStats = {
-          categories: Object.keys(exemplarStats).length,
-          totalExemplars: exemplarsData.metadata.stats.totalExemplars,
-          bestSellersIncluded: exemplarsData.metadata.stats.totalBestSellers || 0,
-          selectionCriteria: exemplarsData.metadata.selectionCriteria
-        };
-        
-        // Step 2: Build grading rules from exemplars
-        const gradingRulesStats = await this.buildGradingRules(exemplarsPath, gradingRulesPath);
-        
-        // Calculate convergence metric
-        const currentExemplarIds = new Set<string>();
-        for (const exemplars of Object.values(exemplarStats)) {
-          for (const exemplar of exemplars) {
-            currentExemplarIds.add(exemplar.id || exemplar.url || '');
-          }
-        }
-        
-        let exemplarChanges: MultiPassBuildStats['passResults'][0]['exemplarChanges'] | undefined;
-        
-        if (pass > 1) {
-          const intersection = new Set([...previousExemplarIds].filter(x => currentExemplarIds.has(x)));
-          const union = new Set([...previousExemplarIds, ...currentExemplarIds]);
-          convergenceMetric = intersection.size / union.size;
-          
-          exemplarChanges = {
-            added: [...currentExemplarIds].filter(x => !previousExemplarIds.has(x)),
-            removed: [...previousExemplarIds].filter(x => !currentExemplarIds.has(x)),
-            unchanged: [...intersection]
-          };
-          
-          this.logger.info(`Pass ${pass}: Convergence analysis`, {
-            convergenceMetric: convergenceMetric.toFixed(3),
-            threshold: convergenceThreshold,
-            exemplarsAdded: exemplarChanges.added.length,
-            exemplarsRemoved: exemplarChanges.removed.length,
-            exemplarsUnchanged: exemplarChanges.unchanged.length
-          });
-          
-          if (convergenceMetric >= convergenceThreshold) {
-            converged = true;
-            this.logger.success(`Pass ${pass}: Converged! (${convergenceMetric.toFixed(3)} >= ${convergenceThreshold})`);
-          }
-        }
-        
-        passResults.push({
-          pass,
-          exemplarStats: exemplarBuildStats,
-          gradingRulesStats,
-          exemplarChanges
-        });
-        
-        previousExemplarIds = currentExemplarIds;
-        
-        if (converged) {
-          break;
-        }
-      }
-      
-      // Build final vocabulary and playbooks
-      this.logger.info('Building final vocabulary and playbooks');
-      const vocabStats = await this.buildExemplarVocabulary(exemplarsPath, vocabPath);
-      const playbookStats = await this.generatePlaybooks(exemplarsPath, playbooksPath);
-      
-      const result: MultiPassBuildStats = {
-        passes: passResults.length,
-        converged,
-        convergenceMetric,
-        convergenceThreshold,
-        passResults,
-        finalFiles: {
-          exemplars: exemplarsPath,
-          gradingRules: gradingRulesPath,
-          vocabulary: vocabPath,
-          playbooks: playbooksPath
-        }
-      };
-      
-      this.logger.success('Multi-pass build completed', {
-        passes: result.passes,
-        converged: result.converged,
-        finalConvergence: result.convergenceMetric.toFixed(3),
-        totalExemplars: passResults[passResults.length - 1]?.exemplarStats.totalExemplars || 0
-      });
-      
-      return result;
-    });
-  }
 
   /**
    * Grade an asset using static or dynamic rules
@@ -808,15 +292,18 @@ export class UnityAssetOptimizer {
    */
   async optimizeAsset(options: OptimizeOptions): Promise<OptimizationResult> {
     return this.logger.time('optimizeAsset', async () => {
-      const { input, url, vocabPath, exemplarsPath, neighborsPath, useAI = false } = options;
+      const { input, url, assetData, vocabPath, exemplarsPath, neighborsPath, useAI = false, generateFields, generateAll = false } = options;
       
       this.logger.info('Starting comprehensive optimization', {
         hasInput: !!input,
         hasUrl: !!url,
+        hasAssetData: !!assetData,
         hasVocab: !!vocabPath,
         hasExemplars: !!exemplarsPath,
         hasNeighbors: !!neighborsPath,
-        useAI
+        useAI,
+        generateFields,
+        generateAll
       });
 
       // Get asset data
@@ -828,8 +315,11 @@ export class UnityAssetOptimizer {
       } else if (input) {
         asset = await FileValidator.validateJSONFile(input) as Asset;
         this.logger.info('Asset loaded from file', { title: asset.title });
+      } else if (assetData) {
+        asset = assetData;
+        this.logger.info('Asset loaded from direct data', { title: asset.title });
       } else {
-        throw new Error('Either input file or URL must be provided');
+        throw new Error('Either input file, URL, or asset data must be provided');
       }
 
       // Load vocabulary
@@ -980,6 +470,80 @@ export class UnityAssetOptimizer {
         }
       }
 
+      // Handle focused field generation if requested
+      let optimizedAsset: Partial<Asset> = {};
+      let generatedContent: Record<string, any> = {};
+      let generatedFields: string[] = [];
+
+      if (generateFields?.length || generateAll) {
+        const fieldsToGenerate = generateAll ? ['title', 'tags', 'short_description', 'long_description'] : (generateFields || []);
+        generatedFields = fieldsToGenerate;
+        
+        this.logger.info('Generating focused fields', { fields: fieldsToGenerate });
+
+        for (const field of fieldsToGenerate) {
+          try {
+            // Prefer AI-generated content if available and requested
+            if (useAI && this.config.hasAI() && aiSuggestions) {
+              if (field === 'title' && aiSuggestions.title?.suggested_titles?.length > 0) {
+                optimizedAsset.title = aiSuggestions.title.suggested_titles[0].text;
+                generatedContent[field] = aiSuggestions.title.suggested_titles[0].text;
+              } else if (field === 'tags' && aiSuggestions.tags?.suggested_tags?.length > 0) {
+                optimizedAsset.tags = aiSuggestions.tags.suggested_tags.map((t: any) => t.tag);
+                generatedContent[field] = optimizedAsset.tags;
+              } else if (field === 'short_description' && aiSuggestions.short_description?.suggested_short_description) {
+                optimizedAsset.short_description = aiSuggestions.short_description.suggested_short_description;
+                generatedContent[field] = optimizedAsset.short_description;
+              } else if (field === 'long_description' && aiSuggestions.long_description?.suggested_long_description) {
+                optimizedAsset.long_description = aiSuggestions.long_description.suggested_long_description;
+                generatedContent[field] = optimizedAsset.long_description;
+              }
+            }
+            
+            // Fall back to exemplar-based generation if AI didn't provide content or isn't available
+            if (!optimizedAsset[field as keyof Asset] && exemplarsPath) {
+              try {
+                const exemplarsData = await FileValidator.validateJSONFile(exemplarsPath);
+                const exemplarSuggestion = generateExemplarFieldSuggestion(field, asset, exemplarsData, 5);
+                
+                if (exemplarSuggestion) {
+                  optimizedAsset[field as keyof Asset] = exemplarSuggestion as any;
+                  generatedContent[field] = exemplarSuggestion;
+                  this.logger.info(`Generated ${field} using exemplar patterns`);
+                }
+              } catch (error) {
+                this.logger.warn(`Failed to generate ${field} using exemplars`, { error: (error as Error).message });
+              }
+            }
+            
+            // Final fallback to heuristic suggestions
+            if (!optimizedAsset[field as keyof Asset]) {
+              if (field === 'title' && suggestions.suggested_title) {
+                optimizedAsset.title = suggestions.suggested_title;
+                generatedContent[field] = suggestions.suggested_title;
+              } else if (field === 'tags' && suggestions.suggested_tags?.length > 0) {
+                optimizedAsset.tags = suggestions.suggested_tags;
+                generatedContent[field] = suggestions.suggested_tags;
+              } else if (field === 'short_description' && suggestions.suggested_description) {
+                optimizedAsset.short_description = suggestions.suggested_description;
+                generatedContent[field] = suggestions.suggested_description;
+              } else if (field === 'long_description' && suggestions.suggested_description) {
+                // Use description as fallback for long description
+                optimizedAsset.long_description = suggestions.suggested_description;
+                generatedContent[field] = suggestions.suggested_description;
+              }
+            }
+          } catch (error) {
+            this.logger.warn(`Failed to generate field ${field}`, { error: (error as Error).message });
+          }
+        }
+        
+        this.logger.success('Focused field generation completed', {
+          generatedFields: Object.keys(generatedContent),
+          requestedFields: fieldsToGenerate
+        });
+      }
+
       const result: OptimizationResult = {
         grade,
         // Legacy suggestions format (for backward compatibility)
@@ -994,6 +558,10 @@ export class UnityAssetOptimizer {
         exemplar_coaching: exemplarRecommendations || null,
         ai_suggestions: aiSuggestions || null,
         
+        // Add optimized content for focused field generation
+        optimizedAsset: Object.keys(optimizedAsset).length > 0 ? optimizedAsset : undefined,
+        generated: Object.keys(generatedContent).length > 0 ? generatedContent : undefined,
+        
         analysis_metadata: {
           coaching_method: exemplarsPath ? 'exemplar-based' : (neighborsPath ? 'similarity-based' : 'heuristic-only'),
           ai_used: useAI && this.config.hasAI() && aiSuggestions !== null,
@@ -1001,7 +569,8 @@ export class UnityAssetOptimizer {
           similar_assets_found: similarAssets.length,
           exemplar_neighbors: exemplarRecommendations?.neighbors?.length || 0,
           category_alignment: exemplarRecommendations?.categoryAlignment?.score || null,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
+          generated_fields: generatedFields.length > 0 ? generatedFields : undefined
         }
       };
 
@@ -1035,64 +604,177 @@ export class UnityAssetOptimizer {
   }
 
   /**
-   * Batch processing for multiple assets
+   * Private helper to load exemplars and grading rules for field suggestions
    */
-  async batchOptimize(
-    assets: Asset[], 
-    vocabulary: Vocabulary = {}, 
-    corpus: Asset[] = []
-  ): Promise<BatchOptimizationResult[]> {
-    return this.logger.time('batchOptimize', async () => {
-      this.logger.info('Starting batch optimization', {
-        assetCount: assets.length,
-        hasVocab: Object.keys(vocabulary).length > 0,
-        hasCorpus: corpus.length > 0
-      });
+  private async loadExemplarsAndRules(
+    asset: Asset,
+    exemplarsPath?: string | null,
+    gradingRulesPath?: string | null,
+    fieldType?: string
+  ): Promise<{ categoryExemplars: any[]; categoryVocab: any; gradingRules: any | null }> {
+    let categoryExemplars: any[] = [];
+    let categoryVocab: any = {};
+    let gradingRules: any = null;
 
-      const results: BatchOptimizationResult[] = [];
-      
-      for (let i = 0; i < assets.length; i++) {
-        const asset = assets[i]!;
-        
-        try {
-          this.logger.progress('Batch processing', i + 1, assets.length, {
-            currentAsset: asset.title
-          });
-
-          const grade = await this.grader.gradeAsset(asset as unknown as Asset, vocabulary);
-          const suggestions = this.generateHeuristicSuggestions(asset, vocabulary);
-          
-          results.push({
-            asset_id: asset.id || asset.url || `asset_${i}`,
-            title: asset.title,
-            grade,
-            suggestions,
-            processed_at: new Date().toISOString()
-          });
-
-        } catch (error) {
-          this.logger.error(`Failed to process asset ${i}`, error as Error, {
-            assetTitle: asset.title
-          });
-          
-          results.push({
-            asset_id: asset.id || asset.url || `asset_${i}`,
-            title: asset.title,
-            error: (error as Error).message,
-            processed_at: new Date().toISOString()
-          });
-        }
+    // Load exemplars
+    if (exemplarsPath) {
+      try {
+        const exemplarsData = await FileValidator.validateJSONFile(exemplarsPath);
+        categoryExemplars = exemplarsData?.exemplars?.[asset.category] || [];
+        categoryVocab = exemplarsData?.patterns?.[asset.category] || {};
+      } catch (error) {
+        this.logger.warn(`Failed to load exemplars for ${fieldType || 'field'} suggestion`, { error: (error as Error).message });
       }
+    }
 
-      const successful = results.filter(r => !r.error).length;
-      this.logger.success('Batch optimization completed', {
-        total: assets.length,
-        successful,
-        failed: assets.length - successful
-      });
+    // Load grading rules
+    if (gradingRulesPath) {
+      try {
+        gradingRules = await FileValidator.validateJSONFile(gradingRulesPath);
+      } catch (error) {
+        this.logger.warn(`Failed to load grading rules for ${fieldType || 'field'} suggestion`, { error: (error as Error).message });
+      }
+    }
 
-      return results;
-    });
+    return { categoryExemplars, categoryVocab, gradingRules };
+  }
+
+  /**
+   * Private helper for AI-first, heuristic-fallback suggestion pattern
+   */
+  private async generateFieldSuggestion<T>(
+    fieldType: string,
+    asset: Asset,
+    categoryExemplars: any[],
+    categoryVocab: any,
+    vocab: Vocabulary | undefined,
+    aiMethod: (params: { asset: Asset; exemplars: any[]; vocab: any }) => Promise<any>,
+    heuristicMethod: () => any,
+    extractResult: (aiResult: any, heuristicResult: any) => T,
+    defaultValue: T
+  ): Promise<T> {
+    // Try AI first
+    if (this.config.hasAI() && this.aiEngine && this.aiEngine.isAvailable()) {
+      try {
+        const aiRes = await aiMethod.call(this.aiEngine, { asset, exemplars: categoryExemplars, vocab: categoryVocab });
+        return extractResult(aiRes, null);
+      } catch (error) {
+        this.logger.warn(`AI ${fieldType} suggestion failed, falling back to heuristics`, { error: (error as Error).message });
+      }
+    }
+
+    // Fallback to heuristics
+    try {
+      const heuristicRes = heuristicMethod();
+      return extractResult(null, heuristicRes);
+    } catch (error) {
+      this.logger.warn(`Heuristic ${fieldType} suggestion failed`, { error: (error as Error).message });
+      return defaultValue;
+    }
+  }
+
+  /**
+   * Suggest titles for an asset using exemplars, grading rules, AI, and heuristics
+   */
+  async suggestTitleForAsset(
+    asset: Asset,
+    exemplarsPath?: string | null,
+    gradingRulesPath?: string | null,
+    vocab?: Vocabulary
+  ): Promise<any[]> {
+    this.logger.info('Suggesting titles for asset', { title: asset.title });
+
+    const { categoryExemplars, categoryVocab } = await this.loadExemplarsAndRules(asset, exemplarsPath, gradingRulesPath, 'title');
+
+    return this.generateFieldSuggestion(
+      'title',
+      asset,
+      categoryExemplars,
+      categoryVocab,
+      vocab,
+      this.aiEngine.suggestTitle,
+      () => this.heuristicEngine.suggestTitle(asset, vocab || categoryVocab),
+      (aiResult, heuristicResult) => aiResult ? (aiResult.suggested_titles || []) : heuristicResult.map((t: any) => ({ text: t.text, rationale: t.rationale })),
+      []
+    );
+  }
+
+  /**
+   * Suggest tags for an asset using exemplars, grading rules, AI, and heuristics
+   */
+  async suggestTagsForAsset(
+    asset: Asset,
+    exemplarsPath?: string | null,
+    gradingRulesPath?: string | null,
+    vocab?: Vocabulary
+  ): Promise<any[]> {
+    this.logger.info('Suggesting tags for asset', { title: asset.title });
+
+    const { categoryExemplars, categoryVocab } = await this.loadExemplarsAndRules(asset, exemplarsPath, gradingRulesPath, 'tag');
+
+    return this.generateFieldSuggestion(
+      'tag',
+      asset,
+      categoryExemplars,
+      categoryVocab,
+      vocab,
+      this.aiEngine.suggestTags,
+      () => this.heuristicEngine.suggestTags(asset, vocab || categoryVocab),
+      (aiResult, heuristicResult) => aiResult ? (aiResult.suggested_tags || []) : heuristicResult,
+      []
+    );
+  }
+
+  /**
+   * Suggest short description for an asset using exemplars, grading rules, AI, and heuristics
+   */
+  async suggestShortDescriptionForAsset(
+    asset: Asset,
+    exemplarsPath?: string | null,
+    gradingRulesPath?: string | null,
+    vocab?: Vocabulary
+  ): Promise<any> {
+    this.logger.info('Suggesting short description for asset', { title: asset.title });
+
+    const { categoryExemplars, categoryVocab } = await this.loadExemplarsAndRules(asset, exemplarsPath, gradingRulesPath, 'short description');
+
+    return this.generateFieldSuggestion(
+      'short description',
+      asset,
+      categoryExemplars,
+      categoryVocab,
+      vocab,
+      this.aiEngine.suggestShortDescription,
+      () => this.heuristicEngine.suggestDescription(asset, vocab || categoryVocab),
+      (aiResult, heuristicResult) => aiResult ? (aiResult.suggested_short_description || '') : heuristicResult.short,
+      ''
+    );
+  }
+
+  /**
+   * Suggest long description for an asset using exemplars, grading rules, AI, and heuristics
+   */
+  async suggestLongDescriptionForAsset(
+    asset: Asset,
+    exemplarsPath?: string | null,
+    gradingRulesPath?: string | null,
+    vocab?: Vocabulary
+  ): Promise<any> {
+    this.logger.info('Suggesting long description for asset', { title: asset.title });
+
+    const { categoryExemplars, categoryVocab } = await this.loadExemplarsAndRules(asset, exemplarsPath, gradingRulesPath, 'long description');
+
+    return this.generateFieldSuggestion(
+      'long description',
+      asset,
+      categoryExemplars,
+      categoryVocab,
+      vocab,
+      this.aiEngine.suggestLongDescription,
+      () => this.heuristicEngine.suggestDescription(asset, vocab || categoryVocab),
+      (aiResult, heuristicResult) => aiResult ? (aiResult.suggested_long_description || '') : heuristicResult.long_markdown,
+      ''
+    );
   }
 
   /**

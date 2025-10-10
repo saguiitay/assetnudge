@@ -39,6 +39,8 @@
 
 import fs from 'fs/promises';
 import { UnityAssetOptimizer } from './src/optimizer';
+import { SetupValidator } from './src/utils/validation';
+import { Builder } from './src/builder';
 import type { Asset, BestSellerAsset } from './src/types';
 
 // Simple logger interface for CLI output
@@ -216,9 +218,6 @@ Commands:
                  --apiKey <key>           OpenAI API key (or use OPENAI_API_KEY env)
                  --out <output.json>      Save results to file
                
-  batch        --assets <assets.json> [--vocab <vocab.json>] [--corpus <corpus.json>]
-               Process multiple assets in batch
-               
   status       Show system status and configuration
   
   help         Show this help message
@@ -295,7 +294,7 @@ async function cmdScrape(): Promise<void> {
   ensure(!!url, '--url is required (Unity Asset Store URL)');
   
   const optimizer = new UnityAssetOptimizer(args);
-  await optimizer.validateSetup();
+  await SetupValidator.validateSetup(optimizer.config, optimizer.aiEngine, optimizer.logger);
   
   const asset = await optimizer.scrapeAssetWithGraphQL(url!, outPath);
   
@@ -338,7 +337,9 @@ async function cmdBuildExemplars(): Promise<void> {
   }
   
   const optimizer = new UnityAssetOptimizer(args);
-  await optimizer.validateSetup();
+  await SetupValidator.validateSetup(optimizer.config, optimizer.aiEngine, optimizer.logger);
+  
+  const builder = new Builder(optimizer.config);
   
   // Load corpus files
   const corpus = await loadMultipleCorpusFiles(corpusPaths!);
@@ -356,7 +357,7 @@ async function cmdBuildExemplars(): Promise<void> {
     }
   }
   
-  const result = await optimizer.buildExemplarsFromCorpus(corpus, outPath!, finalTopN, finalTopPercent, bestSellers);
+  const result = await builder.buildExemplarsFromCorpus(corpus, outPath!, finalTopN, finalTopPercent, bestSellers);
   
   console.log(JSON.stringify({
     success: true,
@@ -381,9 +382,10 @@ async function cmdBuildGradingRules(): Promise<void> {
   ensure(!!outPath, '--out path is required');
   
   const optimizer = new UnityAssetOptimizer(args);
-  await optimizer.validateSetup();
+  await SetupValidator.validateSetup(optimizer.config, optimizer.aiEngine, optimizer.logger);
   
-  const result = await optimizer.buildGradingRules(exemplarsPath!, outPath!);
+  const builder = new Builder(optimizer.config);
+  const result = await builder.buildGradingRules(exemplarsPath!, outPath!);
   
   console.log(JSON.stringify({
     success: true,
@@ -403,9 +405,10 @@ async function cmdBuildExemplarVocab(): Promise<void> {
   ensure(!!outPath, '--out path is required');
   
   const optimizer = new UnityAssetOptimizer(args);
-  await optimizer.validateSetup();
+  await SetupValidator.validateSetup(optimizer.config, optimizer.aiEngine, optimizer.logger);
   
-  const result = await optimizer.buildExemplarVocabulary(exemplarsPath!, outPath!);
+  const builder = new Builder(optimizer.config);
+  const result = await builder.buildExemplarVocabulary(exemplarsPath!, outPath!);
   
   console.log(JSON.stringify({
     success: true,
@@ -425,9 +428,10 @@ async function cmdGeneratePlaybooks(): Promise<void> {
   ensure(!!outPath, '--out path is required');
   
   const optimizer = new UnityAssetOptimizer(args);
-  await optimizer.validateSetup();
+  await SetupValidator.validateSetup(optimizer.config, optimizer.aiEngine, optimizer.logger);
   
-  const result = await optimizer.generatePlaybooks(exemplarsPath!, outPath!);
+  const builder = new Builder(optimizer.config);
+  const result = await builder.generatePlaybooks(exemplarsPath!, outPath!);
   
   console.log(JSON.stringify({
     success: true,
@@ -471,7 +475,9 @@ async function cmdBuildAll(): Promise<void> {
   const gradingRulesPath = outputDir + 'grading-rules.json';
   
   const optimizer = new UnityAssetOptimizer(args);
-  await optimizer.validateSetup();
+  await SetupValidator.validateSetup(optimizer.config, optimizer.aiEngine, optimizer.logger);
+  
+  const builder = new Builder(optimizer.config);
   
   console.log('🚀 Building complete exemplar ecosystem...\n');
   
@@ -495,22 +501,22 @@ async function cmdBuildAll(): Promise<void> {
     
     // Step 1: Build exemplars
     console.log('\n📊 Step 1/4: Identifying exemplar assets...');
-    const exemplarStats = await optimizer.buildExemplarsFromCorpus(corpus, exemplarsPath, finalTopN, finalTopPercent, bestSellers);
+    const exemplarStats = await builder.buildExemplarsFromCorpus(corpus, exemplarsPath, finalTopN, finalTopPercent, bestSellers);
     console.log(`✅ Exemplars built: ${exemplarStats.totalExemplars} assets across ${exemplarStats.categories} categories\n`);
     
     // Step 2: Build exemplar vocabulary
     console.log('📚 Step 2/4: Building exemplar-based vocabulary...');
-    const vocabStats = await optimizer.buildExemplarVocabulary(exemplarsPath, vocabPath);
+    const vocabStats = await builder.buildExemplarVocabulary(exemplarsPath, vocabPath);
     console.log(`✅ Vocabulary built: ${vocabStats.categories} category vocabularies\n`);
     
     // Step 3: Generate playbooks
     console.log('📖 Step 3/4: Generating category playbooks...');
-    const playbookStats = await optimizer.generatePlaybooks(exemplarsPath, playbooksPath);
+    const playbookStats = await builder.generatePlaybooks(exemplarsPath, playbooksPath);
     console.log(`✅ Playbooks generated: ${playbookStats.categories} category guides\n`);
     
     // Step 4: Build grading rules
     console.log('⚖️ Step 4/4: Building dynamic grading rules...');
-    const gradingRulesStats = await optimizer.buildGradingRules(exemplarsPath, gradingRulesPath);
+    const gradingRulesStats = await builder.buildGradingRules(exemplarsPath, gradingRulesPath);
     console.log(`✅ Grading rules built: ${gradingRulesStats.categories} category-specific rule sets\n`);
     
     // Success summary
@@ -582,7 +588,9 @@ async function cmdBuildAllMultiPass(): Promise<void> {
   const outputDir = outDir!.endsWith('/') || outDir!.endsWith('\\') ? outDir! : outDir! + '/';
   
   const optimizer = new UnityAssetOptimizer(args);
-  await optimizer.validateSetup();
+  await SetupValidator.validateSetup(optimizer.config, optimizer.aiEngine, optimizer.logger);
+  
+  const builder = new Builder(optimizer.config);
   
   console.log('🔄 Starting iterative multi-pass build until convergence...\n');
   
@@ -605,11 +613,11 @@ async function cmdBuildAllMultiPass(): Promise<void> {
     }
     
     // Execute multi-pass build
-    const result = await optimizer.buildAllMultiPass(
-      corpus, 
-      outputDir, 
-      finalTopN, 
-      finalTopPercent, 
+    const result = await builder.buildAllMultiPass(
+      corpus,
+      outputDir!,
+      finalTopN,
+      finalTopPercent,
       bestSellers,
       maxPasses,
       convergenceThreshold
@@ -689,7 +697,7 @@ async function cmdGrade(): Promise<void> {
   ensure(!!inputPath, '--input path is required');
   
   const optimizer = new UnityAssetOptimizer(args);
-  await optimizer.validateSetup();
+  await SetupValidator.validateSetup(optimizer.config, optimizer.aiEngine, optimizer.logger);
   
   const result = await optimizer.gradeAsset(inputPath!, vocabPath, rulesPath);
   
@@ -712,7 +720,7 @@ async function cmdOptimize(): Promise<void> {
   ensure(!(input && url), 'Cannot specify both --input and --url');
   
   const optimizer = new UnityAssetOptimizer(args);
-  await optimizer.validateSetup();
+  await SetupValidator.validateSetup(optimizer.config, optimizer.aiEngine, optimizer.logger);
   
   const result = await optimizer.optimizeAsset({
     input,
@@ -730,49 +738,6 @@ async function cmdOptimize(): Promise<void> {
   }
   
   console.log(JSON.stringify(result, null, 2));
-}
-
-/**
- * BATCH COMMAND: Process multiple assets
- */
-async function cmdBatch(): Promise<void> {
-  const assetsPath = getFlag('assets');
-  const vocabPath = getFlag('vocab');
-  const corpusPath = getFlag('corpus');
-  const outPath = getFlag('out', 'batch_results.json');
-  
-  ensure(!!assetsPath, '--assets path is required');
-  
-  const optimizer = new UnityAssetOptimizer(args);
-  await optimizer.validateSetup();
-  
-  // Load data
-  const assets = await optimizer.readJSON(assetsPath!) as Asset[];
-  const vocabulary = vocabPath ? await optimizer.readJSON(vocabPath) : {};
-  const corpus = corpusPath ? await optimizer.readJSON(corpusPath) as Asset[] : [];
-  
-  const results = await optimizer.batchOptimize(assets, vocabulary, corpus);
-  
-  // Save results
-  await optimizer.writeJSON(outPath!, {
-    batch_results: results,
-    summary: {
-      total_assets: assets.length,
-      successful: results.filter(r => !r.error).length,
-      failed: results.filter(r => r.error).length,
-      processed_at: new Date().toISOString()
-    }
-  });
-  
-  console.log(JSON.stringify({
-    success: true,
-    summary: {
-      total_assets: assets.length,
-      successful: results.filter(r => !r.error).length,
-      failed: results.filter(r => r.error).length,
-      output_file: outPath
-    }
-  }, null, 2));
 }
 
 /**
@@ -818,9 +783,6 @@ async function main(): Promise<void> {
         break;
       case 'optimize':
         await cmdOptimize();
-        break;
-      case 'batch':
-        await cmdBatch();
         break;
       case 'status':
         await cmdStatus();

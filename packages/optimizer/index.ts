@@ -5,9 +5,10 @@
 
 import path from 'path';
 import UnityAssetOptimizer from './src/optimizer';
+import { SetupValidator } from './src/utils/validation';
 import Config from './src/config';
 import { scrapeAssetWithGraphQL } from './src/scrappers/graphql-scraper';
-import { FileValidator, ConfigValidator } from './src/utils/validation';
+import { FileValidator } from './src/utils/validation';
 import { Asset, GradeResult, Vocabulary as TypesVocabulary } from './src/types';
 import { DynamicAssetGrader } from './src/dynamic-asset-grader';
 import { findDataDirectory } from './src/utils/utils';
@@ -39,7 +40,7 @@ export async function scrapeAsset(url: string, config: { debug?: boolean; apiKey
   }
   
   const optimizer = new UnityAssetOptimizer(args);
-  await optimizer.validateSetup();
+  await SetupValidator.validateSetup(optimizer.config, optimizer.aiEngine, optimizer.logger);
   
   try {
     const asset = await optimizer.scrapeAssetWithGraphQL(url);
@@ -65,7 +66,7 @@ export async function scrapeAssetWithGraphQLAPI(url: string, config: { debug?: b
   }
   
   const optimizer = new UnityAssetOptimizer(args);
-  await optimizer.validateSetup();
+  await SetupValidator.validateSetup(optimizer.config, optimizer.aiEngine, optimizer.logger);
   
   try {
     const asset = await optimizer.scrapeAssetWithGraphQL(url);
@@ -102,7 +103,7 @@ export async function gradeAsset(assetData: Asset, vocabPath: string | null = nu
   args.push('--rules', defaultRulesPath);
   
   const optimizer = new UnityAssetOptimizer(args);
-  await optimizer.validateSetup();
+  await SetupValidator.validateSetup(optimizer.config, optimizer.aiEngine, optimizer.logger);
   
   // Load vocabulary
   let vocabulary: TypesVocabulary = {};
@@ -162,7 +163,7 @@ export async function optimizeAsset(options: any, config: { debug?: boolean } | 
   }
   
   const optimizer = new UnityAssetOptimizer(args);
-  await optimizer.validateSetup();
+  await SetupValidator.validateSetup(optimizer.config, optimizer.aiEngine, optimizer.logger);
   
   return optimizer.optimizeAsset(options);
 }
@@ -304,12 +305,11 @@ function generateAllPrompts(
   exemplars: any[] = [], 
   vocab: any = {}
 ): Record<string, string> {
-  const validCategories = ConfigValidator.getValidCategories();
   return {
-    title: `${buildTitleSystemPrompt()}\n\n---\n\n${buildTitleUserPrompt(asset, exemplars, vocab, validCategories)}`,
-    tags: `${buildTagsSystemPrompt()}\n\n---\n\n${buildTagsUserPrompt(asset, exemplars, vocab, validCategories)}`,
-    short_description: `${buildShortDescSystemPrompt()}\n\n---\n\n${buildShortDescUserPrompt(asset, exemplars, vocab, validCategories)}`,
-    long_description: `${buildLongDescSystemPrompt()}\n\n---\n\n${buildLongDescUserPrompt(asset, exemplars, vocab, validCategories)}`
+    title: `${buildTitleSystemPrompt()}\n\n---\n\n${buildTitleUserPrompt(asset, exemplars, vocab)}`,
+    tags: `${buildTagsSystemPrompt()}\n\n---\n\n${buildTagsUserPrompt(asset, exemplars, vocab)}`,
+    short_description: `${buildShortDescSystemPrompt()}\n\n---\n\n${buildShortDescUserPrompt(asset, exemplars, vocab)}`,
+    long_description: `${buildLongDescSystemPrompt()}\n\n---\n\n${buildLongDescUserPrompt(asset, exemplars, vocab)}`
   };
 }
 
