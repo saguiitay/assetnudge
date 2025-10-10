@@ -2,17 +2,20 @@
 
 import { useState, useEffect } from 'react';
 import { z } from 'zod';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@workspace/ui/components/form';
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSeparator,
+  FieldSet,
+  FieldTitle,
+} from '@workspace/ui/components/field';
 import { Input } from '@workspace/ui/components/input';
 import { Textarea } from '@workspace/ui/components/textarea';
 import { Button } from '@workspace/ui/components/button';
@@ -679,60 +682,73 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
           </div>
         </CardHeader>
       <CardContent>
-        <Form {...form}>
+        <FieldSet>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormField
+            <FieldGroup>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Controller
                 control={form.control}
                 name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="flex items-center gap-2">
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={!!fieldState.error}>
+                    <FieldLabel htmlFor="title" className="flex items-center gap-2">
                       Title
                       <PromptHoverCard
                         fieldType="title"
                         fieldName="Title"
                         getCurrentAssetData={getCurrentAssetData}
                       />
-                    </FormLabel>
-                    <FormControl>
-                      <div className="flex gap-2">
-                        <Input placeholder="Enter asset title" {...field} className="flex-1" />
-                        <GenerateButton
-                          fieldKey="title"
-                          size='icon'
-                          isGenerating={isGenerating.title || false}
-                          isDisabled={Object.values(isGenerating).some(Boolean)}
-                          onGenerate={generateField}
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+                    </FieldLabel>
+                    <div className="flex gap-2">
+                      <Input 
+                        id="title" 
+                        placeholder="Enter asset title" 
+                        {...field} 
+                        className="flex-1" 
+                        aria-invalid={!!fieldState.error}
+                      />
+                      <GenerateButton
+                        fieldKey="title"
+                        size='icon'
+                        isGenerating={isGenerating.title || false}
+                        isDisabled={Object.values(isGenerating).some(Boolean)}
+                        onGenerate={generateField}
+                      />
+                    </div>
+                    {fieldState.error && (
+                      <FieldError>{fieldState.error.message}</FieldError>
+                    )}
+                  </Field>
                 )}
               />
 
-              <FormField
+              <Controller
                 control={form.control}
                 name="category"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Category</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter category" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={!!fieldState.error}>
+                    <FieldLabel htmlFor="category">Category</FieldLabel>
+                    <Input 
+                      id="category" 
+                      placeholder="Enter category" 
+                      {...field} 
+                      aria-invalid={!!fieldState.error}
+                    />
+                    {fieldState.error && (
+                      <FieldError>{fieldState.error.message}</FieldError>
+                    )}
+                  </Field>
                 )}
               />
             </div>
+            </FieldGroup>
 
-            <FormField
+            <Controller
               control={form.control}
               name="short_description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="flex items-center justify-between">
+              render={({ field, fieldState }) => (
+                <Field data-invalid={!!fieldState.error}>
+                  <FieldLabel htmlFor="short_description" className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       Short Description
                       <PromptHoverCard
@@ -747,28 +763,30 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
                       isDisabled={Object.values(isGenerating).some(Boolean) || !form.watch('title')}
                       onGenerate={generateField}
                     />
-                  </FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Enter a brief description"
-                      className="resize-none"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
+                  </FieldLabel>
+                  <Textarea
+                    id="short_description"
+                    placeholder="Enter a brief description"
+                    className="resize-none"
+                    {...field}
+                    aria-invalid={!!fieldState.error}
+                  />
+                  <FieldDescription>
                     A brief summary of the asset (max 200 characters)
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
+                  </FieldDescription>
+                  {fieldState.error && (
+                    <FieldError>{fieldState.error.message}</FieldError>
+                  )}
+                </Field>
               )}
             />
 
-            <FormField
+            <Controller
               control={form.control}
               name="long_description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="flex items-center justify-between">
+              render={({ field, fieldState }) => (
+                <Field data-invalid={!!fieldState.error}>
+                  <FieldLabel htmlFor="long_description" className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       Long Description
                       <PromptHoverCard
@@ -783,53 +801,53 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
                       isDisabled={Object.values(isGenerating).some(Boolean) || !form.watch('title')}
                       onGenerate={generateField}
                     />
-                  </FormLabel>
-                  <FormControl>
-                    <div className="space-y-2">
-                      <EditorProvider
-                        key={typeof field.value === 'string' && field.value ? `editor-${field.value.slice(0, 50)}` : `editor-${JSON.stringify(field.value)?.slice(0, 50) || 'empty'}`}
-                        className="border rounded-md"
-                        content={
-                          // Handle both HTML strings and JSON content
-                          typeof field.value === 'string' && field.value
-                            ? field.value  // Pass HTML string directly
-                            : field.value as JSONContent  // Pass JSON content for Tiptap
-                        }
-                        onUpdate={(props) => {
-                          // Get HTML content for backward compatibility
-                          const html = props.editor.getHTML();
-                          const isEmpty = html === '<p></p>' || html === '';
-                          field.onChange(isEmpty ? '' : html);
-                        }}
-                        placeholder="Enter detailed description with rich text formatting"
-                        editorProps={{
-                          attributes: {
-                            class: 'prose prose-sm max-w-none min-h-[120px] p-3 focus:outline-none [&_a]:text-blue-600 [&_a]:dark:text-blue-400 [&_a]:underline [&_a:hover]:text-blue-800 [&_a:hover]:dark:text-blue-300 [&_a]:cursor-pointer [&_a]:transition-colors',
-                          },
-                        }}
-                      >
-                        <EditorBubbleMenu>
-                          <EditorFormatBold hideName />
-                          <EditorFormatItalic hideName />
-                          <EditorLinkSelector />
-                          <EditorNodeBulletList hideName />
-                          <EditorNodeOrderedList hideName />
-                        </EditorBubbleMenu>
-                      </EditorProvider>
-                    </div>
-                  </FormControl>
-                  <FormDescription>
+                  </FieldLabel>
+                  <div className="space-y-2">
+                    <EditorProvider
+                      key={typeof field.value === 'string' && field.value ? `editor-${field.value.slice(0, 50)}` : `editor-${JSON.stringify(field.value)?.slice(0, 50) || 'empty'}`}
+                      className="border rounded-md"
+                      content={
+                        // Handle both HTML strings and JSON content
+                        typeof field.value === 'string' && field.value
+                          ? field.value  // Pass HTML string directly
+                          : field.value as JSONContent  // Pass JSON content for Tiptap
+                      }
+                      onUpdate={(props) => {
+                        // Get HTML content for backward compatibility
+                        const html = props.editor.getHTML();
+                        const isEmpty = html === '<p></p>' || html === '';
+                        field.onChange(isEmpty ? '' : html);
+                      }}
+                      placeholder="Enter detailed description with rich text formatting"
+                      editorProps={{
+                        attributes: {
+                          class: 'prose prose-sm max-w-none min-h-[120px] p-3 focus:outline-none [&_a]:text-blue-600 [&_a]:dark:text-blue-400 [&_a]:underline [&_a:hover]:text-blue-800 [&_a:hover]:dark:text-blue-300 [&_a]:cursor-pointer [&_a]:transition-colors',
+                        },
+                      }}
+                    >
+                      <EditorBubbleMenu>
+                        <EditorFormatBold hideName />
+                        <EditorFormatItalic hideName />
+                        <EditorLinkSelector />
+                        <EditorNodeBulletList hideName />
+                        <EditorNodeOrderedList hideName />
+                      </EditorBubbleMenu>
+                    </EditorProvider>
+                  </div>
+                  <FieldDescription>
                     A detailed description with rich text formatting (max 5000 characters)
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
+                  </FieldDescription>
+                  {fieldState.error && (
+                    <FieldError>{fieldState.error.message}</FieldError>
+                  )}
+                </Field>
               )}
             />
 
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
+            <Field>
+              <FieldLabel className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <FormLabel>Tags</FormLabel>
+                  Tags
                   <PromptHoverCard
                     fieldType="tags"
                     fieldName="Tags"
@@ -842,7 +860,7 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
                   isDisabled={Object.values(isGenerating).some(Boolean) || !form.watch('title')}
                   onGenerate={generateField}
                 />
-              </div>
+              </FieldLabel>
               <div className="flex gap-2">
                 <Input
                   placeholder="Add a tag"
@@ -879,11 +897,13 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
                 ))}
               </div>
               {form.formState.errors.tags && (
-                <p className="text-sm font-medium text-destructive">
+                <FieldError>
                   {form.formState.errors.tags.message}
-                </p>
+                </FieldError>
               )}
-            </div>
+            </Field>
+
+            <FieldSeparator />
 
             {/* AI Generation Section */}
             <div className="space-y-4 border-t pt-4">
@@ -926,8 +946,8 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
             </div>
 
             {/* Asset Statistics */}
-            <div className="space-y-4">
-              <FormLabel>Asset Statistics</FormLabel>
+            <Field>
+              <FieldLabel>Asset Statistics</FieldLabel>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                 <div>
                   <span className="text-muted-foreground">Rating:</span>
@@ -960,7 +980,7 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
                   <div className="font-medium">{form.watch('size')?.toFixed(2) || '0.00'} MB</div>
                 </div>
               </div>
-            </div>
+            </Field>
             
             {/* Asset Media Gallery */}
             <AssetMediaGallery 
@@ -985,7 +1005,7 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
               </Button>
             </div>
           </form>
-        </Form>
+        </FieldSet>
       </CardContent>
     </Card>
     </div>

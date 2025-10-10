@@ -1,6 +1,6 @@
 'use client';
 
-import { FormLabel } from '@workspace/ui/components/form';
+import { FieldLabel } from '@workspace/ui/components/field';
 import { MainImageDisplay } from './main-image-display';
 import { ScreenshotsGallery } from './screenshots-gallery';
 import { VideosGallery } from './videos-gallery';
@@ -25,7 +25,7 @@ export function AssetMediaGallery({ data, showIfEmpty = false }: AssetMediaGalle
 
   return (
     <div className="space-y-4">
-      <FormLabel>Asset Media</FormLabel>
+      <FieldLabel>Asset Media</FieldLabel>
       
       {hasMainImage && (
         <MainImageDisplay 
