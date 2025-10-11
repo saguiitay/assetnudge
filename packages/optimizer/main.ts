@@ -188,9 +188,10 @@ Commands:
   generate-playbooks --exemplars <exemplars.json> --out <playbooks.json>
                Generate category playbooks from exemplar patterns
                
-  categoriesWeb --corpus <corpus.json> --exemplars <exemplars.json> --vocabulary <vocab.json> --out <categories-web.json>
+  categories-web --corpus <corpus1.json,corpus2.json,...|folder1,folder2,...> --exemplars <exemplars.json> --vocabulary <vocab.json> --out <categories-web.json>
                Generate category data optimized for web display
-               Requires full corpus, exemplars, and vocabulary data
+               Supports multiple corpus files/folders separated by commas
+               For folders: automatically loads all JSON files within
                
   build-all    --corpus <corpus1.json,corpus2.json,...|folder1,folder2,...> [--out-dir <directory>] [--top-n 20] [--top-percent 10] [--best-sellers <best_sellers.json>]
                🚀 ONE-STOP COMMAND: Build exemplars, vocab, playbooks, and grading rules from corpus
@@ -448,12 +449,12 @@ async function cmdGeneratePlaybooks(): Promise<void> {
  * CATEGORIES-WEB COMMAND: Generate category data optimized for web display
  */
 async function cmdCategoriesWeb(): Promise<void> {
-  const corpusPath = getFlag('corpus');
+  const corpusPaths = getFlag('corpus');
   const exemplarsPath = getFlag('exemplars');
   const vocabularyPath = getFlag('vocabulary');
   const outPath = getFlag('out', 'categories-web.json');
   
-  ensure(!!corpusPath, '--corpus path is required');
+  ensure(!!corpusPaths, '--corpus path(s) required (comma-separated for multiple files/folders)');
   ensure(!!exemplarsPath, '--exemplars path is required');
   ensure(!!vocabularyPath, '--vocabulary path is required');
   ensure(!!outPath, '--out path is required');
@@ -462,11 +463,16 @@ async function cmdCategoriesWeb(): Promise<void> {
   await SetupValidator.validateSetup(optimizer.config, optimizer.aiEngine, optimizer.logger);
   
   const builder = new Builder(optimizer.config);
-  const result = await builder.generateCategoriesWeb(corpusPath!, exemplarsPath!, vocabularyPath!, outPath!);
+  
+  // Load corpus files (supports both files and directories)
+  const corpus = await loadMultipleCorpusFiles(corpusPaths!);
+  
+  const result = await builder.generateCategoriesWeb(corpus, exemplarsPath!, vocabularyPath!, outPath!);
   
   console.log(JSON.stringify({
     success: true,
     categories_web: result,
+    corpus_assets_processed: corpus.length,
     output_file: outPath
   }, null, 2));
 }

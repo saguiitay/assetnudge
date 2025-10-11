@@ -10,6 +10,7 @@ import { Config } from './config';
 import { Logger } from './utils/logger';
 import { FileValidator } from './utils/validation';
 import { VocabularyBuilder } from './vocabulary';
+import { AssetGrader } from './grader';
 
 // Exemplar and pattern modules
 import { identifyExemplars, getExemplarStats } from './exemplars';
@@ -101,55 +102,66 @@ export interface CategoryDataStatistics {
   }
   recommendations: {
     title: {
-      optimalLength: string
-      tips: string[]
+      optimalLength: {
+        min: number;
+        max: number;
+        median: number;
+      },
       examples: {
+  	    // Titles of the 5-10 top graded assets in the category
         good: string[]
+		    // Titles of the 2-3 lowest graded assets in the category
         bad: string[]
       }
     }
     description: {
-      optimalLength: string
-      structure: string[]
-      tips: string[]
-      example: string
+      optimalLength: {
+        min: number;
+        max: number;
+        median: number;
+	    },
+      examples: {
+	      // Description of the 5-10 top graded assets in the category
+        good: string[]
+		    // Description of the 2-3 lowest graded assets in the category
+        bad: string[]
+      }
     }
     images: {
-      optimalCount: string
-      requirements: string[]
-      tips: string[]
+      optimalCount: {
+        min: number;
+        max: number;
+        median: number;
+      },
     }
     tags: {
-      optimalCount: string
+      optimalCount: {
+        min: number;
+		    max: number;
+		    median: number;
+	    },
+	    // 10 most common tags
       commonTags: string[]
-      tips: string[]
+	    // Top 5 tags used by the 5-10 top graded assets in the category
+      topTags: string[]
     }
     keywords: {
-      primary: string[]
-      secondary: string[]
-      tips: string[]
+	    // 10 most common bigrams/trigrams used in the category
+      commonKeywords: string[]
+      // 10 most common bigrams/trigrams used in the category used by the 5-10 top graded assets in the category
+      topKeywords: string[]
     }
     pricing: {
-      range: string
-      strategy: string[]
+	    min: number;
+	    max: number;
+	    median: number;
     }
   }
-  realExamples: {
-    name: string
-    publisher: string
-    whyItWorks: string[]
-    metrics: {
-      titleLength: number
-      descriptionLength: number
-      imageCount: number
-      tagCount: number
-    }
-  }[]
-  commonMistakes: {
-    mistake: string
-    impact: string
-    solution: string
-  }[]
+  // Details of the top 10 assets in the category
+  topAssets: any[],
+  
+  // Details of the 10 lowest-graded assets in the category
+  bottomAssets: any[]
 }
 
 /**
@@ -159,11 +171,17 @@ export class Builder {
   private config: Config;
   private logger: Logger;
   private vocabularyBuilder: VocabularyBuilder;
+  private grader: AssetGrader;
 
   constructor(config: Config) {
     this.config = config;
     this.logger = new Logger('builder', config.debug);
     this.vocabularyBuilder = new VocabularyBuilder(config);
+    this.grader = new AssetGrader({
+      weights: config.weights,
+      thresholds: config.thresholds,
+      textProcessing: config.textProcessing
+    });
   }
 
   /**
@@ -413,53 +431,306 @@ export class Builder {
    * Generate category data optimized for web display
    */
   async generateCategoriesWeb(
-    corpusPath: string, 
+    corpus: Asset[], 
     exemplarsPath: string, 
     vocabularyPath: string, 
     outputPath: string
   ): Promise<PlaybookStats> {
     return this.logger.time('generateCategoriesWeb', async () => {
       this.logger.info('Generating categories web data', { 
-        corpusPath, 
+        corpusSize: corpus.length,
         exemplarsPath, 
         vocabularyPath, 
         outputPath 
       });
       
       // Load required data
-      const corpus = await FileValidator.validateJSONFile(corpusPath) as Asset[];
       const exemplarsData = await FileValidator.validateJSONFile(exemplarsPath);
       const vocabulary = await FileValidator.validateJSONFile(vocabularyPath);
       
-      // TODO: Implement web-optimized category data generation using corpus, exemplars, and vocabulary
-      // For now, this is a placeholder that will be implemented later
-      const categoriesWebData = {
-        categories: {},
+      // Create mapping from short category names to full hierarchical names
+      const categoryMapping = new Map<string, string>();
+      const fullCategoryNames = Object.keys(vocabulary);
+      
+      this.logger.info(`Found ${fullCategoryNames.length} full category names in vocabulary`);
+      this.logger.info(`Sample full categories: ${fullCategoryNames.slice(0, 5).join(', ')}`);
+      
+      // Build mapping for all assets in corpus
+      for (const asset of corpus) {
+        const shortCategory = asset.category || 'Unknown';
+        if (!categoryMapping.has(shortCategory)) {
+          // Find the full category name that ends with this short category
+          const fullCategory = fullCategoryNames.find(fullName => {
+            const parts = fullName.split('/');
+            const lastPart = parts[parts.length - 1];
+            return lastPart === shortCategory;
+          });
+          
+          if (fullCategory) {
+            categoryMapping.set(shortCategory, fullCategory);
+            this.logger.info(`Mapped category: "${shortCategory}" -> "${fullCategory}"`);
+          } else {
+            // If no mapping found, use the short name as fallback
+            categoryMapping.set(shortCategory, shortCategory);
+            this.logger.warn(`No full category name found for "${shortCategory}", using as-is`);
+          }
+        }
+      }
+      
+      this.logger.info(`Created ${categoryMapping.size} category mappings`);
+      categoryMapping.forEach((fullName, shortName) => {
+        this.logger.info(`  ${shortName} -> ${fullName}`);
+      });
+      
+      // Group corpus by full category name
+      const corpusByCategory: Record<string, Asset[]> = {};
+      for (const asset of corpus) {
+        const shortCategory = asset.category || 'Unknown';
+        const fullCategory = categoryMapping.get(shortCategory) || shortCategory;
+        if (!corpusByCategory[fullCategory]) {
+          corpusByCategory[fullCategory] = [];
+        }
+        corpusByCategory[fullCategory].push(asset);
+      }
+      
+      // Generate CategoryDataStatistics for each category
+      const categoriesWebData: Record<string, CategoryDataStatistics> = {};
+      
+      for (const [category, assets] of Object.entries(corpusByCategory)) {
+        if (assets.length === 0) continue;
+        
+        this.logger.info(`Processing category: ${category}`, { assetCount: assets.length });
+        
+        // Get exemplars for this category
+        const exemplars = exemplarsData.exemplars?.[category] || [];
+        const topExemplars = exemplars.slice(0, 10);
+        
+        // Grade all assets using the actual grader system
+        const assetScores: Array<{asset: Asset, score: number}> = [];
+        for (const asset of assets) {
+          try {
+            const gradeResult = await this.grader.gradeAsset(asset, vocabulary);
+            assetScores.push({ asset, score: gradeResult.score });
+          } catch (error) {
+            // If grading fails, assign a low score
+            this.logger.warn(`Failed to grade asset ${asset.id || asset.title}`, { error: (error as Error).message });
+            assetScores.push({ asset, score: 0 });
+          }
+        }
+        
+        // Sort by score and get top/bottom assets
+        const sortedAssetScores = assetScores.sort((a, b) => b.score - a.score);
+        const topAssets = sortedAssetScores.slice(0, 10).map(item => item.asset);
+        const bottomAssets = sortedAssetScores.slice(-10).map(item => item.asset);
+        const bottomAssetsForExamples = sortedAssetScores.slice(-3).map(item => item.asset);        // Calculate statistics
+        const prices = assets.filter(a => a.price > 0).map(a => a.price);
+        const titleLengths = assets.map(a => a.title?.length || 0).filter(l => l > 0);
+        const descLengths = assets.map(a => (a.long_description?.split(' ').length || 0)).filter(l => l > 0);
+        const imageCounts = assets.map(a => a.images_count || 0);
+        const tagCounts = assets.map(a => a.tags?.length || 0);
+        
+        // Extract common tags from all assets in category
+        const allTags = assets.flatMap(a => a.tags || []);
+        const tagFrequency: Record<string, number> = {};
+        allTags.forEach(tag => {
+          tagFrequency[tag] = (tagFrequency[tag] || 0) + 1;
+        });
+        const commonTags = Object.entries(tagFrequency)
+          .sort(([,a], [,b]) => b - a)
+          .slice(0, 10)
+          .map(([tag]) => tag);
+        
+        // Extract tags from top assets
+        const topAssetTags = topAssets.flatMap(a => a.tags || []);
+        const topTagFrequency: Record<string, number> = {};
+        topAssetTags.forEach(tag => {
+          topTagFrequency[tag] = (topTagFrequency[tag] || 0) + 1;
+        });
+        const topTags = Object.entries(topTagFrequency)
+          .sort(([,a], [,b]) => b - a)
+          .slice(0, 5)
+          .map(([tag]) => tag);
+        
+        // Extract keywords from titles and descriptions
+        const allText = assets.map(a => `${a.title} ${a.short_description}`).join(' ');
+        const topAssetsText = topAssets.map(a => `${a.title} ${a.short_description}`).join(' ');
+        
+        // Simple keyword extraction (bigrams and trigrams)
+        const commonKeywords = this.extractKeywords(allText).slice(0, 10);
+        const topKeywords = this.extractKeywords(topAssetsText).slice(0, 10);
+        
+        // Create category slug from name
+        const slug = category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        
+        const categoryStats: CategoryDataStatistics = {
+          slug,
+          name: category,
+          description: `Comprehensive data and insights for ${category} assets on Unity Asset Store.`,
+          overview: {
+            numberOfAssets: assets.length,
+            averagePrice: prices.length > 0 ? Math.round(prices.reduce((a, b) => a + b, 0) / prices.length) : 0
+          },
+          recommendations: {
+            title: {
+              optimalLength: {
+                min: Math.min(...titleLengths),
+                max: Math.max(...titleLengths),
+                median: this.calculateMedian(titleLengths)
+              },
+              examples: {
+                good: topAssets.slice(0, 5).map(a => a.title).filter(Boolean),
+                bad: bottomAssetsForExamples.map(a => a.title).filter(Boolean)
+              }
+            },
+            description: {
+              optimalLength: {
+                min: Math.min(...descLengths),
+                max: Math.max(...descLengths),
+                median: this.calculateMedian(descLengths)
+              },
+              examples: {
+                good: topAssets.slice(0, 5).map(a => a.short_description).filter(Boolean),
+                bad: bottomAssetsForExamples.map(a => a.short_description).filter(Boolean)
+              }
+            },
+            images: {
+              optimalCount: {
+                min: Math.min(...imageCounts),
+                max: Math.max(...imageCounts),
+                median: this.calculateMedian(imageCounts)
+              }
+            },
+            tags: {
+              optimalCount: {
+                min: Math.min(...tagCounts),
+                max: Math.max(...tagCounts),
+                median: this.calculateMedian(tagCounts)
+              },
+              commonTags,
+              topTags
+            },
+            keywords: {
+              commonKeywords,
+              topKeywords
+            },
+            pricing: {
+              min: prices.length > 0 ? Math.min(...prices) : 0,
+              max: prices.length > 0 ? Math.max(...prices) : 0,
+              median: prices.length > 0 ? this.calculateMedian(prices) : 0
+            }
+          },
+          topAssets: topAssets.map(this.serializeAssetForWeb),
+          bottomAssets: bottomAssets.map(this.serializeAssetForWeb)
+        };
+        
+        categoriesWebData[category] = categoryStats;
+      }
+      
+      // Save categories web data
+      const outputData = {
+        categories: categoriesWebData,
         metadata: {
-          totalCategories: 0,
+          totalCategories: Object.keys(categoriesWebData).length,
           sourceCorpus: corpus.length,
           sourceExemplars: exemplarsData.metadata?.stats?.totalExemplars || 0,
           vocabularyCategories: Object.keys(vocabulary).length,
           generatedAt: new Date().toISOString(),
-          placeholder: true
+          placeholder: false
         }
       };
       
-      // Save categories web data
-      await this.writeJSON(outputPath, categoriesWebData);
+      await this.writeJSON(outputPath, outputData);
       
-      this.logger.success('Categories web data generated successfully (placeholder)', {
-        categories: Object.keys(categoriesWebData.categories).length,
+      this.logger.success('Categories web data generated successfully', {
+        categories: Object.keys(categoriesWebData).length,
         corpusSize: corpus.length,
         vocabularyCategories: Object.keys(vocabulary).length,
         outputPath
       });
       
       return {
-        categories: Object.keys(categoriesWebData.categories).length,
-        totalCategories: Object.keys(categoriesWebData.categories).length
+        categories: Object.keys(categoriesWebData).length,
+        totalCategories: Object.keys(categoriesWebData).length
       };
     });
+  }
+  
+  /**
+   * Extract keywords (bigrams and trigrams) from text
+   */
+  private extractKeywords(text: string): string[] {
+    const words = text.toLowerCase()
+      .replace(/[^a-z0-9\s]/g, ' ')
+      .split(/\s+/)
+      .filter(word => word.length > 2 && !this.isStopWord(word));
+    
+    const keywords: Record<string, number> = {};
+    
+    // Extract bigrams
+    for (let i = 0; i < words.length - 1; i++) {
+      const bigram = `${words[i]} ${words[i + 1]}`;
+      keywords[bigram] = (keywords[bigram] || 0) + 1;
+    }
+    
+    // Extract trigrams
+    for (let i = 0; i < words.length - 2; i++) {
+      const trigram = `${words[i]} ${words[i + 1]} ${words[i + 2]}`;
+      keywords[trigram] = (keywords[trigram] || 0) + 1;
+    }
+    
+    return Object.entries(keywords)
+      .sort(([,a], [,b]) => b - a)
+      .map(([keyword]) => keyword);
+  }
+  
+  /**
+   * Check if a word is a stop word
+   */
+  private isStopWord(word: string): boolean {
+    const stopWords = new Set([
+      'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by',
+      'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did',
+      'will', 'would', 'could', 'should', 'may', 'might', 'can', 'this', 'that', 'these', 'those'
+    ]);
+    return stopWords.has(word);
+  }
+  
+  /**
+   * Calculate median of a number array
+   */
+  private calculateMedian(numbers: number[]): number {
+    if (numbers.length === 0) return 0;
+    const sorted = [...numbers].sort((a, b) => a - b);
+    const mid = Math.floor(sorted.length / 2);
+    if (sorted.length % 2 === 0) {
+      const left = sorted[mid - 1];
+      const right = sorted[mid];
+      return left !== undefined && right !== undefined ? Math.round((left + right) / 2) : 0;
+    } else {
+      const median = sorted[mid];
+      return median !== undefined ? median : 0;
+    }
+  }
+  
+  /**
+   * Serialize asset for web display (remove unnecessary fields)
+   */
+  private serializeAssetForWeb(asset: Asset): any {
+    return {
+      id: asset.id,
+      title: asset.title,
+      short_description: asset.short_description,
+      category: asset.category,
+      price: asset.price,
+      publisher: asset.publisher,
+      rating: asset.rating,
+      reviews_count: asset.reviews_count,
+      images_count: asset.images_count,
+      videos_count: asset.videos_count,
+      tags: asset.tags,
+      last_update: asset.last_update,
+      url: asset.url
+    };
   }
 
   /**
