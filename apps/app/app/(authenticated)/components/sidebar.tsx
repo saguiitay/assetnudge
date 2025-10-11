@@ -35,8 +35,9 @@ import {
   SquareTerminalIcon,
 } from 'lucide-react';
 import Link from 'next/link';
-import type { ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import logoSmall from '@repo/design-system/images/logo-small.webp';
+import { Badge } from '@workspace/ui/components/badge';
 
 type GlobalSidebarProperties = {
   readonly children: ReactNode;
@@ -52,6 +53,8 @@ type NavItem = {
   url: string;
   icon: any;
   isActive: boolean;
+  isAvailable?: boolean;
+  badge?: ReactElement;
   items: SubNavItem[];
 };
 
@@ -70,9 +73,19 @@ const data = {
       items: []
     },
     {
+      title: 'Track Keywords',
+      url: '#',
+      icon: BookOpenIcon,
+      isAvailable: false,
+      badge: <Badge variant="default">SOON</Badge>,
+      items: []
+    },
+    {
       title: 'Documentation',
       url: '#',
       icon: BookOpenIcon,
+      isAvailable: false,
+      badge: <Badge variant="default">SOON</Badge>,
       items: []
     },
     // {
@@ -164,10 +177,18 @@ export const GlobalSidebar = ({ children }: GlobalSidebarProperties) => {
                 >
                   <SidebarMenuItem>
                     <SidebarMenuButton asChild tooltip={item.title}>
-                      <Link href={item.url}>
-                        <item.icon />
-                        <span>{item.title}</span>
-                      </Link>
+                      {item.isAvailable !== false ? (
+                        <Link href={item.url}>
+                          <item.icon />
+                          <span>{item.title}</span>
+                        </Link>
+                      ) : (
+                        <span className="cursor-not-allowed opacity-50" >
+                          <item.icon />
+                          <span>{item.title}</span>
+                          {item.badge && <span className="ml-1">{item.badge}</span>}
+                        </span>
+                      )}
                     </SidebarMenuButton>
                     {item.items?.length ? (
                       <>
