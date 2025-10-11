@@ -12,6 +12,11 @@ export const Footer = () => {
       description: "",
     },
     {
+      title: "Categories",
+      href: "/categories",
+      description: "",
+    },
+    {
       title: "Product",
       description: "Managing a small business today is already tough.",
       href: env.NEXT_PUBLIC_APP_URL,

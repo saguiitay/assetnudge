@@ -38,6 +38,11 @@ export const Header = ({ dictionary }: HeaderProps) => {
       href: '/',
       description: '',
     },
+    {
+      title: dictionary.web.header.categories,
+      href: '/categories',
+      description: '',
+    },
     // {
     //   title: dictionary.web.header.product.title,
     //   description: dictionary.web.header.product.description,
