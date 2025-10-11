@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@work
 import { Badge } from "@workspace/ui/components/badge"
 import { ArrowRight, TrendingUp, DollarSign, Users } from "lucide-react"
 import { categoryData } from "@/lib/category-data"
+import { CTASection } from "../components/cta-section"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
@@ -127,19 +128,13 @@ export default function CategoriesPage() {
         </div>
 
         {/* CTA Section */}
-        <div className="mt-16 p-8 bg-gradient-to-br from-primary/10 to-blue-500/10 rounded-lg border">
-          <div className="max-w-2xl">
-            <h2 className="text-2xl font-bold mb-3">Ready to Optimize Your Assets?</h2>
-            <p className="text-muted-foreground leading-relaxed mb-6">
-              Each category guide includes detailed recommendations on titles, descriptions, images, tags, keywords, and
-              pricing strategies. Learn from real successful assets and avoid common mistakes that hurt visibility.
-            </p>
-            <Link href="/" className="inline-flex items-center gap-2 text-primary font-semibold hover:underline">
-              Back to Home
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-        </div>
+        <CTASection
+          title="Ready to Optimize Your Assets?"
+          description="Each category guide includes detailed recommendations on titles, descriptions, images, tags, keywords, and pricing strategies. Learn from real successful assets and avoid common mistakes that hurt visibility."
+          linkText="Back to Home"
+          linkHref="/"
+          className="mt-16"
+        />
       </div>
     </div>
   )
