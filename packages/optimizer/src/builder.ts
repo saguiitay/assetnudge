@@ -90,6 +90,68 @@ export interface MultiPassBuildStats {
   };
 }
 
+
+export interface CategoryDataStatistics {
+  slug: string
+  name: string
+  description: string
+  overview: {
+    numberOfAssets: number
+    averagePrice: number
+  }
+  recommendations: {
+    title: {
+      optimalLength: string
+      tips: string[]
+      examples: {
+        good: string[]
+        bad: string[]
+      }
+    }
+    description: {
+      optimalLength: string
+      structure: string[]
+      tips: string[]
+      example: string
+    }
+    images: {
+      optimalCount: string
+      requirements: string[]
+      tips: string[]
+    }
+    tags: {
+      optimalCount: string
+      commonTags: string[]
+      tips: string[]
+    }
+    keywords: {
+      primary: string[]
+      secondary: string[]
+      tips: string[]
+    }
+    pricing: {
+      range: string
+      strategy: string[]
+    }
+  }
+  realExamples: {
+    name: string
+    publisher: string
+    whyItWorks: string[]
+    metrics: {
+      titleLength: number
+      descriptionLength: number
+      imageCount: number
+      tagCount: number
+    }
+  }[]
+  commonMistakes: {
+    mistake: string
+    impact: string
+    solution: string
+  }[]
+}
+
 /**
  * Builder class for exemplars, grading rules, vocabulary, and playbooks
  */
@@ -343,6 +405,59 @@ export class Builder {
       return {
         categories: Object.keys(playbooks).length,
         totalCategories: Object.keys(playbooks).length
+      };
+    });
+  }
+
+  /**
+   * Generate category data optimized for web display
+   */
+  async generateCategoriesWeb(
+    corpusPath: string, 
+    exemplarsPath: string, 
+    vocabularyPath: string, 
+    outputPath: string
+  ): Promise<PlaybookStats> {
+    return this.logger.time('generateCategoriesWeb', async () => {
+      this.logger.info('Generating categories web data', { 
+        corpusPath, 
+        exemplarsPath, 
+        vocabularyPath, 
+        outputPath 
+      });
+      
+      // Load required data
+      const corpus = await FileValidator.validateJSONFile(corpusPath) as Asset[];
+      const exemplarsData = await FileValidator.validateJSONFile(exemplarsPath);
+      const vocabulary = await FileValidator.validateJSONFile(vocabularyPath);
+      
+      // TODO: Implement web-optimized category data generation using corpus, exemplars, and vocabulary
+      // For now, this is a placeholder that will be implemented later
+      const categoriesWebData = {
+        categories: {},
+        metadata: {
+          totalCategories: 0,
+          sourceCorpus: corpus.length,
+          sourceExemplars: exemplarsData.metadata?.stats?.totalExemplars || 0,
+          vocabularyCategories: Object.keys(vocabulary).length,
+          generatedAt: new Date().toISOString(),
+          placeholder: true
+        }
+      };
+      
+      // Save categories web data
+      await this.writeJSON(outputPath, categoriesWebData);
+      
+      this.logger.success('Categories web data generated successfully (placeholder)', {
+        categories: Object.keys(categoriesWebData.categories).length,
+        corpusSize: corpus.length,
+        vocabularyCategories: Object.keys(vocabulary).length,
+        outputPath
+      });
+      
+      return {
+        categories: Object.keys(categoriesWebData.categories).length,
+        totalCategories: Object.keys(categoriesWebData.categories).length
       };
     });
   }

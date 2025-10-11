@@ -188,6 +188,10 @@ Commands:
   generate-playbooks --exemplars <exemplars.json> --out <playbooks.json>
                Generate category playbooks from exemplar patterns
                
+  categoriesWeb --corpus <corpus.json> --exemplars <exemplars.json> --vocabulary <vocab.json> --out <categories-web.json>
+               Generate category data optimized for web display
+               Requires full corpus, exemplars, and vocabulary data
+               
   build-all    --corpus <corpus1.json,corpus2.json,...|folder1,folder2,...> [--out-dir <directory>] [--top-n 20] [--top-percent 10] [--best-sellers <best_sellers.json>]
                🚀 ONE-STOP COMMAND: Build exemplars, vocab, playbooks, and grading rules from corpus
                --best-sellers: JSON file containing list of Unity best seller assets (always included as exemplars)
@@ -436,6 +440,33 @@ async function cmdGeneratePlaybooks(): Promise<void> {
   console.log(JSON.stringify({
     success: true,
     playbooks: result,
+    output_file: outPath
+  }, null, 2));
+}
+
+/**
+ * CATEGORIES-WEB COMMAND: Generate category data optimized for web display
+ */
+async function cmdCategoriesWeb(): Promise<void> {
+  const corpusPath = getFlag('corpus');
+  const exemplarsPath = getFlag('exemplars');
+  const vocabularyPath = getFlag('vocabulary');
+  const outPath = getFlag('out', 'categories-web.json');
+  
+  ensure(!!corpusPath, '--corpus path is required');
+  ensure(!!exemplarsPath, '--exemplars path is required');
+  ensure(!!vocabularyPath, '--vocabulary path is required');
+  ensure(!!outPath, '--out path is required');
+  
+  const optimizer = new UnityAssetOptimizer(args);
+  await SetupValidator.validateSetup(optimizer.config, optimizer.aiEngine, optimizer.logger);
+  
+  const builder = new Builder(optimizer.config);
+  const result = await builder.generateCategoriesWeb(corpusPath!, exemplarsPath!, vocabularyPath!, outPath!);
+  
+  console.log(JSON.stringify({
+    success: true,
+    categories_web: result,
     output_file: outPath
   }, null, 2));
 }
@@ -771,6 +802,9 @@ async function main(): Promise<void> {
         break;
       case 'generate-playbooks':
         await cmdGeneratePlaybooks();
+        break;
+      case 'categories-web':
+        await cmdCategoriesWeb();
         break;
       case 'build-all':
         await cmdBuildAll();
