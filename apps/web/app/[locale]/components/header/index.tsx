@@ -38,11 +38,7 @@ export const Header = ({ dictionary }: HeaderProps) => {
       href: '/',
       description: '',
     },
-    {
-      title: dictionary.web.header.categories,
-      href: '/categories',
-      description: '',
-    },
+   
     // {
     //   title: dictionary.web.header.product.title,
     //   description: dictionary.web.header.product.description,
@@ -58,6 +54,11 @@ export const Header = ({ dictionary }: HeaderProps) => {
       href: '/#features',
       description: '',
       items:[] as SubNavItem[]
+    },
+    {
+      title: dictionary.web.header.categories,
+      href: '/categories',
+      description: 'See recommendations for each category',
     },
   ];
 
