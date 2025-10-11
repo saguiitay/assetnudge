@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, ReactElement } from "react"
+import { useState, ReactElement, ReactNode } from "react"
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
 import { Textarea } from "@workspace/ui/components/textarea"
@@ -11,15 +11,21 @@ import { FieldLabel } from "./field"
 
 interface SuggestionInputProps {
   label: string | ReactElement
-  value: string
-  onChange: (value: string) => void
-  onSuggest: (currentValue: string) => Promise<string[]> | string[]
+  value: string | any
+  onChange: (value: string | any) => void
+  onSuggest: (currentValue: string | any) => Promise<{text: string, rationale: string | undefined}[]>
   placeholder?: string
-  variant?: "input" | "textarea"
+  variant?: "input" | "textarea" | "custom"
   rows?: number
   className?: string
   buttonSize?: "icon" | "default"
   buttonVariant?: "outline" | "default"
+  renderInput?: (props: {
+    value: string | any
+    onChange: (value: string | any) => void
+    placeholder?: string
+  }) => ReactNode
+  customInput?: ReactElement
 }
 
 export function SuggestionInput({
@@ -33,8 +39,10 @@ export function SuggestionInput({
   className,
   buttonSize = "default",
   buttonVariant = "outline",
+  renderInput,
+  customInput,
 }: SuggestionInputProps) {
-  const [suggestions, setSuggestions] = useState<string[]>([])
+  const [suggestions, setSuggestions] = useState<{text: string, rationale: string | undefined}[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [isExpanded, setIsExpanded] = useState(true)
 
@@ -67,46 +75,100 @@ export function SuggestionInput({
     return label
   }
 
+  const renderInputElement = () => {
+    if (variant === "custom") {
+      if (renderInput) {
+        return renderInput({ value, onChange, placeholder })
+      }
+      if (customInput) {
+        return customInput
+      }
+      // Fallback to input if custom is specified but no render function or element provided
+      return (
+        <Input
+          id="suggestion-input"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className="flex-1"
+        />
+      )
+    }
+    
+    if (variant === "input") {
+      return (
+        <Input
+          id="suggestion-input"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className="flex-1"
+        />
+      )
+    }
+    
+    return (
+      <Textarea
+        id="suggestion-input"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        rows={rows}
+        className="flex-1"
+      />
+    )
+  }
+
   return (
     <div className={className}>
       <div className="space-y-2">
         {label && renderLabel()}
-        <div className="flex gap-2">
-          {variant === "input" ? (
-            <Input
-              id="suggestion-input"
-              value={value}
-              onChange={(e) => onChange(e.target.value)}
-              placeholder={placeholder}
-              className="flex-1"
-            />
+        <div className={variant === "custom" ? "space-y-2" : "flex gap-2"}>
+          {variant === "custom" ? (
+            <>
+              {renderInputElement()}
+              <div className="flex justify-end">
+                <Button 
+                  type="button"
+                  variant={buttonVariant}
+                  size={buttonSize}
+                  onClick={handleSuggest} 
+                  disabled={isLoading} 
+                  className={`gap-2 whitespace-nowrap ${
+                    buttonSize === 'icon' ? '' : 'shrink-0'
+                  }`}
+                >
+                  {isLoading ? (
+                    <RefreshCw className="h-3 w-3 animate-spin" />
+                  ) : (
+                    <Sparkles className="h-3 w-3" />
+                  )}
+                  {buttonSize === 'default' && (isLoading ? "Suggesting..." : "Suggest")}
+                </Button>
+              </div>
+            </>
           ) : (
-            <Textarea
-              id="suggestion-input"
-              value={value}
-              onChange={(e) => onChange(e.target.value)}
-              placeholder={placeholder}
-              rows={rows}
-              className="flex-1"
-            />
+            <>
+              {renderInputElement()}
+              <Button 
+                type="button"
+                variant={buttonVariant}
+                size={buttonSize}
+                onClick={handleSuggest} 
+                disabled={isLoading} 
+                className={`gap-2 whitespace-nowrap ${
+                  buttonSize === 'icon' ? '' : 'shrink-0'
+                }`}
+              >
+                {isLoading ? (
+                  <RefreshCw className="h-3 w-3 animate-spin" />
+                ) : (
+                  <Sparkles className="h-3 w-3" />
+                )}
+                {buttonSize === 'default' && (isLoading ? "Suggesting..." : "Suggest")}
+              </Button>
+            </>
           )}
-          <Button 
-            type="button"
-            variant={buttonVariant}
-            size={buttonSize}
-            onClick={handleSuggest} 
-            disabled={isLoading} 
-            className={`gap-2 whitespace-nowrap ${
-              buttonSize === 'icon' ? '' : 'shrink-0'
-            }`}
-          >
-            {isLoading ? (
-              <RefreshCw className="h-3 w-3 animate-spin" />
-            ) : (
-              <Sparkles className="h-3 w-3" />
-            )}
-            {buttonSize === 'default' && (isLoading ? "Suggesting..." : "Suggest")}
-          </Button>
         </div>
       </div>
 
@@ -129,10 +191,10 @@ export function SuggestionInput({
               {suggestions.map((suggestion, index) => (
                 <button
                   key={index}
-                  onClick={() => handleSelectSuggestion(suggestion)}
+                  onClick={() => handleSelectSuggestion(suggestion.text)}
                   className="w-full text-left p-3 rounded-md border border-border hover:bg-accent hover:text-accent-foreground transition-colors"
                 >
-                  {suggestion}
+                  {suggestion.text}
                 </button>
               ))}
             </div>

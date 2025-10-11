@@ -16,9 +16,28 @@ import {
   buildLongDescSystemPrompt,
   buildLongDescUserPrompt
 } from './prompts/index';
-import type { Asset } from '../types';
+import { TitleSuggestionResponse,  DescriptionSuggestion, TagSuggestion, TitleSuggestion, TagsSuggestionResponse, ShortDescriptionResponse, LongDescriptionResponse, AllSuggestionsResponse, DedicatedSuggestionParams } from './types';
 
 const logger = new Logger('ai');
+
+const suggestionSchema = {
+  type: 'object',
+  properties: {
+    
+    suggestions: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          rationale: { type: 'string' },
+          suggestion: { type: 'string' },
+        },
+        required: ['suggestion', 'rationale']
+      }
+    }
+  },
+  required: ['suggestions']
+};
 
 /**
  * Configuration interface for AI suggestions
@@ -69,169 +88,6 @@ interface OpenAIConfig {
   apiKey: string;
   model: string;
   timeout: number;
-}
-
-/**
- * Vocabulary word with frequency data
- */
-interface VocabularyWord {
-  word: string;
-  frequency: number;
-}
-
-/**
- * Exemplar asset interface
- */
-interface ExemplarAsset {
-  title: string;
-  qualityScore: number;
-  tags?: string[];
-  price?: number;
-  rating?: number;
-  reviews_count?: number;
-}
-
-/**
- * Vocabulary patterns interface
- */
-interface VocabularyPatterns {
-  title_words?: VocabularyWord[];
-  title_bigrams?: VocabularyWord[];
-  description_words?: VocabularyWord[];
-  common_tags?: VocabularyWord[];
-  title_length?: { median?: number };
-  images_count?: { median?: number };
-  price?: { q1?: number; q3?: number; median?: number };
-  quality_score?: { mean?: number };
-}
-
-/**
- * Tag suggestion interface
- */
-interface TagSuggestion {
-  tag: string;
-  reason: string;
-  exemplar_reference?: string;
-  discoverability_score?: number;
-}
-
-/**
- * Title suggestion interface
- */
-interface TitleSuggestion {
-  text: string;
-  intent: string;
-  vocabulary_coverage?: string[];
-  exemplar_pattern?: string;
-  character_count?: number;
-}
-
-/**
- * Description suggestion interface
- */
-interface DescriptionSuggestion {
-  short: string;
-  long_markdown: string;
-  exemplar_structures_used?: string[];
-}
-
-/**
- * Recommendation interface
- */
-interface Recommendation {
-  item: string;
-  effort: string;
-  impact: string;
-  exemplar_benchmark?: string;
-  current_vs_benchmark?: string;
-  priority?: number;
-}
-
-/**
- * Category suggestion interface
- */
-interface CategorySuggestion {
-  category: string;
-  confidence: number;
-  exemplar_similarity?: string;
-  vocabulary_matches?: string[];
-  reasoning?: string;
-}
-
-/**
- * Similar exemplar interface
- */
-interface SimilarExemplar {
-  title: string;
-  similarity_score: number;
-  shared_vocabulary?: string[];
-  quality_score?: number;
-  inspiration_takeaway: string;
-  key_differentiator?: string;
-}
-
-/**
- * Comprehensive AI suggestions response interface
- */
-export interface AISuggestions {
-  rationale?: string;
-  suggested_tags: TagSuggestion[];
-  suggested_title: TitleSuggestion[];
-  suggested_description: DescriptionSuggestion;
-  recommendations: Recommendation[];
-  suggested_category: CategorySuggestion;
-  similar_exemplars?: SimilarExemplar[];
-}
-
-/**
- * Simplified suggestion parameters for dedicated methods
- */
-export interface DedicatedSuggestionParams {
-  asset: Asset;
-  exemplars?: ExemplarAsset[];
-  vocab?: VocabularyPatterns;
-}
-
-/**
- * Title suggestion response
- */
-export interface TitleSuggestionResponse {
-  rationale?: string;
-  suggested_titles: TitleSuggestion[];
-}
-
-/**
- * Tags suggestion response
- */
-export interface TagsSuggestionResponse {
-  rationale?: string;
-  suggested_tags: TagSuggestion[];
-}
-
-/**
- * Short description suggestion response
- */
-export interface ShortDescriptionResponse {
-  rationale?: string;
-  suggested_short_description: string;
-}
-
-/**
- * Long description suggestion response
- */
-export interface LongDescriptionResponse {
-  rationale?: string;
-  suggested_long_description: string;
-}
-
-/**
- * Complete suggestion response for suggestAll method
- */
-export interface AllSuggestionsResponse {
-  title: TitleSuggestionResponse;
-  tags: TagsSuggestionResponse;
-  short_description: ShortDescriptionResponse;
-  long_description: LongDescriptionResponse;
 }
 
 /**
@@ -315,33 +171,15 @@ export class AISuggestionEngine {
       const systemPrompt = buildTitleSystemPrompt();
       const userPrompt = buildTitleUserPrompt(
         params.asset,
-        params.exemplars || [],
-        params.vocab || {},
+        params.exemplars,
+        params.categoryVocabulary,
       );
 
-      const schema = {
-        type: 'object',
-        properties: {
-          rationale: { type: 'string' },
-          suggested_titles: {
-            type: 'array',
-            items: {
-              type: 'object',
-              properties: {
-                text: { type: 'string' },
-                intent: { type: 'string' },
-                vocabulary_coverage: { type: 'array', items: { type: 'string' } },
-                exemplar_pattern: { type: 'string' },
-                character_count: { type: 'number' }
-              },
-              required: ['text', 'intent']
-            }
-          }
-        },
-        required: ['suggested_titles']
-      };
+      const response = await this.callOpenAIWithSchema(systemPrompt, userPrompt, suggestionSchema, 'TitleSuggestion');
 
-      return await this.callOpenAIWithSchema(systemPrompt, userPrompt, schema, 'TitleSuggestion');
+      return {
+        suggestions: response.suggestions.map((s: { rationale: string; suggestion: string; }) => ({ rationale: s.rationale, text: s.suggestion } as TitleSuggestion))
+      } as TitleSuggestionResponse;
     });
   }
 
@@ -361,32 +199,16 @@ export class AISuggestionEngine {
       const systemPrompt = buildTagsSystemPrompt();
       const userPrompt = buildTagsUserPrompt(
         params.asset,
-        params.exemplars || [],
-        params.vocab || {},
+        params.exemplars,
+        params.categoryVocabulary,
+        params.gradingRules,
       );
+      
+      const response = await this.callOpenAIWithSchema(systemPrompt, userPrompt, suggestionSchema, 'TagsSuggestion');
 
-      const schema = {
-        type: 'object',
-        properties: {
-          rationale: { type: 'string' },
-          suggested_tags: {
-            type: 'array',
-            items: {
-              type: 'object',
-              properties: {
-                tag: { type: 'string' },
-                reason: { type: 'string' },
-                exemplar_reference: { type: 'string' },
-                discoverability_score: { type: 'number' }
-              },
-              required: ['tag', 'reason']
-            }
-          }
-        },
-        required: ['suggested_tags']
-      };
-
-      return await this.callOpenAIWithSchema(systemPrompt, userPrompt, schema, 'TagsSuggestion');
+      return {
+        suggestions: response.suggestions.map((s: { rationale: any; suggestion: any; }) => ({ rationale: s.rationale, tag: s.suggestion } as TagSuggestion))
+      } as TagsSuggestionResponse;
     });
   }
 
@@ -406,20 +228,16 @@ export class AISuggestionEngine {
       const systemPrompt = buildShortDescSystemPrompt();
       const userPrompt = buildShortDescUserPrompt(
         params.asset,
-        params.exemplars || [],
-        params.vocab || {},
+        params.exemplars,
+        params.categoryVocabulary,
+        params.gradingRules,
       );
 
-      const schema = {
-        type: 'object',
-        properties: {
-          rationale: { type: 'string' },
-          suggested_short_description: { type: 'string' }
-        },
-        required: ['suggested_short_description']
-      };
+      const response = await this.callOpenAIWithSchema(systemPrompt, userPrompt, suggestionSchema, 'ShortDescSuggestion');
 
-      return await this.callOpenAIWithSchema(systemPrompt, userPrompt, schema, 'ShortDescSuggestion');
+      return {
+        suggestions: response.suggestions.map((s: { rationale: string; suggestion: string; }) => ({ rationale: s.rationale, description: s.suggestion } as DescriptionSuggestion))
+      } as ShortDescriptionResponse;
     });
   }
 
@@ -439,20 +257,17 @@ export class AISuggestionEngine {
       const systemPrompt = buildLongDescSystemPrompt();
       const userPrompt = buildLongDescUserPrompt(
         params.asset,
-        params.exemplars || [],
-        params.vocab || {},
+        params.exemplars,
+        params.categoryVocabulary,
+        params.gradingRules,
       );
 
-      const schema = {
-        type: 'object',
-        properties: {
-          rationale: { type: 'string' },
-          suggested_long_description: { type: 'string' }
-        },
-        required: ['suggested_long_description']
-      };
+      
+      const response = await this.callOpenAIWithSchema(systemPrompt, userPrompt, suggestionSchema, 'LongDescSuggestion');
 
-      return await this.callOpenAIWithSchema(systemPrompt, userPrompt, schema, 'LongDescSuggestion', 2000);
+      return {
+        suggestions: response.suggestions.map((s: { rationale: string; suggestion: string; }) => ({ rationale: s.rationale, description: s.suggestion } as DescriptionSuggestion))
+      } as LongDescriptionResponse;
     });
   }
 

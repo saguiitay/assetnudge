@@ -2,7 +2,8 @@
  * Title-specific AI prompts for Unity Asset Store optimization
  */
 
-import type { Asset } from '../../types';
+import { ExemplarAsset } from 'src/exemplars';
+import type { Asset, CategoryRules, CategoryVocabulary } from '../../types';
 
 /**
  * Build system prompt for title suggestions
@@ -18,7 +19,6 @@ Your expertise includes:
 - Emotional appeal and urgency creation
 
 CRITICAL GUIDELINES:
-1. Titles should be 20-60 characters for optimal visibility
 2. Include primary keywords early in the title
 3. Use action words and clear value indicators
 4. Avoid generic terms like "Pack", "Collection", "Bundle" unless necessary
@@ -34,14 +34,15 @@ Response must be valid JSON with the exact schema provided.`;
  */
 export function buildTitleUserPrompt(
   asset: Asset,
-  exemplars: any[] = [],
-  vocab: any = {},
+  exemplars: ExemplarAsset[] = [],
+  categoryVocabulary: CategoryVocabulary | undefined = undefined,
+  categoryRules: CategoryRules | undefined = undefined 
 ): string {
   const currentShortDesc = asset.short_description || '';
   const currentLongDesc = asset.long_description || '';
-  const exemplarTitles = exemplars.slice(0, 5).map(ex => `"${ex.title}"`).join(', ');
-  const topWords = vocab.title_words?.slice(0, 10).map((w: any) => w.word).join(', ') || '';
-  const topBigrams = vocab.title_bigrams?.slice(0, 5).map((w: any) => w.word).join(', ') || '';
+  const exemplarTitles = exemplars.slice(0, 20).map(ex => `"${ex.title}"`).join(', ');
+  const topWords = categoryVocabulary?.title_words?.slice(0, 10).map((w: any) => w.word).join(', ');
+  const topBigrams = categoryVocabulary?.title_bigrams?.slice(0, 5).map((w: any) => w.word).join(', ');
 
   return `CURRENT ASSET TITLE ANALYSIS:
 Title: "${asset.title}"
@@ -56,18 +57,21 @@ ${currentLongDesc}
 \'\'\'
 
 CATEGORY VOCABULARY:
-Top Title Words: ${topWords}
-Common Bigrams: ${topBigrams}
-Optimal Length: ${vocab.title_length?.median || 40} characters
+${topWords ? `Top Title Words: ${topWords}` : ''}
+${topBigrams ? `Top Title Bigrams: ${topBigrams}` : ''}
+${categoryVocabulary?.title_length ? `Optimal Title Length:
+${categoryVocabulary?.title_length?.min ? `- Min: ${categoryVocabulary.title_length.min} characters` : ''}
+${categoryVocabulary?.title_length?.max ? `- Max: ${categoryVocabulary.title_length.max} characters` : ''}
+${categoryVocabulary?.title_length?.median ? `- Median: ${categoryVocabulary.title_length.median} characters` : ''}` : ''}
 
 ${exemplarTitles ? `HIGH-PERFORMING EXEMPLARS:
 ${exemplarTitles}` : ''}
 
 IMPROVEMENT FOCUS:
-Analyze the current title and suggest 3-5 improved alternatives that:
+Analyze the current title and suggest 3-4 improved alternatives that:
 1. Include high-value keywords from the category vocabulary
 2. Clearly communicate the asset's main benefit/purpose
-3. Stay within optimal character limits (20-60 chars)
+3. Stay within optimal character limits
 4. Use proven patterns from successful exemplars
 5. Improve discoverability while maintaining clarity
 

@@ -317,7 +317,7 @@ const Slash = Node.create<SlashOptions>({
         allow: ({ state, range }) => {
           const $from = state.doc.resolve(range.from);
           const type = state.schema.nodes[this.name];
-          const allow = !!$from.parent.type.contentMatch.matchType(type);
+          const allow = !!$from.parent.type.contentMatch.matchType(type!);
 
           return allow;
         },

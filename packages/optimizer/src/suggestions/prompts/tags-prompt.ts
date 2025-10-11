@@ -2,7 +2,8 @@
  * Tags-specific AI prompts for Unity Asset Store optimization
  */
 
-import type { Asset } from '../../types';
+import { ExemplarAsset } from 'src/exemplars';
+import type { Asset, CategoryRules, CategoryVocabulary } from '../../types';
 
 /**
  * Build system prompt for tag suggestions
@@ -34,13 +35,14 @@ Response must be valid JSON with the exact schema provided.`;
  */
 export function buildTagsUserPrompt(
   asset: Asset,
-  exemplars: any[] = [],
-  vocab: any = {},
+  exemplars: ExemplarAsset[] = [],
+  categoryVocabulary: CategoryVocabulary | undefined = undefined,
+  categoryRules: CategoryRules | undefined = undefined
 ): string {
   const currentShortDesc = asset.short_description || '';
   const currentLongDesc = asset.long_description || '';
   const currentTags = asset.tags?.join(', ') || 'None';
-  const topTags = vocab.common_tags?.slice(0, 15).map((t: any) => t.word).join(', ') || '';
+  const topTags = categoryVocabulary?.common_tags?.slice(0, 15).map((t: any) => t.word).join(', ') || '';
   const exemplarTags = exemplars.slice(0, 3).map(ex => 
     ex.tags ? `"${ex.title}": [${ex.tags.slice(0, 5).join(', ')}]` : ''
   ).filter(Boolean).join('\n');
@@ -57,7 +59,7 @@ ${currentLongDesc}
 
 CATEGORY TAG VOCABULARY:
 Most Effective Tags: ${topTags}
-Tag Count Benchmark: ${vocab.tag_count?.median || 8} tags
+Tag Count Benchmark: ${categoryVocabulary?.tag_count?.median || 8} tags
 
 ${exemplarTags ? `HIGH-PERFORMING EXEMPLAR TAGS:
 ${exemplarTags}` : ''}

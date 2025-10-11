@@ -6,10 +6,37 @@
 import { daysBetween, clamp, zscore, jaccard, tokenize, countBullets, isStopWord } from './utils/utils';
 import { Logger } from './utils/logger';
 import { AssetValidator } from './utils/validation';
-import { Asset, CategoryVocabulary, GraderConfig, GradeResult, LinkAnalysis, PreparedContent, ScoreResult, ThresholdConfig, Vocabulary, WeightConfig } from './types';
+import { Asset, CategoryVocabulary, GraderConfig, GradeResult, ScoreResult, ThresholdConfig, Vocabulary, WeightConfig } from './types';
 // Note: VocabularyBuilder is imported from the .mjs file for now
 
 const logger = new Logger('grader');
+
+/**
+ * Link analysis result
+ */
+interface LinkAnalysis {
+  hasLinks: boolean;
+  linkCount: number;
+  hasQualityLinks: boolean;
+  linkTypes: string[];
+}
+
+/**
+ * Prepared content for analysis
+ */
+interface PreparedContent {
+  title: string;
+  shortDesc: string;
+  longDesc: string;
+  description: string;
+  short: string;
+  bullets: number;
+  hasCTA: boolean;
+  hasUVP: boolean;
+  wordCount: number;
+  contentDensity: number; // Ratio of actual text to total characters (0-1)
+  linkAnalysis: LinkAnalysis;
+}
 
 /**
  * Asset grading and scoring engine
@@ -601,7 +628,7 @@ export class AssetGrader {
       word_count_short: { median: 25, mean: 25, std: 10 },
       word_count_long: { median: 300, mean: 350, std: 100 },
       tag_count: { median: 8, mean: 8, std: 3 },
-      bullet_count: { median: 6, mean: 6 },
+      bullet_count: { median: 6, mean: 6, std: 6 },
       sample_size: 0
     };
   }

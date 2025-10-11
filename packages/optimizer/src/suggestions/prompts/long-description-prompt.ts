@@ -2,7 +2,8 @@
  * Long description-specific AI prompts for Unity Asset Store optimization
  */
 
-import type { Asset } from '../../types';
+import { ExemplarAsset } from 'src/exemplars';
+import type { Asset, CategoryRules, CategoryVocabulary } from '../../types';
 
 /**
  * Build system prompt for long description suggestions
@@ -35,8 +36,9 @@ Response must be valid JSON with the exact schema provided.`;
  */
 export function buildLongDescUserPrompt(
   asset: Asset,
-  exemplars: any[] = [],
-  vocab: any = {},
+  exemplars: ExemplarAsset[] = [],
+  categoryVocabulary: CategoryVocabulary | undefined = undefined,
+  categoryRules: CategoryRules | undefined = undefined 
 ): string {
   const currentShortDesc = asset.short_description || '';
   const currentLongDesc = asset.long_description || '';
@@ -64,8 +66,8 @@ CURRENT DESCRIPTION:
 "${currentDesc}"
 
 CATEGORY BENCHMARKS:
-Target Word Count: ${vocab.word_count_long?.median || 300} words
-Target Bullet Points: ${vocab.bullet_count?.median || 5}
+Target Word Count: ${categoryVocabulary?.word_count_long?.median || 300} words
+Target Bullet Points: ${categoryVocabulary?.bullet_count?.median || 5}
 
 ${exemplarStructures ? `EXEMPLAR STRUCTURE PATTERNS:
 ${exemplarStructures}` : ''}

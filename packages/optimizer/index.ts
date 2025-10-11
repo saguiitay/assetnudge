@@ -152,7 +152,8 @@ export async function suggestTitleForAsset(
 ): Promise<any[]> {
   const args: string[] = [];
   if (config && config.debug) args.push('--debug', 'true');
-  
+
+
   const optimizer = new UnityAssetOptimizer(args);
   await SetupValidator.validateSetup(optimizer.config, optimizer.aiEngine, optimizer.logger);
   

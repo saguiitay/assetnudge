@@ -184,10 +184,53 @@ export interface ThresholdConfig {
   };
 }
 
+
+/**
+ * Vocabulary word with frequency data
+ */
+interface VocabularyWord {
+  word: string;
+  frequency: number;
+  scode: number;
+}
+
+/**
+ * Statistics object for content metrics
+ */
+interface StatisticsObject {
+  median: number | null;
+  mean: number | null;
+  std: number | null;
+  min?: number | null;
+  max?: number | null;
+  q1?: number | null;
+  q3?: number | null;
+}
+
 /**
  * Vocabulary data structure for a category
  */
 export interface CategoryVocabulary {
+  title_words?: VocabularyWord[];
+  title_bigrams?: VocabularyWord[];
+  title_length: StatisticsObject;
+  
+
+  description_words?: VocabularyWord[];
+  common_tags?: VocabularyWord[];
+  tag_cooccurrence?: VocabularyWord[];
+  tag_count: StatisticsObject;
+  
+  sample_size: number;
+  images_count?: StatisticsObject;
+  videos_count?: StatisticsObject;
+  bullet_count: StatisticsObject;
+  price?: StatisticsObject;
+  quality_score?: StatisticsObject;
+  extracted_from?: string;
+  top_exemplar_score?: number;
+  has_video_percentage?: number;
+  common_structures?: string[];
   top_unigrams: Array<{ t: string; c: number }>;
   top_bigrams: Array<{ t: string; c: number }>;
   top_tags: Array<{ t: string; c: number }>;
@@ -196,41 +239,12 @@ export interface CategoryVocabulary {
   med_price: number | null;
   price_mean: number | null;
   price_std: number | null;
-  title_length: {
-    median: number | null;
-    mean: number | null;
-    std: number | null;
-  };
-  short_desc_length: {
-    median: number | null;
-    mean: number | null;
-    std: number | null;
-  };
-  long_desc_length: {
-    median: number | null;
-    mean: number | null;
-    std: number | null;
-  };
-  word_count_short: {
-    median: number | null;
-    mean: number | null;
-    std: number | null;
-  };
-  word_count_long: {
-    median: number | null;
-    mean: number | null;
-    std: number | null;
-  };
-  tag_count: {
-    median: number | null;
-    mean: number | null;
-    std: number | null;
-  };
-  bullet_count: {
-    median: number | null;
-    mean: number | null;
-  };
-  sample_size: number;
+
+  short_desc_length: StatisticsObject;
+  long_desc_length: StatisticsObject;
+
+  word_count_short: StatisticsObject;
+  word_count_long: StatisticsObject;
 }
 
 /**
@@ -240,35 +254,6 @@ export interface Vocabulary {
   [category: string]: CategoryVocabulary;
 }
 
-/**
- * Prepared content for analysis
- */
-/**
- * Link analysis result
- */
-export interface LinkAnalysis {
-  hasLinks: boolean;
-  linkCount: number;
-  hasQualityLinks: boolean;
-  linkTypes: string[];
-}
-
-/**
- * Prepared content for analysis
- */
-export interface PreparedContent {
-  title: string;
-  shortDesc: string;
-  longDesc: string;
-  description: string;
-  short: string;
-  bullets: number;
-  hasCTA: boolean;
-  hasUVP: boolean;
-  wordCount: number;
-  contentDensity: number; // Ratio of actual text to total characters (0-1)
-  linkAnalysis: LinkAnalysis;
-}
 
 /**
  * Scoring result with score and reasons
@@ -469,5 +454,21 @@ export interface DynamicGradingRulesFile {
   fallbackRules: {
     weights: WeightConfig;
     thresholds: ThresholdConfig;
+  };
+}
+
+
+
+/**
+ * Grading result with metadata
+ */
+export interface GradeResultWithMetadata {
+  grade: GradeResult;
+  metadata: {
+    gradingMethod: string;
+    assetCategory: string;
+    vocabProvided: boolean;
+    rulesProvided: boolean;
+    gradedAt: string;
   };
 }

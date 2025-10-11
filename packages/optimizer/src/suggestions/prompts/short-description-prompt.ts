@@ -2,7 +2,8 @@
  * Short description-specific AI prompts for Unity Asset Store optimization
  */
 
-import type { Asset } from '../../types';
+import { ExemplarAsset } from 'src/exemplars';
+import type { Asset, CategoryRules, CategoryVocabulary } from '../../types';
 
 /**
  * Build system prompt for short description suggestions
@@ -34,12 +35,13 @@ Response must be valid JSON with the exact schema provided.`;
  */
 export function buildShortDescUserPrompt(
   asset: Asset,
-  exemplars: any[] = [],
-  vocab: any = {},
+  exemplars: ExemplarAsset[] = [],
+  categoryVocabulary: CategoryVocabulary | undefined = undefined,
+  categoryRules: CategoryRules | undefined = undefined 
 ): string {
   const currentShortDesc = asset.short_description || '';
   const currentLongDesc = asset.long_description || '';
-  const descWords = vocab.description_words?.slice(0, 10).map((w: any) => w.word).join(', ') || '';
+  const descWords = categoryVocabulary?.description_words?.slice(0, 10).map((w: any) => w.word).join(', ') || '';
   const exemplarDescs = exemplars.slice(0, 3).map(ex => 
     `"${ex.title}": "${ex.short_description || ''}"`
   ).filter(desc => desc.includes(': "')).join('\n');
@@ -56,7 +58,7 @@ ${currentLongDesc}
 
 CATEGORY DESCRIPTION PATTERNS:
 High-Value Words: ${descWords}
-Optimal Length: ${vocab.short_desc_length?.median || 150} characters
+Optimal Length: ${categoryVocabulary?.short_desc_length?.median || 150} characters
 
 ${exemplarDescs ? `HIGH-PERFORMING EXEMPLAR DESCRIPTIONS:
 ${exemplarDescs}` : ''}

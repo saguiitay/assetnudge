@@ -145,9 +145,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Structure the response to match the expected format
-        result = {
-          [fieldKey]: fieldResult,
-        };
+        result = fieldResult;
         
       } catch (error) {
         console.error(`Error generating field ${fieldKey}:`, error);

@@ -6,30 +6,26 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Field,
-  FieldContent,
   FieldDescription,
   FieldError,
-  FieldGroup,
   FieldLabel,
-  FieldLegend,
   FieldSeparator,
   FieldSet,
-  FieldTitle,
 } from '@workspace/ui/components/field';
 import { Input } from '@workspace/ui/components/input';
-import { Textarea } from '@workspace/ui/components/textarea';
 import { Button } from '@workspace/ui/components/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@workspace/ui/components/card';
 import { Badge } from '@workspace/ui/components/badge';
 import { Alert, AlertDescription } from '@workspace/ui/components/alert';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@workspace/ui/components/dialog';
 import { AssetMediaGallery } from './media-gallery';
-import { X, Download, AlertCircle, CheckCircle, ShoppingCart, Sparkles, RefreshCw, Info, Copy } from 'lucide-react';
+import { X, Download, AlertCircle, CheckCircle, ShoppingCart, Sparkles, RefreshCw } from 'lucide-react';
 import { EditorProvider, EditorBubbleMenu, EditorFormatBold, EditorFormatItalic, EditorLinkSelector, EditorNodeBulletList, EditorNodeOrderedList, type JSONContent, type Editor } from '@workspace/ui/components/kibo-ui/editor';
 import { Asset } from '@repo/optimizer/src/types';
 import { PromptHoverCard } from './prompt-hover-card';
 import { GenerateButton, type GeneratableField } from './generate-button';
 import { SuggestionInput } from '@workspace/ui/components/suggestion-input';
+import { DescriptionSuggestion, TagSuggestion, TitleSuggestion } from '@repo/optimizer/src/suggestions/types';
 
 // JSON validation function for Kibo UI editor output
 const validateEditorContent = (content: any) => {
@@ -229,7 +225,7 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
   };
 
   // Asset generation functions
-  const generateField = async (fieldKey: GeneratableField) => {
+  const generateField = async (fieldKey: GeneratableField): Promise<{text: string, rationale: string | undefined}[]> => {
     const currentAssetData = {
       ...importedData,
       title: form.getValues('title'),
@@ -241,7 +237,7 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
 
     if (!currentAssetData.title) {
       setGenerationError('Please enter a title first to generate other fields.');
-      return;
+      return [];
     }
 
     setIsGenerating(prev => ({ ...prev, [fieldKey]: true }));
@@ -266,39 +262,34 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
         }),
       });
 
-      const result = await response.json();
+      const output = await response.json();
 
-      if (!result.success) {
-        setGenerationError(result.error || `Failed to generate ${fieldKey}`);
-        return;
+      if (!output.success) {
+        setGenerationError(output.error || `Failed to generate ${fieldKey}`);
+        return [];
       }
 
-      const generatedData = result.optimized_content || result.generated_content || result.optimization?.optimizedAsset || result.optimization?.generated || {};
-      
       // Update the form with generated data
-      if (generatedData[fieldKey]) {
-        if (fieldKey === 'title' && typeof generatedData.title === 'string') {
-          form.setValue('title', generatedData.title.slice(0, 100));
-        } else if (fieldKey === 'short_description' && typeof generatedData.short_description === 'string') {
-          form.setValue('short_description', generatedData.short_description.slice(0, 200));
-        } else if (fieldKey === 'long_description' && typeof generatedData.long_description === 'string') {
-          form.setValue('long_description', generatedData.long_description.slice(0, 5000));
-        } else if (fieldKey === 'tags' && Array.isArray(generatedData.tags)) {
-          const validTags = generatedData.tags
-            .filter((tag: any) => typeof tag === 'string')
-            .slice(0, 20);
-          form.setValue('tags', validTags);
+      if (output.result && output.result.length > 0) {
+        if (fieldKey === 'title') {
+          return (output.result as TitleSuggestion[]).map(s => ({ text: s.text, rationale: s.rationale }));
+        } else if (fieldKey === 'tags') {
+          return (output.result as TagSuggestion[]).map(s => ({ text: s.tag, rationale: s.rationale }));
+        } else if (fieldKey === 'short_description') {
+          return (output.result as DescriptionSuggestion[]).map(s => ({ text: s.description, rationale: s.rationale }));
+        } else if (fieldKey === 'long_description') {
+          return (output.result as DescriptionSuggestion[]).map(s => ({ text: s.description, rationale: s.rationale }));
         }
       }
 
-      setGenerationSuccess(`Successfully generated ${fieldKey}!`);
-      
     } catch (error) {
       console.error('Generation error:', error);
       setGenerationError(`Failed to generate ${fieldKey}. Please check your connection and try again.`);
     } finally {
+      setGenerationSuccess(`Successfully generated ${fieldKey}!`);
       setIsGenerating(prev => ({ ...prev, [fieldKey]: false }));
     }
+    return [];
   };
 
   const generateAllFields = async () => {
@@ -728,8 +719,7 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
                     onChange={field.onChange}
                     onSuggest={async (currentValue) => {
                       try {
-                        await generateField('title');
-                        return [form.getValues('title')];
+                        return await generateField('title');
                       } catch (error) {
                         console.error('Error generating title suggestions:', error);
                         return [];
@@ -769,8 +759,7 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
                     onChange={field.onChange}
                     onSuggest={async (currentValue) => {
                       try {
-                        await generateField('short_description');
-                        return [form.getValues('short_description')];
+                        return await generateField('short_description');
                       } catch (error) {
                         console.error('Error generating short description suggestions:', error);
                         return [];
@@ -797,54 +786,66 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
               name="long_description"
               render={({ field, fieldState }) => (
                 <Field data-invalid={!!fieldState.error}>
-                  <FieldLabel htmlFor="long_description" className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      Long Description
-                      <PromptHoverCard
-                        fieldType="long_description"
-                        fieldName="Long Description"
-                        getCurrentAssetData={getCurrentAssetData}
-                      />
-                    </div>
-                    <GenerateButton
-                      fieldKey="long_description"
-                      isGenerating={isGenerating.long_description || false}
-                      isDisabled={Object.values(isGenerating).some(Boolean) || !form.watch('title')}
-                      onGenerate={generateField}
-                    />
-                  </FieldLabel>
-                  <div className="space-y-2">
-                    <EditorProvider
-                      key={typeof field.value === 'string' && field.value ? `editor-${field.value.slice(0, 50)}` : `editor-${JSON.stringify(field.value)?.slice(0, 50) || 'empty'}`}
-                      className="border rounded-md"
-                      content={
-                        // Handle both HTML strings and JSON content
-                        typeof field.value === 'string' && field.value
-                          ? field.value  // Pass HTML string directly
-                          : field.value as JSONContent  // Pass JSON content for Tiptap
+                  <SuggestionInput
+                    label={(
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                          Long Description
+                        </span>
+                        <PromptHoverCard
+                          fieldType="long_description"
+                          fieldName="Long Description"
+                          getCurrentAssetData={getCurrentAssetData}
+                        />
+                      </div>
+                    )}
+                    value={field.value}
+                    onChange={field.onChange}
+                    onSuggest={async (currentValue) => {
+                      try {
+                        return await generateField('long_description');
+                      } catch (error) {
+                        console.error('Error generating long description suggestions:', error);
+                        return [];
                       }
-                      onUpdate={(props) => {
-                        // Get HTML content for backward compatibility
-                        const html = props.editor.getHTML();
-                        const isEmpty = html === '<p></p>' || html === '';
-                        field.onChange(isEmpty ? '' : html);
-                      }}
-                      placeholder="Enter detailed description with rich text formatting"
-                      editorProps={{
-                        attributes: {
-                          class: 'prose prose-sm max-w-none min-h-[120px] p-3 focus:outline-none [&_a]:text-blue-600 [&_a]:dark:text-blue-400 [&_a]:underline [&_a:hover]:text-blue-800 [&_a:hover]:dark:text-blue-300 [&_a]:cursor-pointer [&_a]:transition-colors',
-                        },
-                      }}
-                    >
-                      <EditorBubbleMenu>
-                        <EditorFormatBold hideName />
-                        <EditorFormatItalic hideName />
-                        <EditorLinkSelector />
-                        <EditorNodeBulletList hideName />
-                        <EditorNodeOrderedList hideName />
-                      </EditorBubbleMenu>
-                    </EditorProvider>
-                  </div>
+                    }}
+                    placeholder="Enter detailed description with rich text formatting"
+                    variant="custom"
+                    buttonSize="default"
+                    buttonVariant="outline"
+                    renderInput={({ value, onChange, placeholder }) => (
+                      <EditorProvider
+                        key={typeof value === 'string' && value ? `editor-${value.slice(0, 50)}` : `editor-${JSON.stringify(value)?.slice(0, 50) || 'empty'}`}
+                        className="border rounded-md"
+                        content={
+                          // Handle both HTML strings and JSON content
+                          typeof value === 'string' && value
+                            ? value  // Pass HTML string directly
+                            : (value as any) as JSONContent  // Pass JSON content for Tiptap
+                        }
+                        onUpdate={(props) => {
+                          // Get HTML content for backward compatibility
+                          const html = props.editor.getHTML();
+                          const isEmpty = html === '<p></p>' || html === '';
+                          onChange(isEmpty ? '' : html);
+                        }}
+                        placeholder={placeholder}
+                        editorProps={{
+                          attributes: {
+                            class: 'prose prose-sm max-w-none min-h-[120px] p-3 focus:outline-none [&_a]:text-blue-600 [&_a]:dark:text-blue-400 [&_a]:underline [&_a:hover]:text-blue-800 [&_a:hover]:dark:text-blue-300 [&_a]:cursor-pointer [&_a]:transition-colors',
+                          },
+                        }}
+                      >
+                        <EditorBubbleMenu>
+                          <EditorFormatBold hideName />
+                          <EditorFormatItalic hideName />
+                          <EditorLinkSelector />
+                          <EditorNodeBulletList hideName />
+                          <EditorNodeOrderedList hideName />
+                        </EditorBubbleMenu>
+                      </EditorProvider>
+                    )}
+                  />
                   <FieldDescription>
                     A detailed description with rich text formatting (max 5000 characters)
                   </FieldDescription>
