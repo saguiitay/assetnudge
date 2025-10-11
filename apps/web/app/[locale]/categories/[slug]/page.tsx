@@ -2,6 +2,7 @@ import { categoryData } from "@/lib/category-data"
 import { notFound } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@workspace/ui/components/card"
 import { Badge } from "@workspace/ui/components/badge"
+import { CTASection } from "../../components/cta-section"
 import {
   CheckCircle2,
   XCircle,
@@ -14,6 +15,7 @@ import {
   Target,
 } from "lucide-react"
 import type { Metadata } from "next"
+import { env } from "@/env"
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -475,24 +477,13 @@ export default async function CategoryPage({ params }: PageProps) {
         </section>
 
         {/* CTA Section */}
-        <section className="border-t pt-12">
-          <Card className="bg-primary text-primary-foreground">
-            <CardHeader>
-              <CardTitle className="text-2xl">Ready to Optimize Your {category.name} Assets?</CardTitle>
-              <CardDescription className="text-primary-foreground/80">
-                Apply these best practices to your next Unity Asset Store listing and watch your visibility and sales
-                improve.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm leading-relaxed">
-                Remember: Optimization is an ongoing process. Monitor your asset's performance, gather user feedback,
-                and continuously refine your listing based on what works best for your specific assets and target
-                audience.
-              </p>
-            </CardContent>
-          </Card>
-        </section>
+        <CTASection
+          className="border-t pt-12"
+          title={`Ready to Optimize Your ${category.name} Assets?`}
+          description="Apply these best practices to your next Unity Asset Store listing and watch your visibility and sales improve. Remember: Optimization is an ongoing process. Monitor your asset's performance, gather user feedback, and continuously refine your listing based on what works best for your specific assets and target audience."
+          linkText="Get Started with Optimization"
+          linkHref={env.NEXT_PUBLIC_APP_URL}
+        />
       </div>
     </div>
   )

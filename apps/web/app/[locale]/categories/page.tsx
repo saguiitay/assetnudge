@@ -5,6 +5,7 @@ import { ArrowRight, TrendingUp, DollarSign, Users } from "lucide-react"
 import { categoryData } from "@/lib/category-data"
 import { CTASection } from "../components/cta-section"
 import type { Metadata } from "next"
+import { env } from "@/env"
 
 export const metadata: Metadata = {
   title: "Unity Asset Store Categories - Complete Optimization Guide",
@@ -132,7 +133,7 @@ export default function CategoriesPage() {
           title="Ready to Optimize Your Assets?"
           description="Each category guide includes detailed recommendations on titles, descriptions, images, tags, keywords, and pricing strategies. Learn from real successful assets and avoid common mistakes that hurt visibility."
           linkText="Back to Home"
-          linkHref="/"
+          linkHref={env.NEXT_PUBLIC_APP_URL}
           className="mt-16"
         />
       </div>
