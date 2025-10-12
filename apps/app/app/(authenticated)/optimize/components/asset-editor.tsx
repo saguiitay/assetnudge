@@ -647,7 +647,6 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
                     }}
                     placeholder="Enter asset title"
                     variant="input"
-                    buttonSize="icon"
                     buttonVariant="outline"
                   />
                   {fieldState.error && (
@@ -709,7 +708,7 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
                   <SuggestionInput
                     label={(
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                        <span>
                           Long Description
                         </span>
                         <PromptHoverCard

@@ -123,52 +123,25 @@ export function SuggestionInput({
     <div className={className}>
       <div className="space-y-2">
         {label && renderLabel()}
-        <div className={variant === "custom" ? "space-y-2" : "flex gap-2"}>
-          {variant === "custom" ? (
-            <>
-              {renderInputElement()}
-              <div className="flex justify-end">
-                <Button 
-                  type="button"
-                  variant={buttonVariant}
-                  size={buttonSize}
-                  onClick={handleSuggest} 
-                  disabled={isLoading} 
-                  className={`gap-2 whitespace-nowrap ${
-                    buttonSize === 'icon' ? '' : 'shrink-0'
-                  }`}
-                >
-                  {isLoading ? (
-                    <RefreshCw className="h-3 w-3 animate-spin" />
-                  ) : (
-                    <Sparkles className="h-3 w-3" />
-                  )}
-                  {buttonSize === 'default' && (isLoading ? "Suggesting..." : "Suggest")}
-                </Button>
-              </div>
-            </>
-          ) : (
-            <>
-              {renderInputElement()}
-              <Button 
-                type="button"
-                variant={buttonVariant}
-                size={buttonSize}
-                onClick={handleSuggest} 
-                disabled={isLoading} 
-                className={`gap-2 whitespace-nowrap ${
-                  buttonSize === 'icon' ? '' : 'shrink-0'
-                }`}
-              >
-                {isLoading ? (
-                  <RefreshCw className="h-3 w-3 animate-spin" />
-                ) : (
-                  <Sparkles className="h-3 w-3" />
-                )}
-                {buttonSize === 'default' && (isLoading ? "Suggesting..." : "Suggest")}
-              </Button>
-            </>
-          )}
+        <div className="flex gap-2 items-start">
+          <div className="flex-1">
+            {renderInputElement()}
+          </div>
+          <Button 
+            type="button"
+            variant={buttonVariant}
+            size={buttonSize}
+            onClick={handleSuggest} 
+            disabled={isLoading} 
+            className={`gap-2 whitespace-nowrap shrink-0 ${variant === "custom" ? "mt-0" : ""}`}
+          >
+            {isLoading ? (
+              <RefreshCw className="h-3 w-3 animate-spin" />
+            ) : (
+              <Sparkles className="h-3 w-3" />
+            )}
+            {buttonSize === 'default' && (isLoading ? "Suggesting..." : "Suggest")}
+          </Button>
         </div>
       </div>
 
