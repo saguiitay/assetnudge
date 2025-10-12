@@ -917,46 +917,6 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
 
             <FieldSeparator />
 
-            {/* AI Generation Section */}
-            <div className="space-y-4 border-t pt-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h4 className="font-semibold text-sm">AI Enhancement</h4>
-                  <p className="text-xs text-muted-foreground">
-                    Generate all asset details at once using AI optimization
-                  </p>
-                </div>
-                <Button
-                  type="button"
-                  onClick={generateAllFields}
-                  disabled={Object.values(isGenerating).some(Boolean) || !form.watch('title')}
-                  className="gap-2"
-                >
-                  {isGenerating.all ? (
-                    <RefreshCw className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Sparkles className="h-4 w-4" />
-                  )}
-                  Generate All Fields
-                </Button>
-              </div>
-
-              {/* Status Messages */}
-              {generationError && (
-                <Alert variant="destructive">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>{generationError}</AlertDescription>
-                </Alert>
-              )}
-
-              {generationSuccess && (
-                <Alert>
-                  <CheckCircle className="h-4 w-4" />
-                  <AlertDescription>{generationSuccess}</AlertDescription>
-                </Alert>
-              )}
-            </div>
-
             {/* Asset Statistics */}
             <Field>
               <FieldLabel>Asset Statistics</FieldLabel>
