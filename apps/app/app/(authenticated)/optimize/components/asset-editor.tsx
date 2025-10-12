@@ -19,7 +19,7 @@ import { Badge } from '@workspace/ui/components/badge';
 import { Alert, AlertDescription } from '@workspace/ui/components/alert';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@workspace/ui/components/dialog';
 import { AssetMediaGallery } from './media-gallery';
-import { X, Download, AlertCircle, CheckCircle, ShoppingCart, Sparkles, RefreshCw } from 'lucide-react';
+import { X, Download, AlertCircle, CheckCircle, ShoppingCart } from 'lucide-react';
 import { EditorProvider, EditorBubbleMenu, EditorFormatBold, EditorFormatItalic, EditorLinkSelector, EditorNodeBulletList, EditorNodeOrderedList, type JSONContent, type Editor } from '@workspace/ui/components/kibo-ui/editor';
 import { Asset } from '@repo/optimizer/src/types';
 import { PromptHoverCard } from './prompt-hover-card';
@@ -290,86 +290,6 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
       setIsGenerating(prev => ({ ...prev, [fieldKey]: false }));
     }
     return [];
-  };
-
-  const generateAllFields = async () => {
-    const currentAssetData = {
-      ...importedData,
-      title: form.getValues('title'),
-      short_description: form.getValues('short_description'),
-      long_description: form.getValues('long_description'),
-      tags: form.getValues('tags'),
-      category: form.getValues('category')
-    } as Asset;
-
-    if (!currentAssetData.title) {
-      setGenerationError('Please enter a title first to generate other fields.');
-      return;
-    }
-
-    setIsGenerating(prev => ({ ...prev, all: true }));
-    setGenerationError(null);
-    setGenerationSuccess(null);
-
-    try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
-      const isDevelopment = process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_DEBUG === 'true';
-
-      const response = await fetch(`${apiUrl}/optimize?generateAll=true`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          options: {
-            assetData: currentAssetData,
-            useAI: true
-          },
-          debug: isDevelopment
-        }),
-      });
-
-      const result = await response.json();
-
-      if (!result.success) {
-        setGenerationError(result.error || 'Failed to generate asset details');
-        return;
-      }
-
-      const generatedData = result.optimized_content || result.generated_content || result.optimization?.optimizedAsset || result.optimization?.generated || {};
-      
-      // Update form with all generated data
-      setIsBatchUpdating(true);
-      
-      if (generatedData.title && typeof generatedData.title === 'string') {
-        form.setValue('title', generatedData.title.slice(0, 100));
-      }
-      
-      if (generatedData.short_description && typeof generatedData.short_description === 'string') {
-        form.setValue('short_description', generatedData.short_description.slice(0, 200));
-      }
-      
-      if (generatedData.long_description && typeof generatedData.long_description === 'string') {
-        form.setValue('long_description', generatedData.long_description.slice(0, 5000));
-      }
-      
-      if (generatedData.tags && Array.isArray(generatedData.tags)) {
-        const validTags = generatedData.tags
-          .filter((tag: any) => typeof tag === 'string')
-          .slice(0, 20);
-        form.setValue('tags', validTags);
-      }
-
-      setIsBatchUpdating(false);
-      setGenerationSuccess(`Successfully generated ${Object.keys(generatedData).length} field(s)!`);
-      
-    } catch (error) {
-      console.error('Generation error:', error);
-      setGenerationError('Failed to generate asset details. Please check your connection and try again.');
-    } finally {
-      setIsGenerating(prev => ({ ...prev, all: false }));
-      setIsBatchUpdating(false);
-    }
   };
 
   const clearImportedData = () => {
