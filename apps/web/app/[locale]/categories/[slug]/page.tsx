@@ -439,6 +439,18 @@ export default async function CategoryPage({ params }: PageProps) {
                       <p className="text-lg font-bold">{example.metrics.tagCount}</p>
                     </div>
                   </div>
+                  {example.tags && example.tags.length > 0 && (
+                    <div className="pt-4 border-t mt-4">
+                      <p className="text-xs text-muted-foreground mb-2">Tags Used:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {example.tags.map((tag, tagIndex) => (
+                          <Badge key={tagIndex} variant="outline" className="text-xs">
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             ))}

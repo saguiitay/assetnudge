@@ -51,7 +51,8 @@ export interface CategoryData {
       descriptionLength: number
       imageCount: number
       tagCount: number
-    }
+    },
+    tags?: string[]
   }[]
   commonMistakes: {
     mistake: string
