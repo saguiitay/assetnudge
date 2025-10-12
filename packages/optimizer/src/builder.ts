@@ -429,13 +429,14 @@ export class Builder {
 
   /**
    * Generate category data optimized for web display
+   * Outputs multiple JSON files with 10 categories each
    */
   async generateCategoriesWeb(
     corpus: Asset[], 
     exemplarsPath: string, 
     vocabularyPath: string, 
     outputPath: string
-  ): Promise<PlaybookStats> {
+  ): Promise<{ categories: number; totalCategories: number; filesCreated: string[] }> {
     return this.logger.time('generateCategoriesWeb', async () => {
       this.logger.info('Generating categories web data', { 
         corpusSize: corpus.length,
@@ -626,31 +627,65 @@ export class Builder {
         categoriesWebData[category] = categoryStats;
       }
       
-      // Save categories web data
-      const outputData = {
-        categories: categoriesWebData,
-        metadata: {
-          totalCategories: Object.keys(categoriesWebData).length,
-          sourceCorpus: corpus.length,
-          sourceExemplars: exemplarsData.metadata?.stats?.totalExemplars || 0,
-          vocabularyCategories: Object.keys(vocabulary).length,
-          generatedAt: new Date().toISOString(),
-          placeholder: false
-        }
-      };
+      // Split categories into chunks of 10 and save multiple files
+      const categoryEntries = Object.entries(categoriesWebData);
+      const chunkSize = 10;
+      const chunks: Array<[string, CategoryDataStatistics][]> = [];
       
-      await this.writeJSON(outputPath, outputData);
+      for (let i = 0; i < categoryEntries.length; i += chunkSize) {
+        chunks.push(categoryEntries.slice(i, i + chunkSize));
+      }
+      
+      const filesCreated: string[] = [];
+      const baseOutputPath = outputPath.replace(/\.json$/, '');
+      
+      for (let i = 0; i < chunks.length; i++) {
+        const chunk = chunks[i];
+        if (!chunk) continue;
+        
+        const chunkData: Record<string, CategoryDataStatistics> = {};
+        
+        chunk.forEach(([key, value]) => {
+          chunkData[key] = value;
+        });
+        
+        const outputData = {
+          categories: chunkData,
+          metadata: {
+            totalCategories: Object.keys(categoriesWebData).length,
+            categoriesInFile: Object.keys(chunkData).length,
+            fileNumber: i + 1,
+            totalFiles: chunks.length,
+            sourceCorpus: corpus.length,
+            sourceExemplars: exemplarsData.metadata?.stats?.totalExemplars || 0,
+            vocabularyCategories: Object.keys(vocabulary).length,
+            generatedAt: new Date().toISOString(),
+            placeholder: false
+          }
+        };
+        
+        const chunkOutputPath = `${baseOutputPath}-${i + 1}.json`;
+        await this.writeJSON(chunkOutputPath, outputData);
+        filesCreated.push(chunkOutputPath);
+        
+        this.logger.info(`Saved categories chunk ${i + 1}/${chunks.length}`, {
+          categoriesInChunk: Object.keys(chunkData).length,
+          outputPath: chunkOutputPath
+        });
+      }
       
       this.logger.success('Categories web data generated successfully', {
-        categories: Object.keys(categoriesWebData).length,
+        totalCategories: Object.keys(categoriesWebData).length,
+        filesCreated: filesCreated.length,
         corpusSize: corpus.length,
         vocabularyCategories: Object.keys(vocabulary).length,
-        outputPath
+        outputFiles: filesCreated
       });
       
       return {
         categories: Object.keys(categoriesWebData).length,
-        totalCategories: Object.keys(categoriesWebData).length
+        totalCategories: Object.keys(categoriesWebData).length,
+        filesCreated
       };
     });
   }

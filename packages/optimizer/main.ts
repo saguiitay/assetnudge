@@ -189,7 +189,8 @@ Commands:
                Generate category playbooks from exemplar patterns
                
   categories-web --corpus <corpus1.json,corpus2.json,...|folder1,folder2,...> --exemplars <exemplars.json> --vocabulary <vocab.json> --out <categories-web.json>
-               Generate category data optimized for web display
+               Generate category data optimized for web display (outputs multiple files with 10 categories each)
+               Output files will be named: categories-web-1.json, categories-web-2.json, etc.
                Supports multiple corpus files/folders separated by commas
                For folders: automatically loads all JSON files within
                
@@ -471,9 +472,13 @@ async function cmdCategoriesWeb(): Promise<void> {
   
   console.log(JSON.stringify({
     success: true,
-    categories_web: result,
+    categories_web: {
+      categories: result.categories,
+      totalCategories: result.totalCategories,
+      filesCreated: result.filesCreated.length
+    },
     corpus_assets_processed: corpus.length,
-    output_file: outPath
+    output_files: result.filesCreated
   }, null, 2));
 }
 
