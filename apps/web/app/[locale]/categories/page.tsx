@@ -35,48 +35,6 @@ export default function CategoriesPage() {
           </p>
         </div>
 
-        {/* Stats Overview */}
-        <div className="grid md:grid-cols-3 gap-6 mb-12">
-          <Card>
-            <CardHeader className="pb-3">
-              <div className="flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-emerald-600" />
-                <CardTitle className="text-lg">Categories Covered</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold">{categories.length}</p>
-              <p className="text-sm text-muted-foreground mt-1">Detailed optimization guides</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-3">
-              <div className="flex items-center gap-2">
-                <Users className="w-5 h-5 text-blue-600" />
-                <CardTitle className="text-lg">Real Examples</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold">{categories.reduce((sum, cat) => sum + cat.realExamples.length, 0)}+</p>
-              <p className="text-sm text-muted-foreground mt-1">Successful asset case studies</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-3">
-              <div className="flex items-center gap-2">
-                <DollarSign className="w-5 h-5 text-amber-600" />
-                <CardTitle className="text-lg">Pricing Strategies</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold">Included</p>
-              <p className="text-sm text-muted-foreground mt-1">For every category</p>
-            </CardContent>
-          </Card>
-        </div>
-
         {/* Categories Grid */}
         <div className="space-y-6">
           <h2 className="text-2xl font-bold">Browse by Category</h2>
@@ -116,9 +74,6 @@ export default function CategoriesPage() {
 
                     {/* Quick Stats */}
                     <div className="pt-4 border-t flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">
-                        {category.realExamples.length} real examples included
-                      </span>
                       <span className="text-primary font-medium">View Guide →</span>
                     </div>
                   </CardContent>
