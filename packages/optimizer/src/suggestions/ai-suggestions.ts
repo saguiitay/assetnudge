@@ -175,7 +175,7 @@ export class AISuggestionEngine {
         params.categoryVocabulary,
       );
 
-      const response = await this.callOpenAIWithSchema(systemPrompt, userPrompt, suggestionSchema, 'TitleSuggestion');
+      const response = await this.callOpenAIWithSchema(systemPrompt, userPrompt, suggestionSchema, 'TitleSuggestion', 1000);
 
       return {
         suggestions: response.suggestions.map((s: { rationale: string; suggestion: string; }) => ({ rationale: s.rationale, text: s.suggestion } as TitleSuggestion))
@@ -204,7 +204,7 @@ export class AISuggestionEngine {
         params.gradingRules,
       );
       
-      const response = await this.callOpenAIWithSchema(systemPrompt, userPrompt, suggestionSchema, 'TagsSuggestion');
+      const response = await this.callOpenAIWithSchema(systemPrompt, userPrompt, suggestionSchema, 'TagsSuggestion', 1000);
 
       return {
         suggestions: response.suggestions.map((s: { rationale: any; suggestion: any; }) => ({ rationale: s.rationale, tag: s.suggestion } as TagSuggestion))
@@ -233,7 +233,7 @@ export class AISuggestionEngine {
         params.gradingRules,
       );
 
-      const response = await this.callOpenAIWithSchema(systemPrompt, userPrompt, suggestionSchema, 'ShortDescSuggestion');
+      const response = await this.callOpenAIWithSchema(systemPrompt, userPrompt, suggestionSchema, 'ShortDescSuggestion', 5000);
 
       return {
         suggestions: response.suggestions.map((s: { rationale: string; suggestion: string; }) => ({ rationale: s.rationale, description: s.suggestion } as DescriptionSuggestion))
@@ -263,7 +263,7 @@ export class AISuggestionEngine {
       );
 
       
-      const response = await this.callOpenAIWithSchema(systemPrompt, userPrompt, suggestionSchema, 'LongDescSuggestion');
+      const response = await this.callOpenAIWithSchema(systemPrompt, userPrompt, suggestionSchema, 'LongDescSuggestion', 50000);
 
       return {
         suggestions: response.suggestions.map((s: { rationale: string; suggestion: string; }) => ({ rationale: s.rationale, description: s.suggestion } as DescriptionSuggestion))
@@ -310,6 +310,10 @@ export class AISuggestionEngine {
     maxTokens: number = 1000
   ): Promise<any> {
     const openaiConfig = this.config.getOpenAIConfig();
+
+    // this.logger.info(`Calling OpenAI for ${schemaName}, model: ${openaiConfig.model}, max tokens: ${maxTokens}, timeout: ${openaiConfig.timeout}, schema: ${JSON.stringify(schema)}`);
+    // this.logger.info(`Calling OpenAI systemPrompt: ${systemPrompt}`);
+    // this.logger.info(`Calling OpenAI userPrompt: ${userPrompt}`);
     
     const response = await this.client!.chat.completions.create({
       model: openaiConfig.model,
@@ -324,12 +328,15 @@ export class AISuggestionEngine {
           schema: schema 
         } 
       },
-      max_tokens: maxTokens,
-      temperature: 0.7
+      max_completion_tokens: maxTokens,
     });
 
+    //this.logger.info(`OpenAI response: ${JSON.stringify(response)}`);
+    
     const responseText = response.choices[0]?.message?.content || '';
     
+    //this.logger.info(`OpenAI responseText: ${responseText}`);
+
     try {
       return JSON.parse(responseText);
     } catch (parseError) {
@@ -352,7 +359,7 @@ export class AISuggestionEngine {
       const response = await this.client!.chat.completions.create({
         model: this.config.ai.defaultModel,
         messages: [{ role: 'user', content: 'Hello, this is a connection test.' }],
-        max_tokens: 10
+        max_completion_tokens: 10
       });
 
       return {
