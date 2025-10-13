@@ -42,14 +42,15 @@ export function buildShortDescUserPrompt(
   const currentShortDesc = asset.short_description || '';
   const currentLongDesc = asset.long_description || '';
   const descWords = categoryVocabulary?.description_words?.slice(0, 10).map((w: any) => w.word).join(', ') || '';
-  const exemplarDescs = exemplars.slice(0, 3).map(ex => 
-    `"${ex.title}": "${ex.short_description || ''}"`
+  const exemplarDescs = exemplars.slice(0, 10).map(ex => 
+    `- "${ex.title}": "${ex.short_description || ''}"`
   ).filter(desc => desc.includes(': "')).join('\n');
 
-  return `CURRENT SHORT DESCRIPTION ANALYSIS:
+  return `CURRENT ASSET ANALYSIS:
 Title: "${asset.title}"
 Category: ${asset.category}
 Price: $${asset.price}
+Tags: ${asset.tags?.join(', ') || 'None'}
 Current Short Description (${currentShortDesc.length} chars): "${currentShortDesc}"
 Current Long Description (if any):
 \`\`\`
@@ -58,7 +59,11 @@ ${currentLongDesc}
 
 CATEGORY DESCRIPTION PATTERNS:
 High-Value Words: ${descWords}
-Optimal Length: ${categoryVocabulary?.short_desc_length?.median || 150} characters
+${categoryVocabulary?.short_desc_length ? `Optimal Length:
+${categoryVocabulary?.short_desc_length?.min ? `- Min: ${categoryVocabulary.short_desc_length.min} characters` : ''}
+${categoryVocabulary?.short_desc_length?.max ? `- Max: ${categoryVocabulary.short_desc_length.max} characters` : ''}
+${categoryVocabulary?.short_desc_length?.median ? `- Median: ${categoryVocabulary.short_desc_length.median} characters` : ''}` : ''}
+
 
 ${exemplarDescs ? `HIGH-PERFORMING EXEMPLAR DESCRIPTIONS:
 ${exemplarDescs}` : ''}
@@ -73,5 +78,5 @@ Rewrite the short description to:
 6. End with a strong value statement
 7. Match successful patterns from exemplars
 
-Provide a rewritten short description with explanation of the optimization strategy used.`;
+Generate short description suggestions with reasoning for each recommendation.`;
 }
