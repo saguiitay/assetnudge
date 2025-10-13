@@ -250,8 +250,8 @@ export class UnityAssetOptimizer {
       this.logger.info(`Using default exemplars path: ${exemplarsPath}`);
     }
     if (!exemplarsVocabPath) {
-      const dataDir = await findDataDirectory('exemplars_vocab.json');
-      exemplarsVocabPath = path.join(dataDir, 'exemplars_vocab.json');
+      const dataDir = await findDataDirectory('exemplar_vocab.json');
+      exemplarsVocabPath = path.join(dataDir, 'exemplar_vocab.json');
       this.logger.info(`Using default exemplars vocab path: ${exemplarsVocabPath}`);
     }
     if (!gradingRulesPath) {
@@ -361,7 +361,7 @@ export class UnityAssetOptimizer {
   ): Promise<TitleSuggestion[]> {
     this.logger.info('Suggesting titles for asset', { title: asset.title });
 
-    const { categoryExemplars, categoryVocabulary, gradingRules } = await this.loadExemplarsAndRules(asset, exemplarsPath, gradingRulesPath, 'title');
+    const { categoryExemplars, categoryVocabulary, gradingRules } = await this.loadExemplarsAndRules(asset, null, null, null, 'title');
 
     return this.generateFieldSuggestion(
       'title',
@@ -388,7 +388,7 @@ export class UnityAssetOptimizer {
   ): Promise<TagSuggestion[]> {
     this.logger.info('Suggesting tags for asset', { title: asset.title });
 
-    const { categoryExemplars, categoryVocabulary, gradingRules } = await this.loadExemplarsAndRules(asset, exemplarsPath, gradingRulesPath, 'tag');
+    const { categoryExemplars, categoryVocabulary, gradingRules } = await this.loadExemplarsAndRules(asset, null, null, null, 'tag');
 
     return this.generateFieldSuggestion(
       'tags',
@@ -416,7 +416,7 @@ export class UnityAssetOptimizer {
   ): Promise<DescriptionSuggestion[]  > {
     this.logger.info('Suggesting short description for asset', { title: asset.title });
 
-    const { categoryExemplars, categoryVocabulary, gradingRules } = await this.loadExemplarsAndRules(asset, exemplarsPath, gradingRulesPath, 'short description');
+    const { categoryExemplars, categoryVocabulary, gradingRules } = await this.loadExemplarsAndRules(asset, null, null, null, 'short description');
 
     return this.generateFieldSuggestion(
       'short description',
@@ -444,7 +444,7 @@ export class UnityAssetOptimizer {
   ): Promise<DescriptionSuggestion[]> {
     this.logger.info('Suggesting long description for asset', { title: asset.title });
 
-    const { categoryExemplars, categoryVocabulary, gradingRules } = await this.loadExemplarsAndRules(asset, exemplarsPath, gradingRulesPath, 'long description');
+    const { categoryExemplars, categoryVocabulary, gradingRules } = await this.loadExemplarsAndRules(asset, null, null, null, 'long description');
 
     return this.generateFieldSuggestion(
       'long description',
