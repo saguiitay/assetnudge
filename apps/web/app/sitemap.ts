@@ -1,3 +1,4 @@
+import { categoryData } from '@/lib/category-data';
 import type { MetadataRoute } from 'next'
  
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -9,12 +10,26 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: `${siteUrl}` ,
       lastModified: new Date(),
-      changeFrequency: 'yearly',
+      changeFrequency: 'monthly',
       priority: 1,
+    },
+    {
+      url: `${siteUrl}/categories` ,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.9
     }
   ] as MetadataRoute.Sitemap;
 
-
+  const categories = Object.values(categoryData)
+  categories.forEach((category) => {
+    pages.push({
+      url: `${siteUrl}/categories/${category.slug}`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.8
+    });
+  });
 
   return pages;
 }
