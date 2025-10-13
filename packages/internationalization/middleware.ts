@@ -11,21 +11,31 @@ const I18nMiddleware = createI18nMiddleware({
   defaultLocale: 'en',
   urlMappingStrategy: 'rewriteDefault',
   resolveLocaleFromRequest: (request: NextRequest) => {
-    const headers = Object.fromEntries(request.headers.entries());
-    console.log('Request Headers:', headers);
-    
-    const negotiator = new Negotiator({ headers });
-    const acceptedLanguages = negotiator.languages();
-    console.log('Accepted Languages:', acceptedLanguages);
+    try {
+      const headers = Object.fromEntries(request.headers.entries());
+      
+      const negotiator = new Negotiator({ headers });
+      const acceptedLanguages = negotiator.languages();
 
-    const matchedLocale = matchLocale(acceptedLanguages, locales, 'en');
-    console.log('Matched Locale:', matchedLocale);
+      // Filter out invalid language codes that might cause issues
+      const validLanguages = acceptedLanguages.filter((lang) => {
+        // Basic validation for language codes
+        return lang && typeof lang === 'string' && lang !== '*' && /^[a-zA-Z]{2,3}(-[a-zA-Z0-9]+)*$/.test(lang);
+      });
 
-    return matchedLocale;
+      if (validLanguages.length === 0) {
+        return 'en';
+      }
+
+      const matchedLocale = matchLocale(validLanguages, locales, 'en');
+
+      return matchedLocale;
+    } catch (error) {
+      console.error('Error resolving locale from request:', error);
+      return 'en';
+    }
   },
-});
-
-export function internationalizationMiddleware(request: NextRequest) {
+});export function internationalizationMiddleware(request: NextRequest) {
   return I18nMiddleware(request);
 }
 
