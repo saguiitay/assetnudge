@@ -1,5 +1,5 @@
-import { categoryData } from "@/lib/category-data"
 import { notFound } from "next/navigation"
+import type { CategoryData } from "@/lib/category-data"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@workspace/ui/components/card"
 import { Badge } from "@workspace/ui/components/badge"
 import { CTASection } from "../../components/cta-section"
@@ -21,9 +21,20 @@ interface PageProps {
   params: Promise<{ slug: string }>
 }
 
+// Helper function to dynamically load category data
+async function loadCategoryData(slug: string): Promise<CategoryData | null> {
+  try {
+    const categoryModule = await import(`@/lib/category-data/${slug}`)
+    return categoryModule.default
+  } catch (error) {
+    console.error(`Failed to load category data for slug: ${slug}`, error)
+    return null
+  }
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params
-  const category = categoryData[slug]
+  const category = await loadCategoryData(slug)
 
   if (!category) {
     return {
@@ -47,7 +58,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function CategoryPage({ params }: PageProps) {
   const { slug } = await params
-  const category = categoryData[slug]
+  const category = await loadCategoryData(slug)
 
   if (!category) {
     notFound()
