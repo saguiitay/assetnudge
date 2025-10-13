@@ -341,7 +341,7 @@ export class AssetGrader {
       score.score += w.title;
     } else {
       score.reasons.push(
-        `Title not in ${Math.round(idealTitleMin)}–${Math.round(idealTitleMax)} chars ` +
+        `Title not in ${Math.round(idealTitleMin)}-${Math.round(idealTitleMax)} chars ` +
         `(category median: ${Math.round(vocab.title_length.median ?? 60)}) - currently ${content.title.length} chars`
       );
     }
@@ -354,7 +354,7 @@ export class AssetGrader {
       score.score += w.short;
     } else {
       score.reasons.push(
-        `Short description not ${this.thresholds.shortDesc.minLength}–${this.thresholds.shortDesc.maxLength} chars - ` +
+        `Short description not ${this.thresholds.shortDesc.minLength}-${this.thresholds.shortDesc.maxLength} chars - ` +
         `currently ${content.short.length} chars`
       );
     }
