@@ -35,7 +35,7 @@ export default {
       "optimalLength": "120-200 words (3-5 short paragraphs)",
       "structure": [
         "Lead: one‑sentence value proposition for the target genre or use case.",
-        "What’s inside: counts, variants, formats, LODs, textures, and poly ranges.",
+        "What's inside: counts, variants, formats, LODs, textures, and poly ranges.",
         "Compatibility: pipelines (URP/HDRP/Built‑in), render scale, and platforms.",
         "Use cases: concrete scenarios (RPG interiors, survival crafting, racing).",
         "Support & updates: versioning, roadmap, and links to docs or demos."
@@ -46,7 +46,7 @@ export default {
         "Name the pipelines you tested and Unity versions.",
         "Invite feedback and list future additions if you plan updates."
       ],
-      "example": "Build faster with a focused pack of game‑ready assets. You’ll get modular pieces, clean UVs, and optimized LODs designed for smooth performance. Textures are PBR and compatible with URP/HDRP. Perfect for 3D/Props/Electronics projects like RPGs, survival, and adventure—drop in and go."
+      "example": "Build faster with a focused pack of game‑ready assets. You'll get modular pieces, clean UVs, and optimized LODs designed for smooth performance. Textures are PBR and compatible with URP/HDRP. Perfect for 3D/Props/Electronics projects like RPGs, survival, and adventure—drop in and go."
     },
     "images": {
       "optimalCount": "7-13 images",
@@ -118,7 +118,7 @@ export default {
     "pricing": {
       "range": "Most assets fall around $8.00; healthy range $5.60-$12.80",
       "strategy": [
-        "Anchor near the category’s common price band; justify higher tiers with scope (count, variants, modularity).",
+        "Anchor near the category's common price band; justify higher tiers with scope (count, variants, modularity).",
         "Launch with a small discount to drive early reviews, then return to list price.",
         "Consider a free lite pack to grow wishlists and upsell the full version."
       ]
@@ -146,7 +146,7 @@ export default {
         "lowpoly"
       ],
       "whyItWorks": [
-        "Straightforward title that’s easy to scan.",
+        "Straightforward title that's easy to scan.",
         "Strong visuals (22 images + 1 video).",
         "Description highlights use cases and compatibility.",
         "Price aligns with content scale and audience."
@@ -179,7 +179,7 @@ export default {
         "sci-fi vehicles"
       ],
       "whyItWorks": [
-        "Straightforward title that’s easy to scan.",
+        "Straightforward title that's easy to scan.",
         "Strong visuals (28 images + 1 video).",
         "Description highlights use cases and compatibility.",
         "Price aligns with content scale and audience."
@@ -275,7 +275,7 @@ export default {
         "fan"
       ],
       "whyItWorks": [
-        "Straightforward title that’s easy to scan.",
+        "Straightforward title that's easy to scan.",
         "Strong visuals (8 images + 1 video).",
         "Description highlights use cases and compatibility.",
         "Price aligns with content scale and audience."
@@ -324,12 +324,12 @@ export default {
   "commonMistakes": [
     {
       "mistake": "Missing or very short description",
-      "impact": "Buyers can’t evaluate fit, which lowers conversions and search ranking.",
-      "solution": "Write 3-5 short paragraphs: what’s inside, key features, compatibility (URP/HDRP/Built‑in), and use cases."
+      "impact": "Buyers can't evaluate fit, which lowers conversions and search ranking.",
+      "solution": "Write 3-5 short paragraphs: what's inside, key features, compatibility (URP/HDRP/Built‑in), and use cases."
     },
     {
       "mistake": "Too few preview images",
-      "impact": "Shoppers can’t judge quality or scope at a glance.",
+      "impact": "Shoppers can't judge quality or scope at a glance.",
       "solution": "Upload a clean cover plus gallery shots: overview, close-ups, wireframe/UVs (if relevant), variants, and one in‑engine screenshot."
     },
     {

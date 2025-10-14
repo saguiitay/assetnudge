@@ -3,13 +3,13 @@ export default {
   "name": "Essentials",
   "description": "Guidelines for creating standout Essentials assets on the Unity Asset Store.",
   "overview": {
-    "marketSize": "Very small – fewer than 100 assets",
-    "competition": "Lower competition – niche quality can stand out",
+    "marketSize": "Very small - fewer than 100 assets",
+    "competition": "Lower competition - niche quality can stand out",
     "averagePrice": "Around $0.0"
   },
   "recommendations": {
     "title": {
-      "optimalLength": "44–60 characters (6–9 words)",
+      "optimalLength": "44-60 characters (6-9 words)",
       "tips": [
         "Put the asset type and the main benefit in the first 40 characters.",
         "Avoid internal versioning or vague adjectives.",
@@ -33,25 +33,25 @@ export default {
       }
     },
     "description": {
-      "optimalLength": "120–250 words",
+      "optimalLength": "120-250 words",
       "structure": [
-        "What it is and who it’s for.",
-        "What’s included (with counts).",
+        "What it is and who it's for.",
+        "What's included (with counts).",
         "Compatibility and requirements.",
         "Usage examples or demo scenes.",
         "Support and updates."
       ],
       "tips": [
-        "Explain exactly what’s included with counts, formats, and variations.",
+        "Explain exactly what's included with counts, formats, and variations.",
         "State supported pipelines/Unity versions and any requirements.",
-        "Add 2–4 concrete use cases so buyers can picture fit.",
+        "Add 2-4 concrete use cases so buyers can picture fit.",
         "Link to a demo scene or quickstart steps.",
         "Keep paragraphs short and scannable."
       ],
-      "example": "Bring believable results to your project with a curated, ready-to-use set. You’ll get multiple variations, clear folder structure, and support for common Unity pipelines (URP/HDRP or Built-in). Designed for quick iteration, this pack blends quality with performance and ships with a small demo scene and usage tips so you can drag-and-drop and ship faster."
+      "example": "Bring believable results to your project with a curated, ready-to-use set. You'll get multiple variations, clear folder structure, and support for common Unity pipelines (URP/HDRP or Built-in). Designed for quick iteration, this pack blends quality with performance and ships with a small demo scene and usage tips so you can drag-and-drop and ship faster."
     },
     "images": {
-      "optimalCount": "6–10 images",
+      "optimalCount": "6-10 images",
       "requirements": [
         "One clean hero image.",
         "Detail views of key features.",
@@ -66,7 +66,7 @@ export default {
       ]
     },
     "tags": {
-      "optimalCount": "8–12 relevant tags",
+      "optimalCount": "8-12 relevant tags",
       "commonTags": [
         "Character Controller",
         "Unity",
@@ -112,12 +112,12 @@ export default {
       ],
       "tips": [
         "Use primary keywords in the first 40 characters of your title.",
-        "Repeat key phrases naturally in the first 2–3 lines of the description.",
+        "Repeat key phrases naturally in the first 2-3 lines of the description.",
         "Align tags with the same language to reinforce search relevance."
       ]
     },
     "pricing": {
-      "range": "$0–$0",
+      "range": "$0-$0",
       "strategy": [
         "Anchor price to scope and clarity of value (counts, variants, support).",
         "Offer a free lite/demo to drive traffic without underpricing the main pack.",

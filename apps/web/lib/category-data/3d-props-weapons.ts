@@ -35,7 +35,7 @@ export default {
     "description": {
       "optimalLength": "60-80 words (2 short paragraphs + bullets)",
       "structure": [
-        "Intro: what it is, who it’s for, and key benefits.",
+        "Intro: what it is, who it's for, and key benefits.",
         "First/third-person fit: pivots, attachments, animations, and texture sets.",
         "Bullets: counts, formats, variants, and organization.",
         "Compatibility: Unity versions, pipelines, and integrations.",
@@ -43,13 +43,13 @@ export default {
         "Support & updates: contact, changelog, and roadmap note."
       ],
       "tips": [
-        "Open with what’s included and who it’s for.",
+        "Open with what's included and who it's for.",
         "List counts, formats, and variants in bullets for fast scanning.",
         "Call out pipeline/compatibility and any integrations.",
         "Explain performance/optimization choices in plain English.",
         "End with support info and update policy."
       ],
-      "example": "A complete, game-ready weapons pack designed for FPS/TPS projects. Includes modular attachments, clean pivots for first/third-person use, and optimized PBR textures.\n\nYou’ll get multiple variants, LODs (where noted), and demo scenes for quick setup. Ideal for shooters on mobile and desktop."
+      "example": "A complete, game-ready weapons pack designed for FPS/TPS projects. Includes modular attachments, clean pivots for first/third-person use, and optimized PBR textures.\n\nYou'll get multiple variants, LODs (where noted), and demo scenes for quick setup. Ideal for shooters on mobile and desktop."
     },
     "images": {
       "optimalCount": "8-12 images",
@@ -83,7 +83,7 @@ export default {
       "tips": [
         "Mix generic (type) with style/genre and use-case tags.",
         "Avoid near-duplicates and keep casing consistent.",
-        "Reflect what’s inside; don’t overreach."
+        "Reflect what's inside; don't overreach."
       ]
     },
     "keywords": {

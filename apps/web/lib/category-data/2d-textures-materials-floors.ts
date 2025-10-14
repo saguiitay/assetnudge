@@ -3,13 +3,13 @@ export default {
   "name": "2D/Textures & Materials/Floors",
   "description": "Guidelines for creating standout 2D/Textures & Materials/Floors assets on the Unity Asset Store.",
   "overview": {
-    "marketSize": "Small–Medium – a few hundred assets",
-    "competition": "Moderate competition – strong previews and keywords help",
+    "marketSize": "Small-Medium - a few hundred assets",
+    "competition": "Moderate competition - strong previews and keywords help",
     "averagePrice": "Around $9.0"
   },
   "recommendations": {
     "title": {
-      "optimalLength": "21–40 characters (3–6 words)",
+      "optimalLength": "21-40 characters (3-6 words)",
       "tips": [
         "State the surface type and theme early (e.g., 'Hand-Painted Cobblestone').",
         "Include resolution and pipeline when relevant (e.g., '2K, PBR, URP/HDRP').",
@@ -34,25 +34,25 @@ export default {
       }
     },
     "description": {
-      "optimalLength": "120–250 words",
+      "optimalLength": "120-250 words",
       "structure": [
-        "What it is and best-fit genres (1–2 sentences).",
-        "What’s included with counts and resolutions.",
+        "What it is and best-fit genres (1-2 sentences).",
+        "What's included with counts and resolutions.",
         "Pipelines and Unity versions supported.",
         "Usage tips and performance notes.",
         "Support, updates, and licensing notes."
       ],
       "tips": [
-        "Explain exactly what’s included with counts, formats, and variations.",
+        "Explain exactly what's included with counts, formats, and variations.",
         "State supported pipelines/Unity versions and any requirements.",
-        "Add 2–4 concrete use cases so buyers can picture fit.",
+        "Add 2-4 concrete use cases so buyers can picture fit.",
         "Link to a demo scene or quickstart steps.",
         "Keep paragraphs short and scannable."
       ],
-      "example": "Bring believable results to your project with a curated, ready-to-use set. You’ll get multiple variations, clear folder structure, and support for common Unity pipelines (URP/HDRP or Built-in). Designed for quick iteration, this pack blends quality with performance and ships with a small demo scene and usage tips so you can drag-and-drop and ship faster."
+      "example": "Bring believable results to your project with a curated, ready-to-use set. You'll get multiple variations, clear folder structure, and support for common Unity pipelines (URP/HDRP or Built-in). Designed for quick iteration, this pack blends quality with performance and ships with a small demo scene and usage tips so you can drag-and-drop and ship faster."
     },
     "images": {
-      "optimalCount": "10–14 images",
+      "optimalCount": "10-14 images",
       "requirements": [
         "At least one clean hero image that summarizes the set.",
         "Close-ups showing tiling quality and PBR maps.",
@@ -67,7 +67,7 @@ export default {
       ]
     },
     "tags": {
-      "optimalCount": "8–12 relevant tags",
+      "optimalCount": "8-12 relevant tags",
       "commonTags": [
         "Texture",
         "ground",
@@ -113,12 +113,12 @@ export default {
       ],
       "tips": [
         "Use primary keywords in the first 40 characters of your title.",
-        "Repeat key phrases naturally in the first 2–3 lines of the description.",
+        "Repeat key phrases naturally in the first 2-3 lines of the description.",
         "Align tags with the same language to reinforce search relevance."
       ]
     },
     "pricing": {
-      "range": "$4.99–$149",
+      "range": "$4.99-$149",
       "strategy": [
         "Anchor price to scope and clarity of value (counts, variants, support).",
         "Offer a free lite/demo to drive traffic without underpricing the main pack.",
@@ -278,13 +278,13 @@ export default {
   "commonMistakes": [
     {
       "mistake": "Thin or missing description",
-      "impact": "Buyers can’t tell what’s included or if it fits their project, so they bounce.",
-      "solution": "Write 120–250 words covering what it is, what’s included (counts, formats), compatibility, and practical examples."
+      "impact": "Buyers can't tell what's included or if it fits their project, so they bounce.",
+      "solution": "Write 120-250 words covering what it is, what's included (counts, formats), compatibility, and practical examples."
     },
     {
       "mistake": "Missing or irrelevant tags",
-      "impact": "Search and category filters won’t surface your asset to the right audience.",
-      "solution": "Add 8–12 relevant tags matching genre, pipeline, resolution, and use cases."
+      "impact": "Search and category filters won't surface your asset to the right audience.",
+      "solution": "Add 8-12 relevant tags matching genre, pipeline, resolution, and use cases."
     },
     {
       "mistake": "Outdated listing with no recent updates",

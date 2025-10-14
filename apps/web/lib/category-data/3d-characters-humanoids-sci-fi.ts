@@ -33,7 +33,7 @@ export default {
     "description": {
       "optimalLength": "60-80 words (2 short paragraphs + bullets)",
       "structure": [
-        "Intro: what it is, who it’s for, and key benefits.",
+        "Intro: what it is, who it's for, and key benefits.",
         "Interiors/exteriors: corridors, rooms, props; emissives and materials.",
         "Rigging & animation: rig type, blendshapes, animation sets.",
         "Bullets: counts, formats, variants, and organization.",
@@ -42,7 +42,7 @@ export default {
         "Support & updates: contact, changelog, and roadmap note."
       ],
       "tips": [
-        "Open with what’s included and who it’s for.",
+        "Open with what's included and who it's for.",
         "List counts, formats, and variants in bullets for fast scanning.",
         "Call out pipeline/compatibility and any integrations.",
         "Explain performance/optimization choices in plain English.",
@@ -84,7 +84,7 @@ export default {
       "tips": [
         "Mix generic (type) with style/genre and use-case tags.",
         "Avoid near-duplicates and keep casing consistent.",
-        "Reflect what’s inside; don’t overreach."
+        "Reflect what's inside; don't overreach."
       ]
     },
     "keywords": {
