@@ -14,6 +14,7 @@ interface SuggestionInputProps {
   value: string | any
   onChange: (value: string | any) => void
   onSuggest: (currentValue: string | any) => Promise<{text: string, rationale: string | undefined}[]>
+  onSuggestionSelect?: (suggestion: string) => void
   placeholder?: string
   variant?: "input" | "textarea" | "custom"
   rows?: number
@@ -33,6 +34,7 @@ export function SuggestionInput({
   value,
   onChange,
   onSuggest,
+  onSuggestionSelect,
   placeholder,
   variant = "input",
   rows = 4,
@@ -60,7 +62,11 @@ export function SuggestionInput({
   }
 
   const handleSelectSuggestion = (suggestion: string) => {
-    onChange(suggestion)
+    if (onSuggestionSelect) {
+      onSuggestionSelect(suggestion)
+    } else {
+      onChange(suggestion)
+    }
   }
 
   const handleClearSuggestions = () => {
