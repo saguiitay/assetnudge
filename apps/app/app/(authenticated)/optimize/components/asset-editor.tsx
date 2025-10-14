@@ -776,57 +776,80 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
             />
 
             <Field>
-              <FieldLabel className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  Tags
-                  <PromptHoverCard
-                    fieldType="tags"
-                    fieldName="Tags"
-                    getCurrentAssetData={getCurrentAssetData}
-                  />
-                </div>
-                <GenerateButton
-                  fieldKey="tags"
-                  isGenerating={isGenerating.tags || false}
-                  isDisabled={Object.values(isGenerating).some(Boolean) || !form.watch('title')}
-                  onGenerate={generateField}
-                />
-              </FieldLabel>
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Add a tag"
-                  value={newTag}
-                  onChange={(e) => setNewTag(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      addTag();
-                    }
-                  }}
-                />
-                <Button type="button" onClick={addTag} variant="outline">
-                  Add Tag
-                </Button>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {tags.map((tag, index) => (
-                  <Badge key={`${tag}-${index}`} variant="secondary" className="flex items-center gap-1 pr-1">
-                    <span>{tag}</span>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        removeTag(tag);
-                      }}
-                      className="ml-1 rounded-full p-0.5 hover:bg-destructive/20 hover:text-destructive transition-colors"
-                      aria-label={`Remove ${tag} tag`}
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </Badge>
-                ))}
-              </div>
+              <SuggestionInput
+                label={(
+                  <div className="flex items-center gap-2">
+                    <span>
+                      Tags
+                    </span>
+                    <PromptHoverCard
+                      fieldType="tags"
+                      fieldName="Tags"
+                      getCurrentAssetData={getCurrentAssetData}
+                    />
+                  </div>
+                )}
+                value={newTag}
+                onChange={setNewTag}
+                onSuggest={async (currentValue) => {
+                  try {
+                    return await generateField('tags');
+                  } catch (error) {
+                    console.error('Error generating tag suggestions:', error);
+                    return [];
+                  }
+                }}
+                onSuggestionSelect={(suggestion) => {
+                  // Directly add the selected suggestion as a tag
+                  if (suggestion.trim() && !tags.includes(suggestion.trim())) {
+                    setValue('tags', [...tags, suggestion.trim()]);
+                  }
+                  // Clear the input after adding the tag
+                  setNewTag('');
+                }}
+                placeholder="Add a tag"
+                variant="custom"
+                buttonVariant="outline"
+                renderInput={({ value, onChange, placeholder }) => (
+                  <div className="space-y-3">
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder={placeholder}
+                        value={value}
+                        onChange={(e) => onChange(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            addTag();
+                          }
+                        }}
+                      />
+                      <Button type="button" onClick={addTag} variant="outline">
+                        Add Tag
+                      </Button>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {tags.map((tag, index) => (
+                        <Badge key={`${tag}-${index}`} variant="secondary" className="flex items-center gap-1 pr-1">
+                          <span>{tag}</span>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              removeTag(tag);
+                            }}
+                            className="ml-1 rounded-full p-0.5 hover:bg-destructive/20 hover:text-destructive transition-colors"
+                            aria-label={`Remove ${tag} tag`}
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              />
               {form.formState.errors.tags && (
                 <FieldError>
                   {form.formState.errors.tags.message}
