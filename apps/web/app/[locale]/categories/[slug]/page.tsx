@@ -153,7 +153,7 @@ export default async function CategoryPage({ params }: PageProps) {
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2">
-                  {category.recommendations.title.examples.good.map((example, index) => (
+                  {Array.from(new Set(category.recommendations.title.examples.good)).map((example, index) => (
                     <li key={index} className="text-sm p-3 bg-green-50 dark:bg-green-950/30 rounded-md font-medium">
                       {example}
                     </li>
@@ -171,7 +171,7 @@ export default async function CategoryPage({ params }: PageProps) {
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2">
-                  {category.recommendations.title.examples.bad.map((example, index) => (
+                  {Array.from(new Set(category.recommendations.title.examples.bad)).map((example, index) => (
                     <li
                       key={index}
                       className="text-sm p-3 bg-red-50 dark:bg-red-950/30 rounded-md line-through opacity-75"
@@ -310,7 +310,7 @@ export default async function CategoryPage({ params }: PageProps) {
                   <div className="flex flex-wrap gap-2">
                     {category.recommendations.tags.commonTags.map((tag, index) => (
                       <Badge key={index} variant="secondary">
-                        {tag}
+                        <span className="capitalize">{tag}</span>
                       </Badge>
                     ))}
                   </div>
@@ -456,7 +456,7 @@ export default async function CategoryPage({ params }: PageProps) {
                       <div className="flex flex-wrap gap-2">
                         {example.tags.map((tag, tagIndex) => (
                           <Badge key={tagIndex} variant="outline" className="text-xs">
-                            {tag}
+                            <span className="capitalize">{tag}</span>
                           </Badge>
                         ))}
                       </div>
