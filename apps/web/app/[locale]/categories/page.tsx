@@ -51,24 +51,18 @@ export default function CategoriesPage() {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     {/* Market Overview */}
-                    <div className="space-y-2">
-                      <div className="flex items-start gap-2">
-                        <Badge variant="secondary" className="mt-0.5">
-                          Market
-                        </Badge>
-                        <p className="text-sm text-muted-foreground flex-1">{category.overview.marketSize}</p>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <Badge variant="secondary" className="mt-0.5">
-                          Competition
-                        </Badge>
-                        <p className="text-sm text-muted-foreground flex-1">{category.overview.competition}</p>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <Badge variant="secondary" className="mt-0.5">
-                          Pricing
-                        </Badge>
-                        <p className="text-sm text-muted-foreground flex-1">{category.overview.averagePrice}</p>
+                    <div className="space-y-3">
+                      <h4 className="text-sm font-medium text-foreground">Market Overview</h4>
+                      <div className="space-y-2">
+                        <p className="text-sm">
+                          <span className="font-medium">Market Size:</span> {category.overview.marketSize}
+                        </p>
+                        <p className="text-sm">
+                          <span className="font-medium">Competition:</span> {category.overview.competition}
+                        </p>
+                        <p className="text-sm">
+                          <span className="font-medium">Avg. Pricing:</span> {category.overview.averagePrice}
+                        </p>
                       </div>
                     </div>
 
