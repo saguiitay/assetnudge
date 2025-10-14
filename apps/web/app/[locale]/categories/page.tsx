@@ -1,8 +1,7 @@
 import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@workspace/ui/components/card"
-import { Badge } from "@workspace/ui/components/badge"
 import { ArrowRight } from "lucide-react"
-import { categoryMetadata } from "@/lib/category-data"
+import { categoriesMetadata } from "@/lib/category-data"
 import { CTASection } from "../components/cta-section"
 import type { Metadata } from "next"
 import { env } from "@/env"
@@ -21,8 +20,6 @@ export const metadata: Metadata = {
 }
 
 export default function CategoriesPage() {
-  const categories = categoryMetadata
-
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-12 max-w-6xl">
@@ -39,7 +36,7 @@ export default function CategoriesPage() {
         <div className="space-y-6">
           <h2 className="text-2xl font-bold">Browse by Category</h2>
           <div className="grid md:grid-cols-3 gap-6">
-            {categories.map((category) => (
+            {categoriesMetadata.map((category) => (
               <Link key={category.slug} href={`/categories/${category.slug}`}>
                 <Card className="h-full hover:border-primary transition-all hover:shadow-md">
                   <CardHeader>
