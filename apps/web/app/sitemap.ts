@@ -1,4 +1,4 @@
-import { categoryData } from '@/lib/category-data';
+import { categoriesMetadata } from '@/lib/category-data';
 import type { MetadataRoute } from 'next'
  
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -21,8 +21,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }
   ] as MetadataRoute.Sitemap;
 
-  const categories = Object.values(categoryData)
-  categories.forEach((category) => {
+  categoriesMetadata.forEach((category) => {
     pages.push({
       url: `${siteUrl}/categories/${category.slug}`,
       lastModified: new Date(),

@@ -73,7 +73,7 @@ export interface CategoryData {
   }[]
 }
 
-export const categoryMetadata: CategoryMetaData[] = [
+export const categoriesMetadata: CategoryMetaData[] = [
   {
     "slug": "2d",
     "name": "2D",
