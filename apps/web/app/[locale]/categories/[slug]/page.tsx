@@ -18,7 +18,7 @@ import type { Metadata } from "next"
 import { env } from "@/env"
 
 interface PageProps {
-  params: Promise<{ slug: string }>
+  params: Promise<{ slug: string; locale: string }>
 }
 
 // Helper function to dynamically load category data
@@ -33,7 +33,7 @@ async function loadCategoryData(slug: string): Promise<CategoryData | null> {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { slug } = await params
+  const { slug, locale } = await params
   const category = await loadCategoryData(slug)
 
   if (!category) {
@@ -42,9 +42,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
   }
 
+  const canonicalUrl = locale == 'en' 
+    ? `${env.NEXT_PUBLIC_WEB_URL}/${locale}/categories/${slug}`
+    : `${env.NEXT_PUBLIC_WEB_URL}/categories/${slug}`
+
   return {
-    title: `${category.name} Unity Asset Optimization Guide | Best Practices for Publishers`,
-    description: `Complete guide to optimizing ${category.name} listings on Unity Asset Store. Learn best practices for titles, descriptions, images, tags, and pricing to maximize visibility and sales.`,
+    title: `${category.name} Optimization Guide | Best Practices for Publishers`,
+    description: `Complete guide to optimizing ${category.name} listings on Unity Asset Store. Learn best practices to maximize visibility and sales.`,
     keywords: [
       `unity ${category.name.toLowerCase()}`,
       "unity asset store optimization",
@@ -53,11 +57,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       "asset store best practices",
       ...category.recommendations.keywords.primary,
     ],
+    alternates: {
+      canonical: canonicalUrl,
+    },
   }
 }
 
 export default async function CategoryPage({ params }: PageProps) {
-  const { slug } = await params
+  const { slug, locale } = await params
   const category = await loadCategoryData(slug)
 
   if (!category) {
