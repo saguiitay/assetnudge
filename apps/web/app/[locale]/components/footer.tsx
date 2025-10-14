@@ -18,12 +18,12 @@ export const Footer = () => {
     },
     {
       title: "Product",
-      description: "Managing a small business today is already tough.",
+      description: "",
       href: env.NEXT_PUBLIC_APP_URL,
     },
     {
       title: "Company",
-      description: "Managing a small business today is already tough.",
+      description: "",
       items: [
         {
           title: "About us",
@@ -79,6 +79,7 @@ export const Footer = () => {
                     <Link
                       href={item.href}
                       className="flex justify-between items-center"
+                      rel={item.href.startsWith('http') ? 'nofollow' : undefined}
                     >
                       <span className="text-xl">{item.title}</span>
                     </Link>
@@ -90,6 +91,7 @@ export const Footer = () => {
                       <Link
                         key={subItem.title}
                         href={subItem.href}
+                        rel={subItem.href.startsWith('http') ? 'nofollow' : undefined}
                         className="flex justify-between items-center"
                       >
                         <span className="text-background/75">

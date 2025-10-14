@@ -150,12 +150,12 @@ export const Header = ({ dictionary }: HeaderProps) => {
             <ModeToggle />
           </div>
           <Button variant="outline" asChild className="hidden md:inline">
-            <Link href={`${env.NEXT_PUBLIC_APP_URL}${env.NEXT_PUBLIC_CLERK_SIGN_IN_URL}`}>
+            <Link href={`${env.NEXT_PUBLIC_APP_URL}${env.NEXT_PUBLIC_CLERK_SIGN_IN_URL}`} rel="nofollow">
               {dictionary.web.header.signIn}
             </Link>
           </Button>
           <Button asChild>
-            <Link href={`${env.NEXT_PUBLIC_APP_URL}${env.NEXT_PUBLIC_CLERK_SIGN_UP_URL}`}>
+            <Link href={`${env.NEXT_PUBLIC_APP_URL}${env.NEXT_PUBLIC_CLERK_SIGN_UP_URL}`} rel="nofollow">
               {dictionary.web.header.signUp}
             </Link>
           </Button>
@@ -205,14 +205,14 @@ export const Header = ({ dictionary }: HeaderProps) => {
               ))}
               <div className="flex flex-col gap-2 pt-4 border-t">
                 <Link
-                  href={`${env.NEXT_PUBLIC_APP_URL}${env.NEXT_PUBLIC_CLERK_SIGN_IN_URL}`}
+                  href={`${env.NEXT_PUBLIC_APP_URL}${env.NEXT_PUBLIC_CLERK_SIGN_IN_URL}`} rel="nofollow"
                   className="flex items-center justify-between"
                 >
                   <span className="text-lg">{dictionary.web.header.signIn}</span>
                   <MoveRight className="h-4 w-4 stroke-1 text-muted-foreground" />
                 </Link>
                 <Link
-                  href={`${env.NEXT_PUBLIC_APP_URL}${env.NEXT_PUBLIC_CLERK_SIGN_UP_URL}`}
+                  href={`${env.NEXT_PUBLIC_APP_URL}${env.NEXT_PUBLIC_CLERK_SIGN_UP_URL}`} rel="nofollow"
                   className="flex items-center justify-between"
                 >
                   <span className="text-lg font-semibold">{dictionary.web.header.signUp}</span>

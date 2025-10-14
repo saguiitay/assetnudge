@@ -23,7 +23,7 @@ export const CTASection = ({
         <p className="text-muted-foreground leading-relaxed mb-6">
           {description}
         </p>
-        <Link href={linkHref} className="inline-flex items-center gap-2 text-primary font-semibold hover:underline">
+        <Link href={linkHref} rel="nofollow" className="inline-flex items-center gap-2 text-primary font-semibold hover:underline">
           {linkText}
           <ArrowRight className="w-4 h-4" />
         </Link>
