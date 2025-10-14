@@ -704,7 +704,7 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
               control={form.control}
               name="long_description"
               render={({ field, fieldState }) => (
-                <Field data-invalid={!!fieldState.error}>
+                <Field>
                   <SuggestionInput
                     label={(
                       <div className="flex items-center gap-2">
