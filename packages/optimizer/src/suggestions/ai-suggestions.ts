@@ -263,7 +263,7 @@ export class AISuggestionEngine {
       );
 
       
-      const response = await this.callOpenAIWithSchema(systemPrompt, userPrompt, suggestionSchema, 'LongDescSuggestion', 50000);
+      const response = await this.callOpenAIWithSchema(systemPrompt, userPrompt, suggestionSchema, 'LongDescSuggestion', 16000);
 
       return {
         suggestions: response.suggestions.map((s: { rationale: string; suggestion: string; }) => ({ rationale: s.rationale, description: s.suggestion } as DescriptionSuggestion))

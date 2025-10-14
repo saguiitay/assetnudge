@@ -188,7 +188,7 @@ export interface ThresholdConfig {
 /**
  * Vocabulary word with frequency data
  */
-interface VocabularyWord {
+export interface VocabularyWord {
   word: string;
   frequency: number;
   scode: number;

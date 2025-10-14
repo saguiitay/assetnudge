@@ -3,7 +3,7 @@
  */
 
 import { ExemplarAsset } from 'src/exemplars';
-import type { Asset, CategoryRules, CategoryVocabulary } from '../../types';
+import type { Asset, CategoryRules, CategoryVocabulary, VocabularyWord } from '../../types';
 
 /**
  * Build system prompt for long description suggestions
@@ -18,15 +18,71 @@ Your expertise includes:
 - Technical documentation integration
 - Call-to-action optimization and trust building
 
-CRITICAL GUIDELINES:
-1. Use clear structure with headers, bullets, and sections
-2. Lead with benefits, follow with features and technical details
-3. Include implementation examples and use cases
-4. Add social proof elements (compatibility, requirements)
-5. Use markdown formatting for better readability
-6. Include 3-5 bullet points highlighting key features
-7. End with a strong call-to-action
-8. Target 200-500 words for comprehensive coverage
+### TONE & STYLE
+
+Write as if you are a senior Unity developer explaining your own asset to other developers.  
+The tone should be:
+- **Professional yet conversational**
+- **Confident, not overhyped**
+- **Natural and varied in sentence structure**
+- **Focused on clarity and developer benefit**
+
+Avoid robotic or overly “AI-clean” phrasing. Write as if it's handcrafted by a Unity pro.
+
+---
+
+### STRUCTURE
+
+Follow a natural but consistent flow. Do **not** over-template it.
+
+1. **HOOK (1-2 sentences)**  
+   - Open with a developer pain point or problem statement  
+   - Immediately follow with the main benefit or value proposition  
+   - Example: *“Tired of writing dice logic from scratch? Dice Roller Pro gives you a production-ready rolling engine that just works.”*
+
+2. **KEY FEATURES (3-5 bullets)**  
+   - For each feature, describe both what it does and **why it helps developers**  
+   - Example: *“Thread-safe architecture - perfect for async dice rolls in multiplayer or AI simulations.”*
+
+3. **USE CASES (2-3 examples)**  
+   - Show how real developers would apply this asset  
+   - Example: *“Use it to handle character stat generation, procedural loot systems, or tabletop-inspired combat rolls.”*
+
+4. **TECHNICAL DETAILS (1-2 paragraphs)**  
+   - Include compatibility (Unity version, LTS support, etc.)  
+   - Mention performance, source code, pipelines, or documentation  
+   - Use occasional code-like examples or inline notation for realism (e.g. "2d6+3", "(1d6+2)*3")  
+
+5. **CALL TO ACTION (1-2 sentences)**  
+   - Strong, benefit-driven reason to purchase  
+   - Example: *“Save hours of coding time and ship faster—download Dice Roller Pro today and bring professional dice logic to your next Unity game.”*
+
+---
+
+### SEO & OPTIMIZATION
+
+- Integrate high-performing category keywords naturally.  
+- Emphasize unique differentiators and developer benefits. 
+- Include subtle **trust signals**, like:
+  - “Compatible with Unity 2022.3 LTS and newer”
+  - “Used by indie teams and studios worldwide”
+  - “Includes full source code and examples”
+
+---
+
+### QUALITY & REALISM CHECK
+
+Before finalizing:
+- Vary sentence rhythm (mix short and long sentences)
+- Use occasional transition phrases (“Moreover”, “Even better”, “In practice”)
+- Avoid emoji overload — 0-1 per major section max
+- Ensure the tone reads like *real human marketing copy*, not auto-generated text
+
+---
+
+### FORMATTING
+
+Use HTML with only the following tags: <p>, <ul>, <ol>, <li>, <strong>, <em>, <br>. No other HTML tags are allowed.
 
 Response must be valid JSON with the exact schema provided.`;
 }
@@ -42,58 +98,61 @@ export function buildLongDescUserPrompt(
 ): string {
   const currentShortDesc = asset.short_description || '';
   const currentLongDesc = asset.long_description || '';
-  const currentDesc = asset.long_description || '';
-  const wordCount = currentDesc.split(/\s+/).length;
-  const bulletCount = (currentDesc.match(/[•\-\*]/g) || []).length;
-  
-  const exemplarStructures = exemplars.slice(0, 2).map(ex => 
-    `"${ex.title}": Structure analysis of their description formatting and key sections`
-  ).join('\n');
+  const wordCount = currentLongDesc.split(/\s+/).length;
 
-  return `CURRENT LONG DESCRIPTION ANALYSIS:
+  const topWords = ((categoryVocabulary?.title_words || [])
+                  .concat(categoryVocabulary?.title_bigrams || [])
+                  .concat(categoryVocabulary?.description_words || [])
+                  ).sort((a, b) => (b.frequency - a.frequency))
+                  .slice(0, 10)
+                  .map(w => w.word)
+                  .join(', ');
+
+  const topTags = (categoryVocabulary?.common_tags || [])
+                  .sort((a, b) => (b.frequency - a.frequency))
+                  .slice(0, 10)
+                  .map(w => w.word)
+                  .join(', ');
+
+  // show the long description of a few exemplars
+  const exemplarLongDescs = exemplars.slice(0, 2).map(ex => 
+      `Title: "${ex.title}"\nDescription:\n${ex.long_description}\n`
+      ).join('\n--\n');
+
+
+  return `### CURRENT ASSET DATA:
+
 Title: "${asset.title}"
 Category: ${asset.category}
 Current Word Count: ${wordCount}
-Current Bullet Points: ${bulletCount}
 Price: $${asset.price}
 Current Short Description (${currentShortDesc.length} chars): "${currentShortDesc}"
 Current Long Description (if any):
 \`\`\`
 ${currentLongDesc}
-\'\'\'
+\`\`\`
 
-CURRENT DESCRIPTION:
-"${currentDesc}"
 
-CATEGORY BENCHMARKS:
-Target Word Count: ${categoryVocabulary?.word_count_long?.median || 300} words
-Target Bullet Points: ${categoryVocabulary?.bullet_count?.median || 5}
+### CATEGORY CONTEXT:
 
-${exemplarStructures ? `EXEMPLAR STRUCTURE PATTERNS:
-${exemplarStructures}` : ''}
+Average top-performing word count: ${categoryVocabulary?.word_count_long?.median || 300} words
+Average bullet points: ${categoryVocabulary?.bullet_count?.median || 5}
+Common terms to include for SEO: ${topWords || 'N/A'}
+Common tags to include for SEO: ${topTags || 'N/A'}
+Median price in category: ${categoryVocabulary?.price?.median ? `$${categoryVocabulary.price.median}` : 'N/A'}
 
-OPTIMIZATION GOALS:
-Rewrite the long description with:
+Use this context to match or exceed category performance standards.
 
-1. **HOOK SECTION** (1-2 sentences)
-   - Immediate value proposition
-   - Primary benefit statement
+---
 
-2. **KEY FEATURES** (3-5 bullet points)
-   - Specific capabilities and benefits
-   - Technical highlights relevant to developers
+${exemplarLongDescs ? `### EXEMPLAR LONG DESCRIPTIONS:
+${exemplarLongDescs}` : ''}
 
-3. **USE CASES** (2-3 examples)
-   - Practical applications
-   - Problem-solution scenarios
+---
 
-4. **TECHNICAL DETAILS** (1-2 paragraphs)
-   - Compatibility information
-   - Requirements and specifications
+### RESULT
 
-5. **CALL-TO-ACTION** (1-2 sentences)
-   - Compelling reason to purchase
-   - Value reinforcement
+Before finalizing, rephrase any overly formal or repetitive sentences. The final text should read as if crafted by a skilled Unity developer writing their own store page.
 
-Use markdown formatting and ensure the content is scannable, informative, and conversion-focused.`;
+Generate long description suggestions with reasoning for each recommendation.`;
 }
