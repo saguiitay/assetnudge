@@ -127,10 +127,12 @@ const App = async () => {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <Button variant="ghost" className="gap-2 px-0 text-primary">
-                      Start Optimizing
-                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                    </Button>
+                    <Link href="/optimize">
+                      <Button variant="ghost" className="gap-2 px-0 text-primary">
+                        Start Optimizing
+                        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                      </Button>
+                    </Link>
                   </CardContent>
                 </Card>
 
