@@ -142,24 +142,6 @@ const App = () => {
                     </div>
                   </CardContent>
                 </Card>
-                
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Search className="h-5 w-5" />
-                      Similar Assets
-                    </CardTitle>
-                    <CardDescription>
-                      Discover exemplar assets for reference and inspiration
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-center text-muted-foreground py-8">
-                      <Search className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                      <p>Import an asset to find similar examples</p>
-                    </div>
-                  </CardContent>
-                </Card>
               </>
             )}
           </div>
