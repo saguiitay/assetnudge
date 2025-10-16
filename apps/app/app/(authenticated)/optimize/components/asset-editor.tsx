@@ -732,6 +732,8 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
                     variant="custom"
                     buttonSize="default"
                     buttonVariant="outline"
+                    suggestionLayout="tabs"
+                    enableHtmlContent={true}
                     renderInput={({ value, onChange, placeholder }) => (
                       <EditorProvider
                         key={typeof value === 'string' && value ? `editor-${value.slice(0, 50)}` : `editor-${JSON.stringify(value)?.slice(0, 50) || 'empty'}`}
@@ -810,6 +812,7 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
                 placeholder="Add a tag"
                 variant="custom"
                 buttonVariant="outline"
+                suggestionLayout="compact"
                 renderInput={({ value, onChange, placeholder }) => (
                   <div className="space-y-3">
                     <div className="flex gap-2">
