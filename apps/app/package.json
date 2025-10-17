@@ -13,6 +13,7 @@
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
     "@repo/auth": "*",
+    "@repo/database": "*",
     "@repo/design-system": "*",
     "@repo/internationalization": "*",
     "@repo/next-config": "*",
