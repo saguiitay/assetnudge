@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import type { Asset } from '@repo/optimizer/src/types';
 import { generatePrompts } from '@repo/optimizer';
+import { validateOriginAndGetCorsHeaders } from '@/lib/cors';
 
 /**
  * POST /api/prompts
@@ -23,18 +24,20 @@ import { generatePrompts } from '@repo/optimizer';
  * Only available in development/debug mode for security reasons.
  */
 
-// Add CORS headers
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-};
-
-export async function OPTIONS() {
+export async function OPTIONS(request: NextRequest) {
+  const corsHeaders = validateOriginAndGetCorsHeaders(request);
+  if (!corsHeaders) {
+    return new NextResponse(null, { status: 403 });
+  }
   return new NextResponse(null, { status: 200, headers: corsHeaders });
 }
 
 export async function POST(request: NextRequest) {
+  const corsHeaders = validateOriginAndGetCorsHeaders(request);
+  if (!corsHeaders) {
+    return new NextResponse(null, { status: 403 });
+  }
+
   try {
     // Only allow in development/debug mode
     const isDevelopment = process.env.NODE_ENV === 'development' || process.env.DEBUG === 'true';

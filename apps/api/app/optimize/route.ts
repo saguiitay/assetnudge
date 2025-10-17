@@ -6,21 +6,24 @@ import {
   suggestShortDescriptionForAsset, 
   suggestLongDescriptionForAsset 
 } from '@repo/optimizer';
+import { validateOriginAndGetCorsHeaders } from '@/lib/cors';
 
 export const runtime = 'nodejs';
 
-// Add CORS headers
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-};
-
-export async function OPTIONS() {
+export async function OPTIONS(request: NextRequest) {
+  const corsHeaders = validateOriginAndGetCorsHeaders(request);
+  if (!corsHeaders) {
+    return new NextResponse(null, { status: 403 });
+  }
   return new NextResponse(null, { status: 200, headers: corsHeaders });
 }
 
 export async function POST(request: NextRequest) {
+  const corsHeaders = validateOriginAndGetCorsHeaders(request);
+  if (!corsHeaders) {
+    return new NextResponse(null, { status: 403 });
+  }
+
   try {
     let body;
     try {
@@ -189,7 +192,12 @@ export async function POST(request: NextRequest) {
 }
 
 // GET method to return API documentation
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const corsHeaders = validateOriginAndGetCorsHeaders(request);
+  if (!corsHeaders) {
+    return new NextResponse(null, { status: 403 });
+  }
+
   return NextResponse.json({
     endpoint: '/optimize',
     method: 'POST',

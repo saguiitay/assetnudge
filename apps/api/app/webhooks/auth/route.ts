@@ -9,8 +9,34 @@ import type {
 import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { Webhook } from 'svix';
+import { database } from '@repo/database';
 
-const handleUserCreated = (data: UserJSON) => {
+
+const handleUserCreated = async (data: UserJSON) => {
+  const email = data.email_addresses?.[0]?.email_address;
+  const clerkId = data.id;
+
+  if (!email) {
+    console.error("Missing email in Clerk webhook payload");
+    return NextResponse.json({ status: 400 });
+  }
+
+  // ---- UPSERT user ----
+  const newUser = await database.Users.create({
+    data:
+      {
+        email,
+        clerk_id: clerkId,
+        active: false,     // default locked until activated
+        plan: "none",
+      }
+    });
+
+  if (newUser.error) {
+    console.error("Database error:", newUser.error);
+    return NextResponse.json({ status: 400 });
+  }
+
   return new Response('User created', { status: 201 });
 };
 
@@ -93,7 +119,7 @@ export const POST = async (request: Request): Promise<Response> => {
 
   switch (eventType) {
     case 'user.created': {
-      response = handleUserCreated(event.data);
+      response = await handleUserCreated(event.data);
       break;
     }
     case 'user.updated': {

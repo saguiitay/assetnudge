@@ -1,19 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { validateOriginAndGetCorsHeaders } from '@/lib/cors';
 
 export const runtime = 'nodejs';
 
-// Add CORS headers for cross-origin requests
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-};
-
-export async function OPTIONS() {
+export async function OPTIONS(request: NextRequest) {
+  const corsHeaders = validateOriginAndGetCorsHeaders(request);
+  if (!corsHeaders) {
+    return new NextResponse(null, { status: 403 });
+  }
   return new NextResponse(null, { status: 200, headers: corsHeaders });
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const corsHeaders = validateOriginAndGetCorsHeaders(request);
+  if (!corsHeaders) {
+    return new NextResponse(null, { status: 403 });
+  }
+
   return NextResponse.json({
     endpoint: '/proxy/image',
     method: 'GET',

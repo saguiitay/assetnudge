@@ -1,19 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { validateOriginAndGetCorsHeaders } from '@/lib/cors';
 
 export const runtime = 'nodejs';
 
-// Add CORS headers for cross-origin requests
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-};
-
-export async function OPTIONS() {
+export async function OPTIONS(request: NextRequest) {
+  const corsHeaders = validateOriginAndGetCorsHeaders(request);
+  if (!corsHeaders) {
+    return new NextResponse(null, { status: 403 });
+  }
   return new NextResponse(null, { status: 200, headers: corsHeaders });
 }
 
 export async function HEAD(request: NextRequest) {
+  const corsHeaders = validateOriginAndGetCorsHeaders(request);
+  if (!corsHeaders) {
+    return new NextResponse(null, { status: 403 });
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const imageUrl = searchParams.get('url');
@@ -104,6 +107,7 @@ export async function HEAD(request: NextRequest) {
 
   } catch (error) {
     console.error('Error in HEAD request:', error);
+    const corsHeaders = validateOriginAndGetCorsHeaders(request) || {};
     return new NextResponse(null, { 
       status: 500, 
       headers: corsHeaders 
@@ -112,6 +116,11 @@ export async function HEAD(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
+  const corsHeaders = validateOriginAndGetCorsHeaders(request);
+  if (!corsHeaders) {
+    return new NextResponse(null, { status: 403 });
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const imageUrl = searchParams.get('url');
@@ -218,6 +227,7 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     console.error('Error proxying image:', error);
+    const corsHeaders = validateOriginAndGetCorsHeaders(request) || {};
     
     return NextResponse.json(
       { 
