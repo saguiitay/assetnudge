@@ -17,14 +17,39 @@ Your expertise includes:
 - Clear value proposition communication
 - Category-appropriate naming conventions
 - Emotional appeal and urgency creation
+- Asset grading system requirements for maximum scores
 
-CRITICAL GUIDELINES:
-2. Include primary keywords early in the title
-3. Use action words and clear value indicators
-4. Avoid generic terms like "Pack", "Collection", "Bundle" unless necessary
-5. Consider the target category's naming patterns
-6. Balance SEO optimization with human readability
-7. Use title case formatting
+TITLE OPTIMIZATION GUIDELINES:
+
+1. CHARACTER LENGTH:
+   - Stay within optimal character limits based on category median (will be provided in user prompt)
+   - Avoid titles that are statistical outliers in length
+
+2. KEYWORD STRATEGY:
+   - Include primary keywords early in the title
+   - Use at least one relevant keyword from category's top terms
+
+3. VALUE PROPOSITION LANGUAGE:
+   - Purpose words: "for", "to", "help", "enable", "allows", "create", "build"
+   - Quality descriptors: "best", "perfect", "ultimate", "complete", "professional", "advanced", "powerful"
+   - Use action words and clear value indicators
+
+4. FORMATTING & STYLE:
+   - Use title case formatting
+   - Balance SEO optimization with human readability
+   - Avoid generic terms like "Pack", "Collection", "Bundle" unless necessary
+   - Consider the target category's naming patterns
+
+5. STRONG NAME PRESERVATION:
+   - If the current title contains a Strong Name (distinctive brand/product name like "TopDown Engine", "Survival.io", "CharCrafter Pro", "Image Manager PRO"), preserve it in all suggestions
+   - Strong Names are typically: branded product names, tools with "Pro/PRO" suffixes, distinctive capitalization patterns, or established product identifiers
+   - Build new suggestions around the Strong Name rather than replacing it
+   - The Strong Name should remain prominent in the suggested titles
+
+6. GRADING OPTIMIZATION:
+   - Ensure title communicates main benefit/purpose clearly
+   - Follow proven patterns from successful exemplars
+   - Optimize for both discoverability and clarity
 
 Response must be valid JSON with the exact schema provided.`;
 }
@@ -56,6 +81,9 @@ Current Long Description (if any):
 ${currentLongDesc}
 \'\'\'
 
+STRONG NAME DETECTION:
+Analyze the current title for Strong Names (distinctive brand/product names such as branded tools, products with "Pro/PRO" suffixes, distinctive capitalization patterns, or established identifiers like "TopDown Engine", "Survival.io", "CharCrafter Pro", etc.). If a Strong Name is detected, it MUST be preserved in all title suggestions.
+
 CATEGORY VOCABULARY:
 ${topWords ? `Top Title Words: ${topWords}` : ''}
 ${topBigrams ? `Top Title Bigrams: ${topBigrams}` : ''}
@@ -67,13 +95,34 @@ ${categoryVocabulary?.title_length?.median ? `- Median: ${categoryVocabulary.tit
 ${exemplarTitles ? `HIGH-PERFORMING EXEMPLARS:
 ${exemplarTitles}` : ''}
 
-IMPROVEMENT FOCUS:
-Analyze the current title and suggest 3-4 improved alternatives that:
-1. Include high-value keywords from the category vocabulary
-2. Clearly communicate the asset's main benefit/purpose
-3. Stay within optimal character limits
-4. Use proven patterns from successful exemplars
-5. Improve discoverability while maintaining clarity
+GRADING OPTIMIZATION FOCUS:
+Analyze the current title and suggest 3-4 improved alternatives that maximize asset grading scores:
 
-Generate title suggestions with reasoning for each recommendation.`;
+1. STRONG NAME PRESERVATION (CRITICAL):
+   - If a Strong Name exists in the current title, preserve it exactly in ALL suggestions
+   - Build additional descriptive content around the Strong Name
+   - Do not modify, abbreviate, or replace Strong Names
+   - Strong Names should remain prominent and recognizable
+
+2. KEYWORD OPTIMIZATION:
+   - Include high-value keywords from the category vocabulary
+   - Use at least one top category term early in the title (after Strong Name if present)
+   - Include relevant game development terminology
+
+3. VALUE COMMUNICATION:
+   - Clearly communicate the asset's main benefit/purpose
+   - Use strong value proposition language (purpose words, quality descriptors)
+   - Include action words and clear value indicators
+
+4. TECHNICAL REQUIREMENTS:
+   - Stay within optimal character limits for the category
+   - Use title case formatting
+   - Follow proven patterns from successful exemplars
+
+5. DISCOVERABILITY:
+   - Balance SEO optimization with human readability
+   - Improve discoverability while maintaining clarity
+   - Avoid generic terms unless strategically necessary
+
+For each suggestion, provide detailed reasoning explaining how it improves the grading score across content quality, findability, and professional presentation dimensions.`;
 }

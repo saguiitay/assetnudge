@@ -17,15 +17,37 @@ Your expertise includes:
 - Value proposition communication
 - Benefit-driven messaging over feature lists
 - Emotional triggers and urgency creation
+- Asset grading system requirements for maximum scores
 
-CRITICAL GUIDELINES:
-1. Keep within 100-200 characters for optimal display
-2. Lead with the primary benefit or value proposition
-3. Use action-oriented language and strong verbs
-4. Include 1-2 primary keywords naturally
-5. Create immediate clarity about what the asset does
-6. End with a compelling call-to-action or benefit
-7. Avoid technical jargon unless necessary for the audience
+CRITICAL SHORT DESCRIPTION OPTIMIZATION GUIDELINES:
+
+1. CHARACTER LENGTH:
+   - Stay within optimal character limits based on category median (will be provided in user prompt)
+   - Avoid descriptions that are statistical outliers in length
+   - Suggestions MUST be shorter than 200 characters
+
+2. VALUE PROPOSITION LANGUAGE:
+   - Lead with the primary benefit or value proposition
+   - Tool descriptors: "pack", "set", "asset", "package", "collection", "kit", "system", "tool"
+   - Feature words: "includes", "contains", "features", "offers", "provides"
+   - Benefit words: "save", "improve", "boost", "enhance", "optimize"
+   - Quality descriptors: "best", "perfect", "ultimate", "complete", "professional", "advanced", "powerful"
+
+3. KEYWORD STRATEGY:
+   - Include 1-2 primary keywords from category vocabulary naturally
+   - Use relevant game development terminology
+   - Incorporate high-value category-specific words
+
+4. CONTENT STRUCTURE:
+   - Create immediate clarity about what the asset does
+   - Use action-oriented language and strong verbs
+   - End with a compelling value statement or benefit
+   - Avoid technical jargon unless necessary for the audience
+
+5. GRADING OPTIMIZATION:
+   - Ensure strong opening value proposition
+   - Follow proven patterns from successful exemplars
+   - Optimize for both discoverability and conversion
 
 Response must be valid JSON with the exact schema provided.`;
 }
@@ -42,6 +64,9 @@ export function buildShortDescUserPrompt(
   const currentShortDesc = asset.short_description || '';
   const currentLongDesc = asset.long_description || '';
   const descWords = categoryVocabulary?.description_words?.slice(0, 10).map((w: any) => w.word).join(', ') || '';
+  const topUnigrams = categoryVocabulary?.top_unigrams?.slice(0, 8).map((w: any) => w.t).join(', ') || '';
+  const topBigrams = categoryVocabulary?.top_bigrams?.slice(0, 5).map((w: any) => w.t).join(', ') || '';
+  const commonStructures = categoryVocabulary?.common_structures?.slice(0, 3).join(', ') || '';
   const exemplarDescs = exemplars.slice(0, 10).map(ex => 
     `- "${ex.title}": "${ex.short_description || ''}"`
   ).filter(desc => desc.includes(': "')).join('\n');
@@ -57,26 +82,47 @@ Current Long Description (if any):
 ${currentLongDesc}
 \'\'\'
 
-CATEGORY DESCRIPTION PATTERNS:
-High-Value Words: ${descWords}
-${categoryVocabulary?.short_desc_length ? `Optimal Length:
+CATEGORY VOCABULARY PATTERNS:
+${descWords ? `High-Value Description Words: ${descWords}` : ''}
+${topUnigrams ? `Top Category Unigrams: ${topUnigrams}` : ''}
+${topBigrams ? `Top Category Bigrams: ${topBigrams}` : ''}
+${commonStructures ? `Common Description Structures: ${commonStructures}` : ''}
+${categoryVocabulary?.short_desc_length ? `Optimal Short Description Length:
 ${categoryVocabulary?.short_desc_length?.min ? `- Min: ${categoryVocabulary.short_desc_length.min} characters` : ''}
 ${categoryVocabulary?.short_desc_length?.max ? `- Max: ${categoryVocabulary.short_desc_length.max} characters` : ''}
 ${categoryVocabulary?.short_desc_length?.median ? `- Median: ${categoryVocabulary.short_desc_length.median} characters` : ''}` : ''}
+${categoryVocabulary?.word_count_short ? `Optimal Word Count:
+${categoryVocabulary?.word_count_short?.min ? `- Min: ${categoryVocabulary.word_count_short.min} words` : ''}
+${categoryVocabulary?.word_count_short?.max ? `- Max: ${categoryVocabulary.word_count_short.max} words` : ''}
+${categoryVocabulary?.word_count_short?.median ? `- Median: ${categoryVocabulary.word_count_short.median} words` : ''}` : ''}
 
 
 ${exemplarDescs ? `HIGH-PERFORMING EXEMPLAR DESCRIPTIONS:
 ${exemplarDescs}` : ''}
 
-OPTIMIZATION FOCUS:
-Rewrite the short description to:
-1. Immediately communicate the core value/benefit
-2. Use compelling, action-oriented language
-3. Include 1-2 primary keywords naturally
-4. Create urgency or emotional appeal
-5. Stay within optimal character limits (100-200 chars)
-6. End with a strong value statement
-7. Match successful patterns from exemplars
+GRADING OPTIMIZATION FOCUS:
+Rewrite the short description to maximize asset grading scores:
 
-Generate short description suggestions with reasoning for each recommendation.`;
+1. VALUE PROPOSITION:
+   - Lead with the primary benefit or value proposition
+   - Use strong tool descriptors, feature words, and benefit language
+   - Include quality descriptors that convey professionalism
+
+2. KEYWORD INTEGRATION:
+   - Naturally incorporate 1-2 high-value keywords from category vocabulary
+   - Use relevant unigrams and bigrams from successful assets
+   - Include game development terminology where appropriate
+
+3. TECHNICAL REQUIREMENTS:
+   - Stay within optimal character limits for the category
+   - Suggestions MUST be shorter than 200 characters
+   - Follow word count guidelines from category statistics
+   - Use proven structural patterns from exemplars
+
+4. CONVERSION OPTIMIZATION:
+   - Create immediate clarity about the asset's purpose and value
+   - Use action-oriented language and compelling descriptors
+   - End with a strong value statement that encourages action
+
+For each suggestion, provide detailed reasoning explaining how it improves the grading score across content quality, findability, and professional presentation dimensions.`;
 }
