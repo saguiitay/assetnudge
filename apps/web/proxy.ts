@@ -22,4 +22,4 @@ const proxy = (request: NextRequest) => {
   return NextResponse.next();
 };
 
-export default middleware as NextProxy;
+export default proxy as NextProxy;
