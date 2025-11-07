@@ -35,17 +35,6 @@ export const config: NextConfig = {
     ];
   },
 
-  webpack(config, { isServer }) {
-    if (isServer) {
-      config.plugins = config.plugins || [];
-      config.plugins.push(new PrismaPlugin());
-    }
-
-    config.ignoreWarnings = [{ module: otelRegex }];
-
-    return config;
-  },
-
   // This is required to support PostHog trailing slash API requests
   skipTrailingSlashRedirect: true,
 
