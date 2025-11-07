@@ -9,15 +9,35 @@ if (env.ANALYZE === 'true') {
 }
 
 nextConfig.images = {
-  domains: [
-    // Add your allowed image domains here
-    'assetstorev1-prd-cdn.unity3d.com',
-    'cdn.unity3d.com',
-    'connect-prd-cdn.unity.com',
-    'assetstore-keyimage.unity.com',
-    'localhost',
-    // Add other domains as needed
-    new URL(process.env.NEXT_PUBLIC_API_URL!).hostname,
+  remotePatterns: [
+    {
+      protocol: 'https',
+      hostname: 'assetstorev1-prd-cdn.unity3d.com',
+    },
+    {
+      protocol: 'https',
+      hostname: 'cdn.unity3d.com',
+    },
+    {
+      protocol: 'https',
+      hostname: 'connect-prd-cdn.unity.com',
+    },
+    {
+      protocol: 'https',
+      hostname: 'assetstore-keyimage.unity.com',
+    },
+    {
+      protocol: 'http',
+      hostname: 'localhost',
+    },
+    {
+      protocol: 'https',
+      hostname: 'localhost',
+    },
+    {
+      protocol: 'https',
+      hostname: new URL(process.env.NEXT_PUBLIC_API_URL!).hostname,
+    },
   ],
 }
 
