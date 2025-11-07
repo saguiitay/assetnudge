@@ -17,6 +17,8 @@ import {
   Hash
 } from 'lucide-react';
 import { Asset } from '@repo/optimizer/src/types';
+import { createApiClient } from '@repo/api-client';
+import { useAuth } from '@repo/auth/client';
 
 interface AssetGeneratorProps {
   currentAssetData: Asset | null;
@@ -58,6 +60,12 @@ const generationFields: GenerationField[] = [
 ];
 
 export function AssetGenerator({ currentAssetData, onGeneratedDataUpdate }: AssetGeneratorProps) {
+  const { getToken } = useAuth()
+  // Create API client with authentication
+  const apiClient = createApiClient({
+    getToken,
+  });
+  
   const [isGenerating, setIsGenerating] = useState<Record<string, boolean>>({});
   const [generationError, setGenerationError] = useState<string | null>(null);
   const [generationSuccess, setGenerationSuccess] = useState<string | null>(null);
@@ -77,22 +85,12 @@ export function AssetGenerator({ currentAssetData, onGeneratedDataUpdate }: Asse
     setGenerationSuccess(null);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
-
-      const response = await fetch(`${apiUrl}/optimize`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          assetData: currentAssetData,
-          generateFields: [fieldKey],
-          generateAll: false,
-          debug: isDevelopment
-        }),
+      const result = await apiClient.optimize({
+        assetData: currentAssetData,
+        generateFields: [fieldKey],
+        generateAll: false,
+        debug: isDevelopment,
       });
-
-      const result = await response.json();
 
       if (!result.success) {
         setGenerationError(result.error || `Failed to generate ${fieldKey}`);
@@ -147,23 +145,15 @@ export function AssetGenerator({ currentAssetData, onGeneratedDataUpdate }: Asse
     setLastGenerated(null);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
       const fieldsToGenerate = generationFields.map(field => field.key);
 
-      const response = await fetch(`${apiUrl}/optimize`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          assetData: currentAssetData,
-          generateFields: fieldsToGenerate,
-          generateAll: true,
-          debug: isDevelopment
-        }),
+      const apiClient = createApiClient();
+      const result = await apiClient.optimize({
+        assetData: currentAssetData,
+        generateFields: fieldsToGenerate,
+        generateAll: true,
+        debug: isDevelopment,
       });
-
-      const result = await response.json();
 
       if (!result.success) {
         setGenerationError(result.error || 'Failed to generate asset details');

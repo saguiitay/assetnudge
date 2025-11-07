@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
+    "@repo/api-client": "*",
     "@repo/auth": "*",
     "@repo/database": "*",
     "@repo/design-system": "*",

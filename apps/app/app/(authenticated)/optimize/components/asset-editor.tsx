@@ -26,6 +26,8 @@ import { PromptHoverCard } from './prompt-hover-card';
 import { GenerateButton, type GeneratableField } from './generate-button';
 import { SuggestionInput } from '@workspace/ui/components/suggestion-input';
 import { DescriptionSuggestion, TagSuggestion, TitleSuggestion } from '@repo/optimizer/src/suggestions/types';
+import { createApiClient } from '@repo/api-client';
+import { useAuth } from '@repo/auth/client';
 
 // JSON validation function for Kibo UI editor output
 const validateEditorContent = (content: any) => {
@@ -106,6 +108,12 @@ interface AssetEditorProps {
 }
 
 export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
+  const { getToken } = useAuth()
+  // Create API client with authentication
+  const apiClient = createApiClient({
+    getToken,
+  });
+
   const [newTag, setNewTag] = useState('');
   const [importUrl, setImportUrl] = useState('');
   const [isImporting, setIsImporting] = useState(false);
@@ -244,24 +252,14 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
     setGenerationSuccess(null);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
       const isDevelopment = process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_DEBUG === 'true';
 
-      const response = await fetch(`${apiUrl}/optimize?field=${fieldKey}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          options: {
-            assetData: currentAssetData,
-            useAI: true
-          },
-          debug: isDevelopment
-        }),
+      const apiClient = createApiClient();
+      const output = await apiClient.optimizeField(fieldKey, {
+        assetData: currentAssetData,
+        useAI: true,
+        debug: isDevelopment,
       });
-
-      const output = await response.json();
 
       if (!output.success) {
         setGenerationError(output.error || `Failed to generate ${fieldKey}`);
@@ -269,7 +267,7 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
       }
 
       // Update the form with generated data
-      if (output.result && output.result.length > 0) {
+      if (output.result && Array.isArray(output.result) && output.result.length > 0) {
         if (fieldKey === 'title') {
           return (output.result as TitleSuggestion[]).map(s => ({ text: s.text, rationale: s.rationale }));
         } else if (fieldKey === 'tags') {
@@ -343,20 +341,11 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
     setImportedData(undefined);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
-      const response = await fetch(`${apiUrl}/scrape`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          url: importUrl.trim(),
-          method: 'graphql',
-          debug: true
-        }),
+      const result = await apiClient.scrape({
+        url: importUrl.trim(),
+        method: 'graphql',
+        debug: true,
       });
-
-      const result = await response.json();
 
       if (!result.success) {
         setImportError(result.error || 'Failed to import asset data');
@@ -364,19 +353,16 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
       }
 
       // Store the imported data for reference
-      setImportedData({
-        ...result.asset,
-        scraping_method: result.scraping_method,
-        scraped_at: result.scraped_at
-      });
+      const assetData = result.asset || result.data || result.scrapedData || {};
+      setImportedData(assetData as Asset);
 
-      console.log('Raw scraped asset data:', result.asset);
+      console.log('Raw scraped asset data:', assetData);
 
       // Start batch updating to prevent multiple useEffect triggers
       setIsBatchUpdating(true);
 
       // Process the asset data first
-      const asset = result.asset as Asset;
+      const asset = assetData as Asset;
       
       // Handle long description - preserve HTML and clean up for Tiptap editor
       let processedLongDescription = '';
@@ -631,6 +617,7 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
                           fieldType="title"
                           fieldName="Title"
                           getCurrentAssetData={getCurrentAssetData}
+                          getPrompt={apiClient.getPrompt}
                         />
                       </div>
                     )}
@@ -670,6 +657,7 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
                           fieldType="short_description"
                           fieldName="Short Description"
                           getCurrentAssetData={getCurrentAssetData}
+                          getPrompt={apiClient.getPrompt}
                         />
                       </div>
                     )}
@@ -714,6 +702,7 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
                           fieldType="long_description"
                           fieldName="Long Description"
                           getCurrentAssetData={getCurrentAssetData}
+                          getPrompt={apiClient.getPrompt}
                         />
                       </div>
                     )}
@@ -787,6 +776,7 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
                       fieldType="tags"
                       fieldName="Tags"
                       getCurrentAssetData={getCurrentAssetData}
+                      getPrompt={apiClient.getPrompt}
                     />
                   </div>
                 )}

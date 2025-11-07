@@ -10,12 +10,14 @@ interface PromptHoverCardProps {
   fieldType: string;
   fieldName: string;
   getCurrentAssetData: () => Asset;
+  getPrompt: (fieldType: string, asset: Asset) => Promise<{ success: boolean; error?: string; prompt?: string }>;
 }
 
 export function PromptHoverCard({
   fieldType,
   fieldName,
   getCurrentAssetData,
+  getPrompt,
 }: PromptHoverCardProps) {
   const [prompt, setPrompt] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
@@ -46,18 +48,7 @@ export function PromptHoverCard({
     try {
       const currentAssetData = getCurrentAssetData();
 
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
-      const response = await fetch(`${apiUrl}/prompts?type=${fieldType}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          asset: currentAssetData
-        }),
-      });
-
-      const result = await response.json();
+      const result = await getPrompt(fieldType, currentAssetData);
 
       if (result.success && result.prompt) {
         setPrompt(result.prompt);

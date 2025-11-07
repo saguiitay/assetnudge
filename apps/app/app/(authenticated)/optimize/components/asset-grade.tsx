@@ -16,6 +16,8 @@ import {
 } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
 import { Asset } from '@repo/optimizer/src/types';
+import { useAuth } from '@repo/auth/client';
+import { createApiClient } from '@repo/api-client';
 
 interface GradeResult {
   score: number;
@@ -45,6 +47,12 @@ interface AssetGradeProps {
 }
 
 export function AssetGrade({ assetData, onRefresh, isLoading = false, error = null, autoGrade = true }: AssetGradeProps) {
+  const { getToken } = useAuth()
+  // Create API client with authentication
+  const apiClient = createApiClient({
+    getToken,
+  });
+
   const [gradeResult, setGradeResult] = useState<GradeResult | null>(null);
   const [grading, setGrading] = useState(false);
   const [gradeError, setGradeError] = useState<string | null>(null);
@@ -61,19 +69,9 @@ export function AssetGrade({ assetData, onRefresh, isLoading = false, error = nu
     setGradeResult(null);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
-      const response = await fetch(`${apiUrl}/grade`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          assetData,
-          debug: false
-        }),
-      });
+      
 
-      const result = await response.json();
+      const result = await apiClient.grade(assetData, false);
 
       if (!result.success) {
         setGradeError(result.error || 'Failed to grade asset');
@@ -81,7 +79,7 @@ export function AssetGrade({ assetData, onRefresh, isLoading = false, error = nu
       }
 
       // Validate and sanitize the grade result - handle nested structure
-      const gradeData = result.grade?.grade || result.grade || {};
+      const gradeData: any = result.grade?.grade || result.grade || {};
       const sanitizedGrade = {
         score: typeof gradeData.score === 'number' && !isNaN(gradeData.score) ? gradeData.score : 0,
         letter: typeof gradeData.letter === 'string' ? gradeData.letter : 'F',
@@ -98,7 +96,7 @@ export function AssetGrade({ assetData, onRefresh, isLoading = false, error = nu
       console.log('Sanitized grade:', sanitizedGrade);
 
       setGradeResult(sanitizedGrade);
-      setGradedAt(result.graded_at);
+      setGradedAt(result.graded_at || null);
     } catch (error) {
       console.error('Grade error:', error);
       setGradeError('Failed to grade asset. Please check your connection and try again.');
