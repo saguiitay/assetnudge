@@ -4,7 +4,6 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
     "@floating-ui/dom": "^1.7.4",
@@ -72,7 +71,6 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@repo/eslint-config": "*",
     "@repo/typescript-config": "*",
     "@tailwindcss/postcss": "^4.1.14",
     "@turbo/gen": "^2.5.5",

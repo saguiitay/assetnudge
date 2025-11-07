@@ -4,13 +4,13 @@ import {
   noseconeOptions,
   noseconeOptionsWithToolbar,
 } from '@repo/security/middleware';
-import type { NextMiddleware } from 'next/server';
+import type { NextProxy } from 'next/server';
 
 const securityHeaders = noseconeMiddleware(noseconeOptions);
 
 export default authMiddleware(() =>
   securityHeaders()
-) as unknown as NextMiddleware;
+) as unknown as NextProxy;
 
 export const config = {
   matcher: [

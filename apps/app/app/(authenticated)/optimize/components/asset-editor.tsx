@@ -205,7 +205,6 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
     watchedValues.category,
     watchedValues.size
     // Exclude onAssetUpdate from dependencies to prevent loop
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   ]);
 
   const addTag = () => {
