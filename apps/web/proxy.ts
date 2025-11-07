@@ -1,6 +1,6 @@
 import { internationalizationMiddleware } from '@repo/internationalization/middleware';
 import {
-  type NextMiddleware,
+  type NextProxy,
   type NextRequest,
   NextResponse,
 } from 'next/server';
@@ -11,7 +11,7 @@ export const config = {
   matcher: ['/((?!_next/static|_next/image|ingest|favicon.ico|robots.txt|sitemap.xml).*)'],
 };
 
-const middleware = (request: NextRequest) => {
+const proxy = (request: NextRequest) => {
   const i18nResponse = internationalizationMiddleware(
     request as unknown as NextRequest
   );
@@ -22,4 +22,4 @@ const middleware = (request: NextRequest) => {
   return NextResponse.next();
 };
 
-export default middleware as NextMiddleware;
+export default middleware as NextProxy;
