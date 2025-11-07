@@ -160,6 +160,10 @@
         "description": "Thoughts, ideas, and opinions."
       }
     },
+    "pricing": {
+      "title": "Pricing",
+      "description": "Flexible pricing plans to suit your needs."
+    },
     "contact": {
       "meta": {
         "title": "Let's Talk About Your Business",
