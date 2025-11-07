@@ -254,7 +254,6 @@ export function AssetEditor({ onAssetUpdate, onAssetClear }: AssetEditorProps) {
     try {
       const isDevelopment = process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_DEBUG === 'true';
 
-      const apiClient = createApiClient();
       const output = await apiClient.optimizeField(fieldKey, {
         assetData: currentAssetData,
         useAI: true,

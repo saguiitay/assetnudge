@@ -147,7 +147,6 @@ export function AssetGenerator({ currentAssetData, onGeneratedDataUpdate }: Asse
     try {
       const fieldsToGenerate = generationFields.map(field => field.key);
 
-      const apiClient = createApiClient();
       const result = await apiClient.optimize({
         assetData: currentAssetData,
         generateFields: fieldsToGenerate,
