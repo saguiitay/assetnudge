@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import type { Asset } from '@repo/optimizer/src/types';
 import { generatePrompts } from '@repo/optimizer';
 import { validateOriginAndGetCorsHeaders } from '@/lib/cors';
-import { auth } from '@repo/auth/server';
+import { auth, getAuth } from '@repo/auth/server';
 
 /**
  * POST /api/prompts
@@ -34,11 +34,17 @@ export async function OPTIONS(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  await auth.protect();
-
   const corsHeaders = validateOriginAndGetCorsHeaders(request);
   if (!corsHeaders) {
     return new NextResponse(null, { status: 403 });
+  }
+   
+  // Use `getAuth()` to access `isAuthenticated` and the user's ID
+  const { isAuthenticated, userId } = getAuth(request)
+
+  // Protect the route by checking if the user is signed in
+  if (!isAuthenticated) {
+    return new NextResponse(null, { status: 401 });
   }
 
   try {

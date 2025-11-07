@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { gradeAsset } from '@repo/optimizer';
 import path from 'path';
 import { validateOriginAndGetCorsHeaders } from '@/lib/cors';
-import { auth } from '@repo/auth/server';
+import { getAuth } from '@repo/auth/server';
 
 export const runtime = 'nodejs';
 
@@ -15,11 +15,17 @@ export async function OPTIONS(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  await auth.protect();
-
   const corsHeaders = validateOriginAndGetCorsHeaders(request);
   if (!corsHeaders) {
     return new NextResponse(null, { status: 403 });
+  }
+
+  // Use `getAuth()` to access `isAuthenticated` and the user's ID
+  const { isAuthenticated, userId } = getAuth(request)
+
+  // Protect the route by checking if the user is signed in
+  if (!isAuthenticated) {
+    return new NextResponse(null, { status: 401 });
   }
 
   try {
