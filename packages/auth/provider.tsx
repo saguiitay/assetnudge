@@ -3,7 +3,9 @@
 import { ClerkProvider } from '@clerk/nextjs';
 import { dark } from '@clerk/themes';
 import type { Theme } from '@clerk/types';
+import { keys } from './keys';
 import { useTheme } from 'next-themes';
+import { env } from 'process';
 import type { ComponentProps } from 'react';
 
 type AuthProviderProperties = ComponentProps<typeof ClerkProvider> & {
@@ -53,6 +55,8 @@ export const AuthProvider = ({
     <ClerkProvider
       {...properties}
       appearance={{ layout, baseTheme, elements, variables }}
+      signInUrl={`${keys().NEXT_PUBLIC_APP_URL}/${keys().NEXT_PUBLIC_CLERK_SIGN_IN_URL}` }
+      signUpUrl={`${keys().NEXT_PUBLIC_APP_URL}/${keys().NEXT_PUBLIC_CLERK_SIGN_UP_URL}` }
     />
   );
 };
