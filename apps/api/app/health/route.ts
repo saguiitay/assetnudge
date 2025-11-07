@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateOriginAndGetCorsHeaders } from '@/lib/cors';
 
-export const runtime = 'edge';
-
 export const GET = (request: NextRequest): Response => {
   const corsHeaders = validateOriginAndGetCorsHeaders(request);
   if (!corsHeaders) {
