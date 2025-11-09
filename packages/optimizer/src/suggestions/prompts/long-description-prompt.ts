@@ -2,7 +2,7 @@
  * Long description-specific AI prompts for Unity Asset Store optimization
  */
 
-import { ExemplarAsset } from 'src/exemplars';
+import { ExemplarAsset } from '../../../src/exemplars';
 import type { Asset, CategoryRules, CategoryVocabulary, VocabularyWord } from '../../types';
 
 /**

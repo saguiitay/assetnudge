@@ -1,10 +1,6 @@
 import withBundleAnalyzer from '@next/bundle-analyzer';
-
-// @ts-expect-error No declaration file
-import { PrismaPlugin } from '@prisma/nextjs-monorepo-workaround-plugin';
 import type { NextConfig } from 'next';
 
-const otelRegex = /@opentelemetry\/instrumentation/;
 
 export const config: NextConfig = {
   images: {
@@ -37,10 +33,6 @@ export const config: NextConfig = {
 
   // This is required to support PostHog trailing slash API requests
   skipTrailingSlashRedirect: true,
-
-  typescript: {
-    ignoreBuildErrors: true,
-  },
 };
 
 export const withAnalyzer = (sourceConfig: NextConfig): NextConfig =>

@@ -191,7 +191,7 @@ export interface ThresholdConfig {
 export interface VocabularyWord {
   word: string;
   frequency: number;
-  scode: number;
+  score: number;
 }
 
 /**
