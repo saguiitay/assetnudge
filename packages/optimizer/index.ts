@@ -110,44 +110,12 @@ export async function gradeAsset(assetData: Asset, vocabPath: string | null = nu
 }
 
 /**
- * Optimize asset function wrapper
- */
-export async function optimizeAsset(options: any, config: { debug?: boolean } | null = null) {
-  const args: string[] = [];
-  if (config && config.debug) args.push('--debug', 'true');
-  
-  // If no explicit file paths provided, try to resolve default locations
-  if (!options.vocabPath || !options.exemplarsPath) {
-    // Find the correct data directory
-    const dataDir = await findDataDirectory('exemplars.json');
-
-    // Set default paths if not provided
-    if (!options.vocabPath) {
-      options.vocabPath = path.join(dataDir, 'exemplar_vocab.json');
-    }
-    if (!options.exemplarsPath) {
-      options.exemplarsPath = path.join(dataDir, 'exemplars.json');
-    }
-    
-    if (config?.debug) {
-      console.log(`Using default file paths: vocab=${options.vocabPath}, exemplars=${options.exemplarsPath}`);
-    }
-  }
-  
-  const optimizer = new UnityAssetOptimizer(args);
-  await SetupValidator.validateSetup(optimizer.config, optimizer.aiEngine, optimizer.logger);
-  
-  return optimizer.optimizeAsset(options);
-}
-
-/**
  * Suggest titles for an asset using exemplars, grading rules, AI, and heuristics
  */
 export async function suggestTitleForAsset(
   asset: Asset,
   exemplarsPath?: string | null,
   gradingRulesPath?: string | null,
-  vocab?: TypesVocabulary,
   config: { debug?: boolean } | null = null
 ): Promise<any[]> {
   const args: string[] = [];
@@ -157,7 +125,7 @@ export async function suggestTitleForAsset(
   const optimizer = new UnityAssetOptimizer(args);
   await SetupValidator.validateSetup(optimizer.config, optimizer.aiEngine, optimizer.logger);
   
-  return optimizer.suggestTitleForAsset(asset, exemplarsPath, gradingRulesPath, vocab);
+  return optimizer.suggestTitleForAsset(asset, exemplarsPath, gradingRulesPath);
 }
 
 /**
@@ -176,7 +144,7 @@ export async function suggestTagsForAsset(
   const optimizer = new UnityAssetOptimizer(args);
   await SetupValidator.validateSetup(optimizer.config, optimizer.aiEngine, optimizer.logger);
   
-  return optimizer.suggestTagsForAsset(asset, exemplarsPath, gradingRulesPath, vocab);
+  return optimizer.suggestTagsForAsset(asset, exemplarsPath, gradingRulesPath);
 }
 
 /**

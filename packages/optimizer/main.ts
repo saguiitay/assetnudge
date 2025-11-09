@@ -747,42 +747,6 @@ async function cmdGrade(): Promise<void> {
 }
 
 /**
- * OPTIMIZE COMMAND: Comprehensive optimization analysis
- */
-async function cmdOptimize(): Promise<void> {
-  const input = getFlag('input');
-  const url = getFlag('url');
-  const vocabPath = getFlag('vocab');
-  const exemplarsPath = getFlag('exemplars');
-  const neighborsPath = getFlag('neighbors');
-  const useAI = getBool('ai', false);
-  const outPath = getFlag('out');
-  
-  ensure(!!(input || url), '--input asset json or --url is required');
-  ensure(!(input && url), 'Cannot specify both --input and --url');
-  
-  const optimizer = new UnityAssetOptimizer(args);
-  await SetupValidator.validateSetup(optimizer.config, optimizer.aiEngine, optimizer.logger);
-  
-  const result = await optimizer.optimizeAsset({
-    input,
-    url,
-    vocabPath,
-    exemplarsPath,
-    neighborsPath,
-    useAI
-  });
-  
-  // Save to file if requested
-  if (outPath) {
-    await optimizer.writeJSON(outPath, result);
-    (result as any).output_file = outPath;
-  }
-  
-  console.log(JSON.stringify(result, null, 2));
-}
-
-/**
  * STATUS COMMAND: Show system status
  */
 async function cmdStatus(): Promise<void> {
@@ -825,9 +789,6 @@ async function main(): Promise<void> {
         break;
       case 'grade':
         await cmdGrade();
-        break;
-      case 'optimize':
-        await cmdOptimize();
         break;
       case 'status':
         await cmdStatus();

@@ -424,7 +424,8 @@ export class VocabularyBuilder {
       },
       bullet_count: {
         median: median(data.bullet_counts),
-        mean: bulletStats.mean
+        mean: bulletStats.mean,
+        std: bulletStats.std
       },
       
       // Sample size for statistical confidence
@@ -486,7 +487,7 @@ export class VocabularyBuilder {
       word_count_short: { median: 25, mean: 25, std: 10 },
       word_count_long: { median: 300, mean: 350, std: 100 },
       tag_count: { median: 8, mean: 8, std: 3 },
-      bullet_count: { median: 6, mean: 6 },
+      bullet_count: { median: 6, mean: 6, std: 0 },
       sample_size: 0
     };
   }
@@ -586,6 +587,7 @@ export class VocabularyBuilder {
           
           // Bullet count compatibility
           bullet_count: {
+            std: null,
             mean: patterns.structure.bulletPoints.avg,
             median: patterns.structure.bulletPoints.median
           },
@@ -657,7 +659,8 @@ export class VocabularyBuilder {
     return patternData.map(item => ({
       word: item.item,
       frequency: item.frequency,
-      score: item.frequency // Use frequency as score
+      score: item.frequency, // Use frequency as score
+      scode: item.frequency // Use frequency as scode
     }));
   }
 
