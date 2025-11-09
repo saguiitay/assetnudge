@@ -135,7 +135,6 @@ export async function suggestTagsForAsset(
   asset: Asset,
   exemplarsPath?: string | null,
   gradingRulesPath?: string | null,
-  vocab?: TypesVocabulary,
   config: { debug?: boolean } | null = null
 ): Promise<any[]> {
   const args: string[] = [];

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { 
-  optimizeAsset, 
   suggestTitleForAsset, 
   suggestTagsForAsset, 
   suggestShortDescriptionForAsset, 
@@ -121,7 +120,6 @@ export async function POST(request: NextRequest) {
               assetData,
               options.exemplarsPath,
               options.gradingRulesPath,
-              options.vocab,
               config
             );
             break;
@@ -130,7 +128,6 @@ export async function POST(request: NextRequest) {
               assetData,
               options.exemplarsPath,
               options.gradingRulesPath,
-              options.vocab,
               config
             );
             break;
@@ -170,8 +167,13 @@ export async function POST(request: NextRequest) {
         );
       }
     } else {
-      // Use the general optimization function for full optimization
-      result = await optimizeAsset(options, config as any);
+       return NextResponse.json(
+          { 
+            success: false, 
+            error: 'No field specified for generation'
+          },
+          { status: 500, headers: corsHeaders }
+        );
     }
 
     // Structure response based on whether field-specific generation was requested
