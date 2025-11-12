@@ -10,10 +10,11 @@
 
 import fs from 'fs/promises';
 import path from 'path';
-import { AssetGrader } from '../packages/optimizer/src/grader';
+import { DynamicAssetGrader } from '../packages/optimizer/src/dynamic-asset-grader';
 import { Config, DEFAULT_WEIGHTS, DEFAULT_THRESHOLDS } from '../packages/optimizer/src/config';
 import { Logger } from '../packages/optimizer/src/utils/logger';
-import type { Asset, Vocabulary, GradeResult, CategoryVocabulary } from '../packages/optimizer/src/types';
+import { FileValidator } from '../packages/optimizer/src/utils/validation';
+import type { Asset, Vocabulary, GradeResult, CategoryVocabulary, DynamicGradingRulesFile, GraderConfig } from '../packages/optimizer/src/types';
 
 interface Publisher {
   id: string;
@@ -50,16 +51,17 @@ interface PublisherAnalysis {
  * Cold Outreach Finder with direct TypeScript integration
  */
 class ColdOutreachFinderTS {
-  private grader: AssetGrader;
+  private grader: DynamicAssetGrader | null = null;
   private vocabulary: Vocabulary = {};
+  private config: GraderConfig;
 
   constructor() {
     // Initialize with default configuration
-    this.grader = new AssetGrader({
+    this.config = {
       weights: DEFAULT_WEIGHTS,
       thresholds: DEFAULT_THRESHOLDS,
       textProcessing: { ignoreStopWords: true }
-    });
+    };
   }
 
   /**
@@ -141,7 +143,7 @@ class ColdOutreachFinderTS {
   }
 
   /**
-   * Load vocabulary for grading
+   * Load vocabulary and grading rules
    */
   async loadVocabulary(): Promise<void> {
     try {
@@ -154,12 +156,30 @@ class ColdOutreachFinderTS {
       console.warn('⚠️ Failed to load vocabulary, using empty vocabulary:', error);
       this.vocabulary = {};
     }
+
+    // Load dynamic grading rules
+    try {
+      const rulesPath = 'packages/optimizer/data/results/grading-rules.json';
+      console.log(`📋 Loading dynamic grading rules from ${rulesPath}...`);
+      const gradingRules = await FileValidator.validateJSONFile(rulesPath) as DynamicGradingRulesFile;
+      
+      // Initialize DynamicAssetGrader with the loaded rules
+      this.grader = new DynamicAssetGrader(this.config, gradingRules);
+      console.log(`✅ Loaded dynamic grading rules for ${Object.keys(gradingRules.rules).length} categories`);
+    } catch (error) {
+      console.error('❌ Failed to load dynamic grading rules:', error);
+      throw new Error('Dynamic grading rules are required for cold outreach analysis');
+    }
   }
 
   /**
-   * Grade a package using the Asset Grader
+   * Grade a package using the Dynamic Asset Grader
    */
   async gradePackage(pkg: Asset): Promise<GradeResult & { isOptimizer: boolean }> {
+    if (!this.grader) {
+      throw new Error('Grader not initialized. Call loadVocabulary() first.');
+    }
+    
     try {
       // Asset is already in the correct format
       const grade = await this.grader.gradeAsset(pkg, this.vocabulary);
