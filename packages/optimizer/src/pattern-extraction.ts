@@ -111,6 +111,7 @@ interface VocabularyPatterns {
   titleWords: FrequencyItem[];
   titleBigrams: FrequencyItem[];
   descriptionWords: FrequencyItem[];
+  uvpWords: FrequencyItem[]; // Value proposition words from opening text
   keyPhrases: unknown[];
 }
 
@@ -180,12 +181,14 @@ export function extractVocabularyPatterns(exemplars: Asset[], config: Config = {
         titleWords: [],      // Word frequency in titles
         titleBigrams: [],    // Common word pairs in titles
         descriptionWords: [],// Important words in descriptions (first 200 words)
+        uvpWords: [],        // Value proposition words from opening text
         keyPhrases: []       // Common phrases across exemplars
     };
     
     const titleWordsMap: Record<string, number> = {};
     const titleBigramsMap: Record<string, number> = {};
     const descriptionWordsMap: Record<string, number> = {};
+    const uvpWordsMap: Record<string, number> = {};
     
     exemplars.forEach(asset => {
         // Process title
@@ -210,6 +213,20 @@ export function extractVocabularyPatterns(exemplars: Asset[], config: Config = {
         descWords.forEach(word => {
             descriptionWordsMap[word] = (descriptionWordsMap[word] || 0) + 1;
         });
+        
+        // Extract UVP words from opening text (title + short description or first 200 chars of long desc)
+        // Only count semantically meaningful words that convey value propositions
+        const shortDesc = asset.short_description || '';
+        const openingText = `${asset.title || ''} ${shortDesc || cleanDescription.slice(0, 200)}`;
+        const cleanOpeningText = openingText.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ');
+        const allOpeningWords = extractWords(cleanOpeningText, ignoreStopWords).slice(0, 100); // Get more words to filter from
+        
+        // Filter for only UVP-relevant words (purpose, value, features, benefits, etc.)
+        const uvpWords = allOpeningWords.filter(word => isUVPRelevantWord(word));
+        
+        uvpWords.forEach(word => {
+            uvpWordsMap[word] = (uvpWordsMap[word] || 0) + 1;
+        });
     });
     
     // Convert to ranked lists and filter by frequency
@@ -218,6 +235,7 @@ export function extractVocabularyPatterns(exemplars: Asset[], config: Config = {
     patterns.titleWords = filterAndRank(titleWordsMap, minFrequency);
     patterns.titleBigrams = filterAndRank(titleBigramsMap, Math.max(1, Math.floor(exemplars.length * 0.15)));
     patterns.descriptionWords = filterAndRank(descriptionWordsMap, minFrequency);
+    patterns.uvpWords = filterAndRank(uvpWordsMap, Math.max(1, Math.floor(exemplars.length * 0.25))); // UVP words should be common
     
     return patterns;
 }
@@ -475,6 +493,75 @@ export function extractCategoryPatterns(exemplars: Asset[], config: Config = {})
 }
 
 // Helper functions
+
+/**
+ * Check if a word is relevant for UVP (Unique Value Proposition) detection
+ * Filters for words that typically convey value, purpose, quality, features, or benefits
+ * @param word - Word to check (should be lowercase)
+ * @returns true if word is UVP-relevant
+ */
+function isUVPRelevantWord(word: string): boolean {
+    if (!word || word.length < 3) return false;
+    
+    // Purpose and capability words
+    const purposeWords = new Set([
+        'for', 'help', 'helps', 'enable', 'enables', 'allow', 'allows', 'let', 'lets',
+        'make', 'makes', 'create', 'creates', 'build', 'builds', 'design', 'designs',
+        'provide', 'provides', 'deliver', 'delivers', 'support', 'supports'
+    ]);
+    
+    // Tool and product descriptors
+    const toolDescriptors = new Set([
+        'pack', 'set', 'asset', 'package', 'collection', 'kit', 'system', 'library',
+        'tool', 'tools', 'solution', 'framework', 'toolkit', 'suite', 'bundle'
+    ]);
+    
+    // Value and quality descriptors
+    const valueWords = new Set([
+        'best', 'perfect', 'ideal', 'ultimate', 'complete', 'comprehensive', 'full',
+        'professional', 'advanced', 'powerful', 'easy', 'simple', 'fast', 'quick',
+        'efficient', 'optimized', 'premium', 'high', 'quality', 'pro', 'essential',
+        'perfect', 'amazing', 'incredible', 'outstanding', 'excellent', 'superior',
+        'robust', 'reliable', 'stable', 'flexible', 'versatile', 'modular'
+    ]);
+    
+    // Feature presentation terms
+    const featureWords = new Set([
+        'includes', 'include', 'contains', 'contain', 'features', 'feature', 'offers',
+        'offer', 'comes', 'equipped', 'loaded', 'packed', 'filled', 'full'
+    ]);
+    
+    // Benefit and improvement terms
+    const benefitWords = new Set([
+        'save', 'saves', 'improve', 'improves', 'boost', 'boosts', 'enhance', 'enhances',
+        'increase', 'increases', 'reduce', 'reduces', 'optimize', 'optimizes',
+        'streamline', 'streamlines', 'simplify', 'simplifies', 'accelerate', 'accelerates',
+        'maximize', 'maximizes', 'minimize', 'minimizes'
+    ]);
+    
+    // Action and capability verbs
+    const actionVerbs = new Set([
+        'customize', 'customizes', 'control', 'controls', 'manage', 'manages',
+        'integrate', 'integrates', 'implement', 'implements', 'develop', 'develops',
+        'generate', 'generates', 'animate', 'animates', 'render', 'renders',
+        'simulate', 'simulates', 'visualize', 'visualizes'
+    ]);
+    
+    // Technology and domain-specific terms (Unity/game dev)
+    const techWords = new Set([
+        'unity', 'game', 'games', 'gaming', 'engine', 'shader', 'shaders',
+        'particle', 'particles', 'animation', 'animations', 'physics', 'render',
+        'rendering', 'realtime', 'runtime', 'editor', 'workflow', 'pipeline'
+    ]);
+    
+    return purposeWords.has(word) ||
+           toolDescriptors.has(word) ||
+           valueWords.has(word) ||
+           featureWords.has(word) ||
+           benefitWords.has(word) ||
+           actionVerbs.has(word) ||
+           techWords.has(word);
+}
 
 function extractWords(text: string, ignoreStopWords: boolean = true): string[] {
     if (!text) return [];

@@ -78,7 +78,7 @@ export class AssetGrader {
       });
 
       // Prepare text content for analysis
-      const content = this.prepareContent(asset);
+      const content = this.prepareContent(asset, categoryVocab);
       
       // Score each dimension
       const contentScore = this.scoreContent(content, categoryVocab);
@@ -134,7 +134,7 @@ export class AssetGrader {
   /**
    * Prepare and clean content for analysis
    */
-  prepareContent(asset: Asset): PreparedContent {
+  prepareContent(asset: Asset, vocab?: CategoryVocabulary): PreparedContent {
     const title = String(asset.title || '');
     const shortDesc = String(asset.short_description || '');
     const longDesc = String(asset.long_description || '');
@@ -167,7 +167,7 @@ export class AssetGrader {
       short: shortDesc.slice(0, 180),
       bullets: countBullets(description),
       hasCTA: this.detectCTA(description),
-      hasUVP: this.detectUVP(title, shortDesc, longDesc),
+      hasUVP: this.detectUVP(title, shortDesc, longDesc, vocab),
       wordCount,
       contentDensity, // Add content density metric
       linkAnalysis
@@ -278,12 +278,37 @@ export class AssetGrader {
 
   /**
    * Detect Value Proposition patterns in content
-   * Enhanced based on analysis - looks at title + first part of description for stronger UVP detection
+   * Uses dynamic, category-specific UVP words from vocabulary when available
+   * Falls back to hard-coded patterns if vocabulary lacks UVP data
    */
-  private detectUVP(title: string, shortDesc: string, longDesc: string): boolean {
+  private detectUVP(title: string, shortDesc: string, longDesc: string, vocab?: CategoryVocabulary): boolean {
     // Combine title and first part of description for better UVP detection
     const openingText = `${title} ${shortDesc}`.slice(0, 200);
-    const cleanText = openingText.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ');
+    const cleanText = openingText.toLowerCase().replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ');
+    
+    // Try dynamic UVP detection first using vocabulary
+    if (vocab?.uvp_words && vocab.uvp_words.length > 0) {
+      // Extract top UVP words (those appearing in at least 25% of exemplars)
+      const topUVPWords = vocab.uvp_words
+        .slice(0, 50) // Top 50 most common UVP words
+        .map(w => w.word.toLowerCase());
+      
+      // Tokenize opening text
+      const openingWords = cleanText.split(/\s+/).filter(w => w.length > 2);
+      
+      // Count how many category-specific UVP words are present
+      const uvpWordCount = openingWords.filter(word => 
+        topUVPWords.includes(word)
+      ).length;
+      
+      // Require at least 2 category-specific UVP words for strong value proposition
+      if (uvpWordCount >= 2) {
+        return true;
+      }
+    }
+    
+    // Fallback to hard-coded patterns if no vocabulary or insufficient UVP words
+    // These are general patterns that work across categories
     
     // Purpose and capability words (140% coverage in high-quality assets)
     const purposeWords = /\b(for|to|help|helps|enable|allows|let|lets|make|makes|create|creates|build|builds|design|designs)\b/i;

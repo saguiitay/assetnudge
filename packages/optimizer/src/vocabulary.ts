@@ -69,6 +69,7 @@ interface ExemplarPatterns {
     titleWords: Array<{ item: string; frequency: number }>;
     titleBigrams: Array<{ item: string; frequency: number }>;
     descriptionWords: Array<{ item: string; frequency: number }>;
+    uvpWords: Array<{ item: string; frequency: number }>;
   };
   tags: {
     commonTags: Array<{ item: string; frequency: number }>;
@@ -159,6 +160,7 @@ interface ExtendedCategoryVocabulary extends CategoryVocabulary {
   title_words?: ExemplarVocabTerm[];
   title_bigrams?: ExemplarVocabTerm[];
   description_words?: ExemplarVocabTerm[];
+  uvp_words?: ExemplarVocabTerm[]; // Value proposition words
   common_tags?: ExemplarVocabTerm[];
   tag_cooccurrence?: ExemplarVocabTerm[];
   images_count?: StatisticsObject;
@@ -539,6 +541,7 @@ export class VocabularyBuilder {
           title_words: this.convertToVocabFormat(patterns.vocabulary.titleWords),
           title_bigrams: this.convertToVocabFormat(patterns.vocabulary.titleBigrams),
           description_words: this.convertToVocabFormat(patterns.vocabulary.descriptionWords),
+          uvp_words: this.convertToVocabFormat(patterns.vocabulary.uvpWords || []),
           common_tags: this.convertToVocabFormat(patterns.tags.commonTags),
           tag_cooccurrence: this.convertToVocabFormat(patterns.tags.tagCooccurrence),
           

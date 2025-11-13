@@ -217,6 +217,7 @@ export interface CategoryVocabulary {
   
 
   description_words?: VocabularyWord[];
+  uvp_words?: VocabularyWord[]; // Value proposition words from opening text
   common_tags?: VocabularyWord[];
   tag_cooccurrence?: VocabularyWord[];
   tag_count: StatisticsObject;
