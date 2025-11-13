@@ -82,7 +82,7 @@ export class AssetGrader {
       
       // Score each dimension
       const contentScore = this.scoreContent(content, categoryVocab);
-      const mediaScore = this.scoreMedia(asset);
+      const mediaScore = this.scoreMedia(asset, categoryVocab);
       const trustScore = this.scoreTrust(asset);
       const findabilityScore = this.scoreFindability(asset, categoryVocab);
 
@@ -417,31 +417,58 @@ export class AssetGrader {
       }
     }
 
-    // Long description word count
-    const minWords = Math.max(
-      this.thresholds.longDesc.minWords,
-      Math.round((vocab.word_count_long.median ?? 300) - (vocab.word_count_long.std ?? 100))
-    );
+    // Long description word count - percentile-based partial credit
+    const longDescMedian = vocab.word_count_long?.median ?? 300;
+    const longDescStd = vocab.word_count_long?.std ?? 100;
     
-    const longOK = content.wordCount >= minWords;
-    if (longOK) {
+    // Calculate thresholds based on percentiles
+    const minLongWords = Math.max(50, Math.round(longDescMedian * 0.25)); // 25th percentile minimum
+    const idealLongWords = Math.round(longDescMedian * 0.5);               // 50th percentile ideal
+    const targetLongWords = Math.round(longDescMedian);                     // Median target
+    const excellentLongWords = Math.round(longDescMedian * 1.2);            // 120% of median for bonus
+    
+    if (content.wordCount >= excellentLongWords) {
+      // Bonus for excellent descriptions (10% bonus)
+      score.score += w.long * 1.1;
+    } else if (content.wordCount >= targetLongWords) {
+      // Full points for meeting median
       score.score += w.long;
-    } else {
-      // Enhanced error message that considers content density
-      // Note: Content density < 0.4 suggests excessive HTML/formatting
+    } else if (content.wordCount >= idealLongWords) {
+      // Good partial credit: 80-100% for 50th-100th percentile
+      const ratio = (content.wordCount - idealLongWords) / (targetLongWords - idealLongWords);
+      score.score += w.long * (0.8 + ratio * 0.2);
+    } else if (content.wordCount >= minLongWords) {
+      // Moderate partial credit: 40-80% for 25th-50th percentile
+      const ratio = (content.wordCount - minLongWords) / (idealLongWords - minLongWords);
+      score.score += w.long * (0.4 + ratio * 0.4);
+    } else if (content.wordCount >= 30) {
+      // Minimal partial credit: 10-40% for under 25th percentile but >= 30 words
+      const ratio = content.wordCount / minLongWords;
+      score.score += w.long * (0.1 + ratio * 0.3);
+    }
+    // If < 30 words: no points
+    
+    // Provide actionable feedback based on position
+    if (content.wordCount < minLongWords) {
       if (content.contentDensity < 0.4) {
         score.reasons.push(
-          `Long description under ${minWords} words ` +
-          `(category median: ${Math.round(vocab.word_count_long.median ?? 300)}) - only ${content.wordCount} words. ` +
+          `Long description too short: ${content.wordCount} words ` +
+          `(category median: ${Math.round(longDescMedian)}, minimum: ${minLongWords}). ` +
           `Consider adding more actual content rather than HTML formatting (content density: ${Math.round(content.contentDensity * 100)}%)`
         );
       } else {
         score.reasons.push(
-          `Long description under ${minWords} words ` +
-          `(category median: ${Math.round(vocab.word_count_long.median ?? 300)}) - only ${content.wordCount} words`
+          `Long description too short: ${content.wordCount} words ` +
+          `(category median: ${Math.round(longDescMedian)}, minimum: ${minLongWords})`
         );
       }
+    } else if (content.wordCount < targetLongWords) {
+      score.reasons.push(
+        `Long description could be more detailed: ${content.wordCount} words ` +
+        `(category median: ${Math.round(longDescMedian)})`
+      );
     }
+    // If >= median: no suggestion
 
     // Bullet points
     const bulletsOK = content.bullets >= this.thresholds.bullets.minimum;
@@ -471,7 +498,7 @@ export class AssetGrader {
   /**
    * Score media presence and quality
    */
-  scoreMedia(asset: Asset): ScoreResult {
+  scoreMedia(asset: Asset, vocab: CategoryVocabulary): ScoreResult {
     const score: ScoreResult = { score: 0, reasons: [] };
     const w = this.weights.media;
 
@@ -483,16 +510,60 @@ export class AssetGrader {
       score.reasons.push(`Add ≥${this.thresholds.images.minimum} images - currently ${asset.images_count || 0}`);
     }
 
-    // Videos
-    const vidOK = (asset.videos_count || 0) >= this.thresholds.videos.minimum;
-    if (vidOK) {
+    // Videos - dynamic requirement based on category patterns
+    const videoCount = asset.videos_count || 0;
+    const imageCount = asset.images_count || 0;
+    const hasVideoPercentage = vocab.has_video_percentage ?? 75; // Default 75% if not available
+    const videoIsCommon = hasVideoPercentage >= 90; // Required if 90%+ of category has videos
+    
+    if (videoCount >= 1) {
+      // Has video - award full points
       score.score += w.video;
+      
+      // Bonus for multiple videos (especially for complex assets)
+      if (videoCount >= 3) {
+        score.score += w.video * 0.2; // 20% bonus
+      } else if (videoCount >= 2) {
+        score.score += w.video * 0.1; // 10% bonus
+      }
     } else {
-      score.reasons.push(`Add ≥${this.thresholds.videos.minimum} video - currently ${asset.videos_count || 0}`);
+      // No video - check if it's required or if images can compensate
+      if (videoIsCommon) {
+        // Video is expected in this category (90%+ have videos)
+        if (imageCount >= 10) {
+          score.score += w.video * 0.5; // 50% credit for excellent images
+          score.reasons.push(`Video is common in this category (${Math.round(hasVideoPercentage)}% have videos). Consider adding one.`);
+        } else if (imageCount >= 5) {
+          score.score += w.video * 0.3; // 30% credit for adequate images
+          score.reasons.push(`Video is common in this category (${Math.round(hasVideoPercentage)}% have videos). Consider adding one.`);
+        } else {
+          // Missing both video and adequate images
+          score.reasons.push(`Add video or more images (${Math.round(hasVideoPercentage)}% of assets in this category have videos).`);
+        }
+      } else {
+        // Video is optional in this category (<90% have videos)
+        if (imageCount >= 15) {
+          score.score += w.video * 0.7; // 70% credit for excellent image coverage
+        } else if (imageCount >= 10) {
+          score.score += w.video * 0.5; // 50% credit for good image coverage
+        } else if (imageCount >= 5) {
+          score.score += w.video * 0.3; // 30% credit for adequate image coverage
+        } else if (imageCount >= 1) {
+          score.score += w.video * 0.1; // 10% credit for minimal images
+        }
+        
+        // Only suggest video if images are lacking
+        if (imageCount < 8) {
+          score.reasons.push(`Consider adding a video demo or more images (currently ${imageCount} images, ${Math.round(hasVideoPercentage)}% of category has videos).`);
+        } else if (imageCount >= 8 && imageCount < 12) {
+          score.reasons.push(`Consider adding a video demo to complement your ${imageCount} images.`);
+        }
+        // If imageCount >= 12, don't suggest video - images are sufficient
+      }
     }
 
     // GIF/Demo (bonus points if videos exist)
-    if (vidOK) {
+    if (videoCount >= 1) {
       score.score += w.gif;
     } else {
       score.reasons.push('Consider a short GIF/demo');
