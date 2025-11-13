@@ -299,8 +299,21 @@ function generateDynamicThresholds(
   thresholds.shortDesc.minLength = benchmarks.content.shortDescLength.min;
   thresholds.shortDesc.maxLength = benchmarks.content.shortDescLength.max;
   
-  // Note: longDesc only has minWords in ThresholdConfig
-  // thresholds.longDesc.minLength = benchmarks.content.longDescLength.min;
+  // Convert long description length (chars) to word count estimate
+  // Average English word length is ~5 chars + 1 space = 6 chars per word
+  thresholds.longDesc.minWords = Math.floor(benchmarks.content.longDescLength.min / 6);
+  
+  // Update media thresholds based on category benchmarks
+  thresholds.images.minimum = benchmarks.media.targetImages;
+  thresholds.videos.minimum = benchmarks.media.targetVideos;
+  
+  // Update tag thresholds based on category patterns
+  thresholds.tags.minimum = benchmarks.content.minTags;
+  thresholds.tags.maximum = benchmarks.content.targetTags;
+  
+  // Update bullet threshold (use a reasonable minimum based on category)
+  // Most categories don't strictly require bullets, so keep it low
+  thresholds.bullets.minimum = Math.max(0, Math.floor(benchmarks.content.minTags / 2));
   
   thresholds.rating.minimum = benchmarks.rating.minimum;
   thresholds.reviews.minimum = benchmarks.reviews.minimum;

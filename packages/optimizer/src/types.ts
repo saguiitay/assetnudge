@@ -177,6 +177,10 @@ export interface ThresholdConfig {
   reviews: {
     minimum: number;
   };
+  tags: {
+    minimum: number;
+    maximum: number;
+  };
   similarity: {
     topUnigrams: number;
     topBigrams: number;
