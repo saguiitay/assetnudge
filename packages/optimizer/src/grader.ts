@@ -301,8 +301,8 @@ export class AssetGrader {
         topUVPWords.includes(word)
       ).length;
       
-      // Require at least 2 category-specific UVP words for strong value proposition
-      if (uvpWordCount >= 2) {
+      // More lenient: Accept 1 strong UVP word OR 2+ weaker ones
+      if (uvpWordCount >= 1) {
         return true;
       }
     }
@@ -338,8 +338,8 @@ export class AssetGrader {
     if (featureWords.test(cleanText)) uvpScore += 1;
     if (benefitWords.test(cleanText)) uvpScore += 2;
     
-    // Require a minimum score to ensure strong UVP presence
-    return uvpScore >= 3;
+    // More lenient threshold - require score of 2 instead of 3
+    return uvpScore >= 2;
   }
 
   /**
@@ -372,16 +372,26 @@ export class AssetGrader {
     }
 
     // Short description scoring
-    const shortOK = content.short.length >= this.thresholds.shortDesc.minLength && 
-                   content.short.length <= this.thresholds.shortDesc.maxLength;
+    // Only flag if completely missing descriptions (both short and long)
+    const hasAnyDescription = content.shortDesc.length > 0 || content.longDesc.length > 0;
     
-    if (shortOK) {
-      score.score += w.short;
+    if (!hasAnyDescription) {
+      score.reasons.push('Add product description');
+    } else if (content.short.length > 0) {
+      const shortOK = content.short.length >= this.thresholds.shortDesc.minLength && 
+                     content.short.length <= this.thresholds.shortDesc.maxLength;
+      
+      if (shortOK) {
+        score.score += w.short;
+      } else if (content.short.length < this.thresholds.shortDesc.minLength) {
+        score.reasons.push(
+          `Short description could be more detailed (${content.short.length} chars, ` +
+          `recommended ${this.thresholds.shortDesc.minLength}-${this.thresholds.shortDesc.maxLength})`
+        );
+      }
     } else {
-      score.reasons.push(
-        `Short description not ${this.thresholds.shortDesc.minLength}-${this.thresholds.shortDesc.maxLength} chars - ` +
-        `currently ${content.short.length} chars`
-      );
+      // Has long description but no short - this is acceptable
+      score.score += w.short * 0.7; // Give partial credit for having long description
     }
 
     // Long description word count
@@ -395,7 +405,8 @@ export class AssetGrader {
       score.score += w.long;
     } else {
       // Enhanced error message that considers content density
-      if (content.contentDensity < 0.6) {
+      // Note: Content density < 0.4 suggests excessive HTML/formatting
+      if (content.contentDensity < 0.4) {
         score.reasons.push(
           `Long description under ${minWords} words ` +
           `(category median: ${Math.round(vocab.word_count_long.median ?? 300)}) - only ${content.wordCount} words. ` +
@@ -428,7 +439,7 @@ export class AssetGrader {
     if (content.hasUVP) {
       score.score += w.uvp;
     } else {
-      score.reasons.push('Weak UVP in opening');
+      score.reasons.push('Consider emphasizing value proposition in opening');
     }
 
     return score;
@@ -503,11 +514,20 @@ export class AssetGrader {
     }
 
     // Version information - users can control this
+    // This is helpful but not critical for success
     const hasPublishNotes = asset.publishNotes && asset.publishNotes.trim().length > 0;
     if (hasPublishNotes) {
       score.score += w.publishNotes;
     } else {
-      score.reasons.push('Add version information');
+      // Give partial credit if asset has version field
+      if (asset.version && asset.version.trim().length > 0) {
+        score.score += w.publishNotes * 0.5; // Half credit for version without notes
+      } else {
+        // Only report this if other trust signals are also weak
+        if (!hasDocumentation && completeness < 0.8) {
+          score.reasons.push('Consider adding version information or release notes');
+        }
+      }
     }
 
     return score;
