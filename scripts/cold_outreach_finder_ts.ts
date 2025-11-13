@@ -14,6 +14,7 @@ import { DynamicAssetGrader } from '../packages/optimizer/src/dynamic-asset-grad
 import { Config, DEFAULT_WEIGHTS, DEFAULT_THRESHOLDS } from '../packages/optimizer/src/config';
 import { Logger } from '../packages/optimizer/src/utils/logger';
 import { FileValidator } from '../packages/optimizer/src/utils/validation';
+import { calculateDetailedRating } from '../packages/optimizer/src/utils/rating-analysis';
 import type { Asset, Vocabulary, GradeResult, CategoryVocabulary, DynamicGradingRulesFile, GraderConfig } from '../packages/optimizer/src/types';
 
 interface Publisher {
@@ -285,6 +286,26 @@ class ColdOutreachFinderTS {
   }
 
   /**
+   * Check if asset has strong performance metrics (high reviews/ratings)
+   * These indicate the publisher knows what they're doing
+   */
+  hasStrongPerformance(asset: Asset): boolean {
+    const reviewsCount = asset.reviews_count || 0;
+    const ratingData = calculateDetailedRating(asset.rating || []);
+    const rating = ratingData.averageRating;
+    
+    // Strong performance indicators:
+    // - High review count (50+ reviews shows significant traction)
+    // - High rating (4.0+ shows quality)
+    // - Both together indicate proven success
+    const hasHighReviews = reviewsCount >= 50;
+    const hasHighRating = rating >= 4.0;
+    const hasModerateSuccess = reviewsCount >= 20 && rating >= 3.5;
+    
+    return (hasHighReviews && hasHighRating) || hasModerateSuccess;
+  }
+
+  /**
    * Calculate days between date and now
    */
   daysBetween(dateStr: string): number | null {
@@ -425,7 +446,7 @@ class ColdOutreachFinderTS {
 
       // Grade packages
       const gradedPackages: GradedAsset[] = [];
-      for (const pkg of recentPackages.slice(0, 20)) { // Limit to first 20 for performance
+      for (const pkg of recentPackages) { // Limit to first 20 for performance
         const grade = await this.gradePackage(pkg);
         gradedPackages.push({ ...pkg, grade });
         
@@ -444,13 +465,21 @@ class ColdOutreachFinderTS {
         continue; // Skip publishers with no low-grade packages
       }
 
-      // Check if publisher has any successful packages (score >= 70, which is B or better)
-      const hasSuccessfulPackages = gradedPackages.some(pkg => 
+      // Skip publishers who already demonstrate success through either:
+      // 1. Good optimization/presentation (B grade or better in our grading)
+      // 2. Strong market performance (high reviews/ratings regardless of grade)
+      const hasSuccessfulGrades = gradedPackages.some(pkg => 
         pkg.grade.score >= 70
       );
+      
+      const hasMarketSuccess = publisherPackages.some(pkg => 
+        this.hasStrongPerformance(pkg)
+      );
 
-      if (hasSuccessfulPackages) {
-        continue; // Skip publishers who already have successful packages
+      if (hasSuccessfulGrades || hasMarketSuccess) {
+        // Skip publishers who have proven they know what they're doing
+        // Either through good presentation OR through market validation
+        continue;
       }
 
       // Debug for first few publishers
@@ -460,7 +489,10 @@ class ColdOutreachFinderTS {
           console.log(`      ${pkg.title}: ${pkg.grade.letter} (${pkg.grade.score})`);
         });
         console.log(`    Low-grade packages: ${lowGradePackages.length}`);
-        console.log(`    Has successful packages: ${hasSuccessfulPackages}`);
+        const hasSuccessfulGrades = gradedPackages.some(pkg => pkg.grade.score >= 70);
+        const hasMarketSuccess = publisherPackages.some(pkg => this.hasStrongPerformance(pkg));
+        console.log(`    Has successful grades (B+): ${hasSuccessfulGrades}`);
+        console.log(`    Has market success (reviews/ratings): ${hasMarketSuccess}`);
       }
 
       const reasoning = this.generateReasoning(publisher, gradedPackages, lowGradePackages, recentPackages);
