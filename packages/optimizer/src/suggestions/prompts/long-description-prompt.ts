@@ -32,15 +32,7 @@ CRITICAL LONG DESCRIPTION OPTIMIZATION GUIDELINES:
    - Include quality support links (Discord, GitHub, documentation, tutorials, guides, YouTube demos)
    - Ensure strong opening value proposition
 
-3. VALUE PROPOSITION LANGUAGE:
-   - Purpose words: "for", "to", "help", "enable", "allows", "create", "build"
-   - Tool descriptors: "pack", "set", "asset", "package", "collection", "kit", "system", "tool"
-   - Quality descriptors: "best", "perfect", "ultimate", "complete", "professional", "advanced", "powerful"
-   - Feature words: "includes", "contains", "features", "offers", "provides"
-   - Benefit words: "save", "improve", "boost", "enhance", "optimize"
-   - Game development terms: "game", "unity", "project", "developer", "development"
-
-4. TRUST SIGNALS:
+3. TRUST SIGNALS:
    - Include documentation or support links
    - Mention version information and updates
    - Add compatibility information (Unity versions, LTS support)
@@ -215,6 +207,9 @@ export function buildLongDescUserPrompt(
   const topUnigrams = categoryVocabulary?.top_unigrams?.slice(0, 8).map((w: any) => w.t).join(', ') || '';
   const topBigrams = categoryVocabulary?.top_bigrams?.slice(0, 5).map((w: any) => w.t).join(', ') || '';
   const commonStructures = categoryVocabulary?.common_structures?.slice(0, 3).join(', ') || '';
+  
+  // Extract value proposition words from category vocabulary
+  const uvpWords = categoryVocabulary?.uvp_words?.slice(0, 30).map((w: any) => w.word || w.t).join(', ') || '';
 
   // show the long description of a few exemplars
   const exemplarLongDescs = exemplars.slice(0, 2).map(ex => 
@@ -255,6 +250,9 @@ CATEGORY VOCABULARY FOR SEO:
 - Top category bigrams: ${topBigrams || 'N/A'}
 - Common tags to include: ${topTags || 'N/A'}
 - Common structures: ${commonStructures || 'N/A'}
+
+VALUE PROPOSITION LANGUAGE (from successful assets in this category):
+${uvpWords ? `Use these proven words naturally in your description: ${uvpWords}` : 'Use clear, benefit-focused language that explains what the asset does and why it matters.'}
 
 CATEGORY BENCHMARKS:
 - Median price: ${categoryVocabulary?.price?.median ? `$${categoryVocabulary.price.median}` : 'N/A'}
