@@ -46,45 +46,107 @@ CRITICAL LONG DESCRIPTION OPTIMIZATION GUIDELINES:
    - Add compatibility information (Unity versions, LTS support)
    - Include performance details, source code availability
 
-### TONE & STYLE
+### CRITICAL INSIGHT FROM BEST SELLERS
 
-Write as if you are a senior Unity developer explaining your own asset to other developers.  
-The tone should be:
-- **Professional yet conversational**
-- **Confident, not overhyped**
-- **Natural and varied in sentence structure**
-- **Focused on clarity and developer benefit**
+Real best-selling assets use WILDLY DIFFERENT formats. There's no single "correct" structure.
 
-Avoid robotic or overly “AI-clean” phrasing. Write as if it's handcrafted by a Unity pro.
+**Format Distribution:**
+- 40% use technical spec lists (poly count, textures, included items)
+- 35% use feature overview with bullets
+- 15% are minimal (2-3 sentences)
+- 10% have personality and narrative
+
+**Key Finding:** Many successful descriptions are BRIEF and TECHNICAL, not long and persuasive.
 
 ---
 
-### STRUCTURE
+### TONE & STYLE
 
-Follow a natural but consistent flow. Do **not** over-template it.
+Write like a developer describing their own work in a README or documentation:
+- State what it is and what's included
+- List technical specs clearly
+- Skip the sales pitch
+- Be direct, not promotional
 
-1. **HOOK (1-2 sentences)**  
-   - Open with a developer pain point or problem statement  
-   - Immediately follow with the main benefit or value proposition  
-   - Example: *“Tired of writing dice logic from scratch? Dice Roller Pro gives you a production-ready rolling engine that just works.”*
+**Real Examples:**
+✅ "Technical details: Polygons: 6,120 | Vertices: 5,789 | Textures: Color, Metallic, Roughness, Normal, AO | All textures are 2k resolution"
+✅ "This package is aimed at developers creating medieval-fantasy settings. Contains 12 weapons divided into 3 sets."
+✅ "Simple AI bots out of the box. Just drag and drop. It just works. No extra setup needed."
 
-2. **KEY FEATURES (3-5 bullets)**  
-   - For each feature, describe both what it does and **why it helps developers**  
-   - Example: *“Thread-safe architecture - perfect for async dice rolls in multiplayer or AI simulations.”*
+---
 
-3. **USE CASES (2-3 examples)**  
-   - Show how real developers would apply this asset  
-   - Example: *“Use it to handle character stat generation, procedural loot systems, or tabletop-inspired combat rolls.”*
+### CHOOSE THE RIGHT FORMAT FOR THE ASSET TYPE
 
-4. **TECHNICAL DETAILS (1-2 paragraphs)**  
-   - Include compatibility (Unity version, LTS support, etc.)  
-   - Mention performance, source code, pipelines, or documentation  
-   - Use occasional code-like examples or inline notation for realism (e.g. "2d6+3", "(1d6+2)*3")  
+**FORMAT A - Technical Spec List** (Best for: 3D models, props, characters, vehicles)
+\`\`\`
+Brief intro (1-2 sentences about what it is)
 
-5. **CALL TO ACTION (1-2 sentences)**  
-   - Strong, benefit-driven reason to purchase with action words
-   - Include support links (Discord, documentation, GitHub)
-   - Example: *"Save hours of coding time and ship faster—download Dice Roller Pro today and join our Discord community for support."*
+Features:
+- Poly count: X
+- Texture details: X
+- Animations: X (list them)
+- File formats: X
+- What's included: X
+
+Compatibility notes
+\`\`\`
+
+**FORMAT B - Feature Overview** (Best for: tools, systems, templates, effects)
+\`\`\`
+What it does (1 sentence)
+Why you'd use it (1 sentence - optional)
+
+Key Features:
+- Feature 1 with brief technical detail
+- Feature 2 with brief technical detail  
+- Feature 3 with brief technical detail
+
+Technical Requirements:
+- Unity version
+- Pipeline compatibility
+- Documentation/support links
+\`\`\`
+
+**FORMAT C - Minimal** (Best for: simple packs, textures, sounds)
+\`\`\`
+This pack contains [X items/features].
+[Brief detail about what makes it useful].
+[Compatibility/format notes].
+\`\`\`
+
+**FORMAT D - Narrative with Personality** (Use sparingly, only if it fits)
+\`\`\`
+Open with a question or relatable scenario
+Describe what the asset does
+List what's included
+Add some personality or humor if natural
+End with technical notes
+\`\`\`
+
+---
+
+### WRITING GUIDELINES
+
+1. **Be Specific**
+   - Exact poly counts, texture sizes, animation counts
+   - List what's actually included
+   - State Unity versions, pipeline support
+
+2. **Keep It Scannable**
+   - Use bullet points for lists
+   - Break into clear sections
+   - Don't write long paragraphs unless necessary
+
+3. **Skip the Fluff**
+   - No "Transform your workflow"
+   - No "Perfect for all your needs"
+   - No "Take your project to the next level"
+   - Just state what it is and what it does
+
+4. **Be Clear About Support**
+   - Link to documentation if available
+   - Mention Discord/forum if available
+   - State update policy if relevant
 
 ---
 
@@ -101,13 +163,16 @@ Follow a natural but consistent flow. Do **not** over-template it.
 
 ### QUALITY & REALISM CHECK
 
-Before finalizing:
-- Vary sentence rhythm (mix short and long sentences)
-- Use occasional transition phrases ("Moreover", "Even better", "In practice")
-- Avoid emoji overload — 0-1 per major section max
-- Ensure the tone reads like *real human marketing copy*, not auto-generated text
-- Verify word count meets category requirements (excluding HTML tags)
-- Ensure all required grading elements are included
+Before finalizing, run the "Would a real developer write this?" test:
+- **Sentence rhythm**: Mix short punchy statements with detailed explanations. Some paragraphs can be one sentence. Others can ramble a bit.
+- **Transition words**: If you use "Furthermore" or "Moreover," you've already failed. Try "Plus," "Even better," "Here's the thing," or just skip the transition entirely.
+- **Emoji usage**: 0-1 per major section max. You're a developer, not a LinkedIn influencer.
+- **The "my colleague" test**: Read it out loud. Would you actually say this to another developer? Or does it sound like a press release?
+- **Specificity check**: Did you use concrete examples? Or could your description work for 50 other assets if you swapped the name?
+- **Technical verification**: Verify word count meets category requirements (excluding HTML tags)
+- **Grading elements**: Ensure all required grading elements are included
+
+If it reads like it came from a content mill, start over. Developers can smell AI-generated fluff from miles away.
 
 ---
 
@@ -231,7 +296,13 @@ Generate long description suggestions that maximize asset grading scores:
    - Vary sentence structure and use transition phrases
    - Balance technical details with clear benefits
 
-Before finalizing, rephrase any overly formal or repetitive sentences. The final text should read as if crafted by a skilled Unity developer writing their own store page while optimizing for maximum grading scores.
+Before finalizing, run the authenticity check:
+- Read each sentence aloud. Does it sound like something a real developer would write?
+- Did you use specific technical details that show genuine Unity expertise?
+- Is the enthusiasm genuine (backed by specifics) or generic (could apply to anything)?
+- Would this description make you want to buy the asset, or does it sound like every other store page?
+
+The final text should read as if crafted by a skilled Unity developer writing their own store page—someone who genuinely believes in their product and knows how to communicate its value without resorting to marketing clichés. Optimize for grading scores, yes, but never sacrifice authenticity for optimization.
 
 For each suggestion, provide detailed reasoning explaining how it improves the grading score across content quality, trust signals, findability, and professional presentation dimensions.`;
 }
