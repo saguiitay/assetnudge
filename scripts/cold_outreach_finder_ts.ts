@@ -306,6 +306,76 @@ class ColdOutreachFinderTS {
   }
 
   /**
+   * Check if email is from a free consumer email service
+   * These publishers are more likely to be hobbyists/amateurs who need help
+   */
+  usesFreeEmail(email: string): boolean {
+    if (!email) return false;
+    
+    const freeEmailProviders = [
+      'gmail.com', 'googlemail.com',
+      'yahoo.com', 'yahoo.co.uk', 'ymail.com',
+      'hotmail.com', 'outlook.com', 'live.com', 'msn.com',
+      'aol.com',
+      'icloud.com', 'me.com', 'mac.com',
+      'protonmail.com', 'pm.me',
+      'mail.com',
+      'gmx.com', 'gmx.net',
+      'zoho.com',
+      'yandex.com', 'yandex.ru'
+    ];
+    
+    const emailLower = email.toLowerCase();
+    return freeEmailProviders.some(provider => emailLower.endsWith('@' + provider));
+  }
+
+  /**
+   * Check if website is hosted on a free/budget website builder
+   * These publishers are more likely to be hobbyists/amateurs who need help
+   */
+  usesFreeWebsiteBuilder(website: string): boolean {
+    if (!website) return false;
+    
+    const freeWebsiteBuilders = [
+      'wix.com', 'wixsite.com',
+      'artstation.com',
+      'itch.io',
+      'weebly.com',
+      'wordpress.com', 'wp.com',
+      'blogspot.com', 'blogger.com',
+      'tumblr.com',
+      'squarespace.com',
+      'carrd.co',
+      'godaddysites.com',
+      'site123.com',
+      'webnode.com',
+      'jimdo.com',
+      'strikingly.com'
+    ];
+    
+    const websiteLower = website.toLowerCase();
+    return freeWebsiteBuilders.some(builder => websiteLower.includes(builder));
+  }
+
+  /**
+   * Check if publisher has professional business indicators
+   * Custom domain + professional email suggests established business
+   */
+  hasProfessionalIndicators(publisher: Publisher): boolean {
+    const email = publisher.publisherEmail || '';
+    const website = publisher.publisherWebsite || '';
+    
+    // Has custom domain (not free website builder)
+    const hasCustomDomain = website.length > 0 && !this.usesFreeWebsiteBuilder(website);
+    
+    // Has professional email (not free email service)
+    const hasProfessionalEmail = email.length > 0 && !this.usesFreeEmail(email);
+    
+    // Both indicators suggest professional operation
+    return hasCustomDomain && hasProfessionalEmail;
+  }
+
+  /**
    * Calculate days between date and now
    */
   daysBetween(dateStr: string): number | null {
@@ -482,6 +552,33 @@ class ColdOutreachFinderTS {
         continue;
       }
 
+      // Check for systematic grading issues + professional indicators
+      // If a publisher with professional setup (custom domain + professional email) 
+      // has many packages ALL failing for the same reasons, it's likely a grading issue
+      const hasHighActivity = recentPackages.length >= 20; // Lots of active packages
+      const hasSystematicIssues = lowGradePackages.length >= 15; // Many low-grade packages
+      
+      if (this.hasProfessionalIndicators(publisher) && hasHighActivity && hasSystematicIssues) {
+        // Professional publisher with many active packages all graded low?
+        // Check if it's the same issue repeating (systematic grading problem)
+        const allReasons = lowGradePackages.flatMap(pkg => pkg.grade.reasons);
+        const reasonCounts = new Map<string, number>();
+        allReasons.forEach(reason => {
+          // Normalize reason to detect duplicates
+          const normalized = reason.replace(/\d+/g, 'N').slice(0, 50);
+          reasonCounts.set(normalized, (reasonCounts.get(normalized) || 0) + 1);
+        });
+        
+        // If any single issue affects 80%+ of packages, it's systematic
+        const maxReasonCount = Math.max(...reasonCounts.values());
+        const systematicThreshold = lowGradePackages.length * 0.8;
+        
+        if (maxReasonCount >= systematicThreshold) {
+          // Skip - likely a grading calibration issue, not genuine need
+          continue;
+        }
+      }
+
       // Debug for first few publishers
       if (processedCount <= 3) {
         console.log(`    Graded ${gradedPackages.length} packages:`);
@@ -499,12 +596,50 @@ class ColdOutreachFinderTS {
       const samplePackagesForEmail = await this.getSamplePackagesWithImprovements(lowGradePackages);
 
       // Calculate priority score (1-100)
-      // Factors: number of low-grade packages, recency, contact info
+      // Factors: number of low-grade packages, recency, contact info, professionalism indicators
       let priority = 0;
-      priority += Math.min(lowGradePackages.length * 5, 50); // up to 50 for low-grade count
-      priority += Math.min(recentPackages.length, 20); // up to 20 for recent activity
+      
+      // Base score from low-grade packages (up to 50 points)
+      priority += Math.min(lowGradePackages.length * 5, 50);
+      
+      // Activity score from recent packages (up to 20 points)
+      priority += Math.min(recentPackages.length, 20);
+      
+      // Contact info availability (15 points each)
       if (publisher.publisherEmail) priority += 15;
       if (publisher.publisherWebsite) priority += 15;
+      
+      // Check professionalism indicators
+      const isProfessional = this.hasProfessionalIndicators(publisher);
+      const usesFreeEmail = this.usesFreeEmail(publisher.publisherEmail || '');
+      const usesFreeWebsite = this.usesFreeWebsiteBuilder(publisher.publisherWebsite || '');
+      
+      // BOOST: Publishers with amateur/hobby indicators are HIGHER priority
+      // They're more likely to need help with professional marketing
+      if (usesFreeEmail) {
+        priority += 20; // Significant boost for free email (likely hobbyist/amateur)
+      }
+      
+      if (usesFreeWebsite) {
+        priority += 15; // Boost for free website builder (not professional operation)
+      }
+      
+      // Both amateur indicators together = very likely amateur who needs help
+      if (usesFreeEmail && usesFreeWebsite) {
+        priority += 10; // Extra boost for combination
+      }
+      
+      // PENALTY: Professional publishers should be lower priority
+      // They likely have resources and might have grading calibration issues
+      if (isProfessional) {
+        priority -= 25; // Reduce priority for established businesses
+        
+        // Extra penalty if they have many packages (likely successful despite low grades)
+        if (recentPackages.length >= 20) {
+          priority -= 15;
+        }
+      }
+      
       priority = Math.max(1, Math.min(priority, 100));
 
       analyses.push({
