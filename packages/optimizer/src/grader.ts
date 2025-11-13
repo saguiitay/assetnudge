@@ -371,27 +371,50 @@ export class AssetGrader {
       );
     }
 
-    // Short description scoring
-    // Only flag if completely missing descriptions (both short and long)
+    // Short description scoring - OPTIONAL (31% of best sellers have none)
+    // Award points for having one, but don't penalize absence
+    // Use category-specific thresholds from vocabulary
+    const shortDescMedian = vocab.short_desc_length?.median ?? 150;
+    const shortDescStd = vocab.short_desc_length?.std ?? 30;
+    
+    const minShortLength = Math.max(30, Math.round(shortDescMedian * 0.33)); // 33rd percentile
+    const idealShortMin = Math.max(50, Math.round(shortDescMedian * 0.5)); // 50th percentile (median * 0.5)
+    const idealShortMax = Math.round(shortDescMedian + shortDescStd); // Upper bound
+    const optimalShortMin = Math.round(shortDescMedian * 0.67); // 67th percentile
+    const optimalShortMax = Math.round(shortDescMedian + shortDescStd * 0.5); // Optimal range
+    
     const hasAnyDescription = content.shortDesc.length > 0 || content.longDesc.length > 0;
     
     if (!hasAnyDescription) {
-      score.reasons.push('Add product description');
+      // Critical issue: no description at all
+      score.reasons.push('Add product description (both short and long are missing)');
     } else if (content.short.length > 0) {
-      const shortOK = content.short.length >= this.thresholds.shortDesc.minLength && 
-                     content.short.length <= this.thresholds.shortDesc.maxLength;
+      // Has short description - award points based on quality
+      if (content.short.length >= minShortLength) {
+        score.score += w.short * 0.8; // 80% for having something
+      }
       
-      if (shortOK) {
-        score.score += w.short;
-      } else if (content.short.length < this.thresholds.shortDesc.minLength) {
-        score.reasons.push(
-          `Short description could be more detailed (${content.short.length} chars, ` +
-          `recommended ${this.thresholds.shortDesc.minLength}-${this.thresholds.shortDesc.maxLength})`
-        );
+      // Bonus for reasonable length (50th percentile to upper bound)
+      if (content.short.length >= idealShortMin && content.short.length <= idealShortMax) {
+        score.score += w.short * 0.2; // Full points = 100%
+      }
+      
+      // Additional bonus for optimal length (67th percentile range)
+      if (content.short.length >= optimalShortMin && content.short.length <= optimalShortMax) {
+        score.score += w.short * 0.1; // Extra 10% bonus
       }
     } else {
-      // Has long description but no short - this is acceptable
-      score.score += w.short * 0.7; // Give partial credit for having long description
+      // No short description but has long - award partial credit based on long desc quality
+      if (content.wordCount >= 200) {
+        score.score += w.short * 0.6; // 60% credit for comprehensive long desc
+      } else if (content.wordCount >= 100) {
+        score.score += w.short * 0.4; // 40% credit for adequate long desc
+      }
+      
+      // Only suggest if both short and long are weak
+      if (content.wordCount < 150) {
+        score.reasons.push(`Consider adding a short description (category median: ${Math.round(shortDescMedian)} chars, 31% of best sellers skip this)`);
+      }
     }
 
     // Long description word count
