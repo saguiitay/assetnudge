@@ -9,8 +9,9 @@ import { Card } from "@workspace/ui/components/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
 import { Badge } from "@workspace/ui/components/badge"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@workspace/ui/components/tooltip"
-import { Sparkles, X, ChevronDown, ChevronUp, RefreshCw, Info } from "lucide-react"
+import { X, ChevronDown, ChevronUp, Info } from "lucide-react"
 import { FieldLabel } from "./field"
+import { SuggestButton } from "./suggest-button"
 
 type SuggestionLayoutVariant = "list" | "grid" | "tabs" | "compact"
 
@@ -283,21 +284,13 @@ export function SuggestionInput({
           <div className="flex-1">
             {renderInputElement()}
           </div>
-          <Button 
-            type="button"
-            variant={buttonVariant}
+          <SuggestButton
+            onClick={handleSuggest}
+            isLoading={isLoading}
             size={buttonSize}
-            onClick={handleSuggest} 
-            disabled={isLoading} 
-            className={`gap-2 whitespace-nowrap shrink-0 ${variant === "custom" ? "mt-0" : ""}`}
-          >
-            {isLoading ? (
-              <RefreshCw className="h-3 w-3 animate-spin" />
-            ) : (
-              <Sparkles className="h-3 w-3" />
-            )}
-            {buttonSize === 'default' && (isLoading ? "Suggesting..." : "Suggest")}
-          </Button>
+            variant={buttonVariant}
+            className={variant === "custom" ? "mt-0" : ""}
+          />
         </div>
       </div>
 
